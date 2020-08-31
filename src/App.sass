@@ -1,0 +1,52 @@
+.App, .App-topNav
+    margin: 0
+    padding: 0
+
+$topNavHeight: 65px
+
+.App-topNavContainer
+    height: $topNavHeight
+    background: #434343
+    border-bottom: 1px solid #707070
+
+.App-topNav
+    display: flex
+    margin: 0 auto
+    width: 1300px
+    height: $topNavHeight
+    line-height: $topNavHeight
+
+.App-topNav h1
+    padding: 0
+    margin: 0
+    display: inline-block
+    font-size: 26px
+    vertical-align: top
+
+.App-topNav ul
+    padding: 0
+    margin: 0 20px
+    list-style-type: none
+    display: inline-block
+    vertical-align: top
+
+.App-topNav li
+    display: inline-block
+
+.App-topNav li > a
+    display: inline-block
+    height: 65px
+    box-sizing: border-box
+    padding: 0 12px
+    margin: 0 4px
+    color: #fff
+    text-decoration: none
+    font-weight: bold
+    font-size: 18px
+
+.App-topNav li > a.active
+    color: #22D870
+    border-bottom: 2px solid #22D870
+
+.App-contentContainer
+    text-align: center

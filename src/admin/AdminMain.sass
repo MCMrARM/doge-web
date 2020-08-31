@@ -1,0 +1,75 @@
+.AdminMain
+  width: 1300px
+  background: #4E4E4E
+  border: 1px solid #707070
+  margin: 65px auto
+  border-radius: 8px
+  display: flex
+  overflow: hidden
+  text-align: left
+  --admin-accent: rgba(34, 216, 112, 1)
+  --admin-accent-20percent: rgba(34, 216, 112, 0.2)
+
+.AdminMain-sidebar
+  width: 350px
+  background: #414141
+  border-right: 1px solid #707070
+
+.AdminName-sidebar-server
+  background: #3B3B3B
+
+.AdminMain-sidebar > nav ul
+  list-style-type: none
+  padding: 0
+  margin: 0
+
+.AdminMain-sidebar > nav ul a, .AdminName-sidebar-server
+  display: flex
+  color: #fff
+  text-decoration: none
+  font-size: 16px
+  align-items: center
+  padding: 8px 28px
+  font-weight: bold
+
+.AdminMain-sidebar > nav ul a .Icon, .AdminName-sidebar-server .Icon
+  width: 32px
+  height: 32px
+  margin-right: 16px
+
+.AdminMain-sidebar > nav ul a.active
+  color: var(--admin-accent)
+  background: var(--admin-accent-20percent)
+
+.AdminMain-bottomtext
+  font-weight: bold
+  font-size: 16px
+  color: rgba(255, 255, 255, 0.62)
+
+.AdminName-sidebar-server
+  padding: 16px 28px
+  font-size: 20px
+
+.AdminName-sidebar-server .Icon
+  background: #000
+  border-radius: 16px
+
+.AdminName-sidebar-server-expand
+  margin: 0 0 0 auto
+
+
+.AdminPage
+  margin: 32px 48px 42px 48px
+
+.AdminPage-Title
+  display: flex
+  align-items: center
+  margin: 0 0 48px 0
+  padding: 0
+  color: var(--admin-accent)
+  font-size: 32px
+
+.AdminPage-Title .Icon
+  width: 64px
+  height: 64px
+  margin-right: 32px
