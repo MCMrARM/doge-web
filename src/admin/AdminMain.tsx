@@ -1,8 +1,9 @@
 import React from 'react';
 import './AdminMain.sass';
-import {NavLink, useParams} from "react-router-dom";
+import {NavLink, Route, Switch, useParams} from "react-router-dom";
 import {DashboardIcon, EmojiEventsIcon, ExpandMoreIcon} from "../icons/Icons";
 import {Overview} from "./Overview";
+import {Leveling} from "./Leveling";
 
 export function AdminMain() {
     let {id} = useParams<{id: string}>();
@@ -23,7 +24,14 @@ export function AdminMain() {
                     </nav>
                 </div>
                 <div className="AdminMain-content">
-                    <Overview />
+                    <Switch>
+                        <Route path="/admin/:id/xp">
+                            <Leveling/>
+                        </Route>
+                        <Route path="/admin/:id">
+                            <Overview/>
+                        </Route>
+                    </Switch>
                 </div>
             </div>
             <p className="AdminMain-bottomtext">Thank you for using Doge!</p>
