@@ -6,13 +6,14 @@ export function Dropdown(props: { selectedItem: React.ReactNode, children?: Reac
     let [expanded, setExpanded] = useState(false);
     let expandedRef = createRef<HTMLDivElement>();
     useEffect(() => {
-        expandedRef.current?.focus();
+        if (expanded)
+            expandedRef.current?.focus();
     });
     return (
-        <div className={"Dropdown" + (expanded ? " Dropdown-expanded" : "")} onClick={() => setExpanded(!expanded)}>
+        <div className={"Dropdown" + (expanded ? " Dropdown-expanded" : "")} onClick={() => setExpanded(!expanded)} tabIndex={0} onBlur={() => setExpanded(false)}>
             {props.selectedItem}
             <ExpandMoreIcon className="AdminName-sidebar-server-expand" />
-            {expanded && <div ref={expandedRef} className="Dropdown-list" tabIndex={0} onBlur={() => setExpanded(false)}>
+            {expanded && <div ref={expandedRef} className="Dropdown-list">
                 {props.children}
             </div>}
         </div>
