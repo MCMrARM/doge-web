@@ -3,6 +3,7 @@ import {EmojiEventsIcon} from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {Slider} from "../components/Slider";
 import {Chip, ChipList} from "../components/ChipList";
+import {Dropdown} from "../components/Dropdown";
 
 export function Leveling() {
     let multiplierValues = [0.25, 0.5, 1, 1.5, 2, 2.5, 3];
@@ -21,6 +22,13 @@ export function Leveling() {
             </TwoColumnOption>
             <TwoColumnOption title="Blacklisted roles" description="Experience cannot be gained by members that have these roles">
                 <ChipList />
+            </TwoColumnOption>
+            <TwoColumnOption title="Level up message" description="A level up message can be sent either directly to the user or to a channel">
+                <Dropdown selectedItem={"Disabled"}>
+                    <Dropdown.Item selected={true}>Disabled</Dropdown.Item>
+                    <Dropdown.Item>Private message</Dropdown.Item>
+                    <Dropdown.Item>Channel message</Dropdown.Item>
+                </Dropdown>
             </TwoColumnOption>
         </div>
     );
