@@ -4,6 +4,7 @@ import {TwoColumnOption} from "./TwoColumnOption";
 import {Slider} from "../components/Slider";
 import {Chip, ChipList} from "../components/ChipList";
 import {Dropdown} from "../components/Dropdown";
+import {TextArea} from "../components/TextArea";
 
 export function Leveling() {
     let multiplierValues = [0.25, 0.5, 1, 1.5, 2, 2.5, 3];
@@ -25,11 +26,13 @@ export function Leveling() {
             </TwoColumnOption>
             <TwoColumnOption title="Level up message" description="A level up message can be sent either directly to the user or to a channel">
                 <div style={{width: "100%"}}>
-                    <Dropdown selectedItem={"Disabled"}>
-                        <Dropdown.Item selected={true}>Disabled</Dropdown.Item>
-                        <Dropdown.Item>Private message</Dropdown.Item>
+                    <Dropdown selectedItem={"Private message"}>
+                        <Dropdown.Item>Disabled</Dropdown.Item>
+                        <Dropdown.Item selected={true}>Private message</Dropdown.Item>
                         <Dropdown.Item>Channel message</Dropdown.Item>
                     </Dropdown>
+                    <TextArea>{"Hey {user}, you reached level {level}!"}</TextArea>
+                    <TextArea placeholder={"Add another message"} />
                 </div>
             </TwoColumnOption>
         </div>
