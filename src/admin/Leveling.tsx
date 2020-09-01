@@ -24,11 +24,13 @@ export function Leveling() {
                 <ChipList />
             </TwoColumnOption>
             <TwoColumnOption title="Level up message" description="A level up message can be sent either directly to the user or to a channel">
-                <Dropdown selectedItem={"Disabled"}>
-                    <Dropdown.Item selected={true}>Disabled</Dropdown.Item>
-                    <Dropdown.Item>Private message</Dropdown.Item>
-                    <Dropdown.Item>Channel message</Dropdown.Item>
-                </Dropdown>
+                <div style={{width: "100%"}}>
+                    <Dropdown selectedItem={"Disabled"}>
+                        <Dropdown.Item selected={true}>Disabled</Dropdown.Item>
+                        <Dropdown.Item>Private message</Dropdown.Item>
+                        <Dropdown.Item>Channel message</Dropdown.Item>
+                    </Dropdown>
+                </div>
             </TwoColumnOption>
         </div>
     );
