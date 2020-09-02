@@ -2,7 +2,7 @@ import React, {createRef, CSSProperties, useEffect, useState} from 'react';
 import "./Dropdown.sass";
 import {ExpandMoreIcon} from "../icons/Icons";
 
-export function Dropdown(props: { expanded?: boolean, selectedItem: React.ReactNode, children?: React.ReactNode|React.ReactNode[], onSetExpanded?: (expanded: boolean) => void }) {
+export function Dropdown(props: { expanded?: boolean, selectedItem: React.ReactNode, children?: React.ReactNode|React.ReactNode[], style?: CSSProperties, onSetExpanded?: (expanded: boolean) => void }) {
     let expandedProp = useState(false);
     let [expanded, setExpanded] = props.expanded && props.onSetExpanded ? [props.expanded, props.onSetExpanded] : expandedProp;
     let expandedRef = createRef<HTMLDivElement>();
@@ -11,7 +11,7 @@ export function Dropdown(props: { expanded?: boolean, selectedItem: React.ReactN
             expandedRef.current?.focus();
     });
     return (
-        <div className={"Dropdown" + (expanded ? " Dropdown-expanded" : "")} onClick={() => setExpanded(!expanded)} tabIndex={0} onBlur={() => setExpanded(false)}>
+        <div className={"Dropdown" + (expanded ? " Dropdown-expanded" : "")} onClick={() => setExpanded(!expanded)} tabIndex={0} onBlur={() => setExpanded(false)} style={props.style}>
             {props.selectedItem}
             <ExpandMoreIcon className="AdminName-sidebar-server-expand" />
             {expanded && <div ref={expandedRef} className="Dropdown-list">
