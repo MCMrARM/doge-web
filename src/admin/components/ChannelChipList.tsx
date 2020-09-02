@@ -11,7 +11,7 @@ export function ChannelChipList(props: {value: string[], server: ServerInfo, onV
         let onRemove = () => {
             props.onValueChanged([...props.value.slice(0, i), ...props.value.slice(i + 1)]);
         };
-        chips.push(<Chip onRemove={onRemove}>{name}</Chip>)
+        chips.push(<Chip key={id} onRemove={onRemove}>{name}</Chip>)
     }
     let addDropdown = undefined;
     let [expanded, setExpanded] = useState(false);

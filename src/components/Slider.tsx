@@ -3,7 +3,7 @@ import "./Slider.sass";
 
 export function Slider(props: { value: number, min: number, max: number, labels?: [number, string][], onValueChanged: (value: number) => void }) {
     const labels = props.labels?.map(x => {
-        return <div className="Slider-label" style={{left: `${(x[0] - props.min) / (props.max - props.min) * 100}%`}}>{x[1]}</div>;
+        return <div key={"label-" + x[0]} className="Slider-label" style={{left: `${(x[0] - props.min) / (props.max - props.min) * 100}%`}}>{x[1]}</div>;
     }) || [];
     let slider = React.createRef<HTMLDivElement>();
     let [isDragging, setIsDragging] = React.useState(false);

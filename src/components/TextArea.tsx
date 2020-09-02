@@ -1,7 +1,7 @@
 import React, {createRef, CSSProperties, useLayoutEffect} from 'react';
 import "./TextArea.sass";
 
-export function TextArea(props: { style?: CSSProperties, className?: string, children?: string, placeholder?: string }) {
+export function TextArea(props: { style?: CSSProperties, className?: string, value?: string, placeholder?: string }) {
     let textAreaRef = createRef<HTMLTextAreaElement>();
     let updateHeight = () => {
         let area = textAreaRef.current!;
@@ -15,8 +15,7 @@ export function TextArea(props: { style?: CSSProperties, className?: string, chi
             className={"TextArea" + (props.className ? ` ${props.className}` : "")}
             onInput={updateHeight}
             style={props.style}
-            placeholder={props.placeholder}>
-            {props.children}
-        </textarea>
+            placeholder={props.placeholder}
+            defaultValue={props.value} />
     );
 }

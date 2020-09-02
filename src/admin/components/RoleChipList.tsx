@@ -13,7 +13,7 @@ export function RoleChipList(props: {value: string[], server: ServerInfo, onValu
         let onRemove = () => {
             props.onValueChanged([...props.value.slice(0, i), ...props.value.slice(i + 1)]);
         };
-        chips.push(<Chip onRemove={onRemove} style={{border: `1px solid ${color}`, color: color}}>{name}</Chip>)
+        chips.push(<Chip key={id} onRemove={onRemove} style={{border: `1px solid ${color}`, color: color}}>{name}</Chip>)
     }
     let addDropdown = undefined;
     let [expanded, setExpanded] = useState(false);

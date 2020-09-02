@@ -32,7 +32,7 @@ export function Leveling(props: {server: ServerInfo, config: XpConfig, onChange:
             <TwoColumnOption title="Level up message" description="A level up message can be sent either directly to the user or to a channel">
                 <div style={{width: "100%"}}>
                     <SimpleDropdown value={props.config.levelUpAnnouncementMode} map={levelUpAnnouncementModes} onValueChanged={(v) => props.onChange({levelUpAnnouncementMode: v})} style={{marginBottom: "4px"}} />
-                    <TextArea>{"Hey {user}, you reached level {level}!"}</TextArea>
+                    <TextArea value="Hey {user}, you reached level {level}!" />
                     <TextArea placeholder={"Add another message"} />
                 </div>
             </TwoColumnOption>
