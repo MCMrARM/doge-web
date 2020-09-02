@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {CSSProperties} from 'react';
 import "./ChipList.sass";
 import {AddIcon, CloseIcon} from "../icons/Icons";
 
-export function Chip(props: { onRemove?: () => void, children: React.ReactNode|React.ReactNode[] }) {
+export function Chip(props: { onRemove?: () => void, children: React.ReactNode|React.ReactNode[], style?: CSSProperties }) {
     let closeIcon = props.onRemove ? <CloseIcon className="Chip-remove" onClick={props.onRemove} /> : undefined;
-    return <div className="Chip">{props.children}{closeIcon}</div>;
+    return <div className="Chip" style={props.style}>{props.children}{closeIcon}</div>;
 }
 
 export function AddButtonChip(props: { active?: boolean, onClick?: () => void }) {

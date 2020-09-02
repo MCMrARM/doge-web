@@ -1,4 +1,4 @@
-import React, {createRef, useEffect, useState} from 'react';
+import React, {createRef, CSSProperties, useEffect, useState} from 'react';
 import "./Dropdown.sass";
 import {ExpandMoreIcon} from "../icons/Icons";
 
@@ -20,8 +20,8 @@ export function Dropdown(props: { selectedItem: React.ReactNode, children?: Reac
     );
 }
 
-Dropdown.Item = function(props: { selected?: boolean, onClick?: () => void, children: React.ReactNode|React.ReactNode[] }) {
+Dropdown.Item = function(props: { selected?: boolean, onClick?: () => void, children: React.ReactNode|React.ReactNode[], style?: CSSProperties }) {
     return (
-        <div className={"Dropdown-Item" + (props.selected ? " Dropdown-Item-selected" : "")} onClick={props.onClick}>{props.children}</div>
+        <div className={"Dropdown-Item" + (props.selected ? " Dropdown-Item-selected" : "")} onClick={props.onClick} style={props.style}>{props.children}</div>
     );
 };

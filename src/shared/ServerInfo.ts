@@ -5,7 +5,8 @@ export type ChannelInfo = {
 export type RoleInfo = {
     id: string,
     name: string,
-    color: number
+    color: number,
+    position: number
 };
 
 export type ServerInfo = {
