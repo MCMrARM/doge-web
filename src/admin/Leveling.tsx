@@ -2,13 +2,13 @@ import React from 'react';
 import {EmojiEventsIcon} from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {Slider} from "../components/Slider";
-import {TextArea} from "../components/TextArea";
 import {XpConfig} from "../shared/BotConfig";
 import {ChannelChipList} from "./components/ChannelChipList";
 import {ServerInfo} from "../shared/ServerInfo";
 import {RoleChipList} from "./components/RoleChipList";
 import {SimpleDropdown} from "./components/SimpleDropdown";
 import {ChannelDropdown} from "./components/ChannelDropdown";
+import {TextAreaList} from "./components/TextAreaList";
 
 const multiplierValues = [0.25, 0.5, 1, 1.5, 2, 2.5, 3];
 const levelUpAnnouncementModes = new Map<"channel"|"direct"|null, string>();
@@ -33,9 +33,8 @@ export function Leveling(props: {server: ServerInfo, config: XpConfig, onChange:
                 <div style={{width: "100%"}}>
                     <SimpleDropdown value={props.config.levelUpAnnouncementMode} map={levelUpAnnouncementModes} onValueChanged={(v) => props.onChange({levelUpAnnouncementMode: v})} style={{marginBottom: "4px"}} />
                     {props.config.levelUpAnnouncementMode === "channel" &&
-                        <ChannelDropdown value={props.config.levelUpChannel} server={props.server} onValueChanged={(v) => props.onChange({levelUpChannel: v})} style={{marginBottom: "4px"}} />}
-                    <TextArea value="Hey {user}, you reached level {level}!" />
-                    <TextArea placeholder={"Add another message"} />
+                        <ChannelDropdown value={props.config.levelUpChannel} server={props.server} onValueChanged={(v) => props.onChange({levelUpChannel: v})} style={{marginBottom: "16px"}} />}
+                    <TextAreaList value={props.config.levelUpMessages} placeholder="Write another level up message..." onValueChanged={(v) => props.onChange({levelUpMessages: v})} />
                 </div>
             </TwoColumnOption>
         </div>
