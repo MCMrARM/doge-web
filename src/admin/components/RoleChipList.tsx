@@ -23,7 +23,7 @@ export function RoleChipList(props: {value: string[], server: ServerInfo, onValu
             props.onValueChanged(props.value.concat([id]));
         };
         let channels = Object.values(props.server.roles).filter(x => !valueSet.has(x.id)).sort((a, b) => b.position - a.position).map(x => (
-            <Dropdown.Item onClick={() => onClick(x.id)} style={{color: colorIntToHexString(x.color || 0xFFFFFF)}}>{`${x.name}`}</Dropdown.Item>
+            <Dropdown.Item key={x.id} onClick={() => onClick(x.id)} style={{color: colorIntToHexString(x.color || 0xFFFFFF)}}>{`${x.name}`}</Dropdown.Item>
         ));
         addDropdown = <ChipAddDropdown>{channels}</ChipAddDropdown>;
     }

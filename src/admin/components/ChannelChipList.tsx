@@ -21,7 +21,7 @@ export function ChannelChipList(props: {value: string[], server: ServerInfo, onV
             props.onValueChanged(props.value.concat([id]));
         };
         let channels = Object.values(props.server.channels).filter(x => !valueSet.has(x.id)).sort((a, b) => a.name.localeCompare(b.name)).map(x => (
-            <Dropdown.Item onClick={() => onClick(x.id)}>{`#${x.name}`}</Dropdown.Item>
+            <Dropdown.Item key={x.id} onClick={() => onClick(x.id)}>{`#${x.name}`}</Dropdown.Item>
         ));
         addDropdown = <ChipAddDropdown>{channels}</ChipAddDropdown>;
     }
