@@ -1,4 +1,4 @@
-import React, {createRef, CSSProperties, useEffect, useState} from 'react';
+import React, {createRef, CSSProperties, useEffect, useLayoutEffect, useState} from 'react';
 import "./Dropdown.sass";
 import {ExpandMoreIcon} from "../icons/Icons";
 
@@ -9,7 +9,7 @@ export function Dropdown(props: { expanded?: boolean, selectedItem: React.ReactN
     useEffect(() => {
         if (expanded)
             expandedRef.current?.focus();
-    });
+    }, [expanded, expandedRef]);
     return (
         <div className={"Dropdown" + (expanded ? " Dropdown-expanded" : "")} onClick={() => setExpanded(!expanded)} tabIndex={0} onBlur={() => setExpanded(false)} style={props.style}>
             {props.selectedItem}
@@ -21,8 +21,15 @@ export function Dropdown(props: { expanded?: boolean, selectedItem: React.ReactN
     );
 }
 
-Dropdown.Item = function(props: { selected?: boolean, onClick?: () => void, children: React.ReactNode|React.ReactNode[], style?: CSSProperties }) {
+function Item(props: { selected?: boolean, onClick?: () => void, children: React.ReactNode|React.ReactNode[], style?: CSSProperties }) {
+    let ref = createRef<HTMLDivElement>();
+    useLayoutEffect(() => {
+        if (props.selected && ref.current && ref.current.parentElement)
+            ref.current.parentElement.scrollTop = ref.current.offsetTop - (ref.current.parentElement.offsetHeight - ref.current.offsetHeight) / 2;
+    }, [ref, props.selected]);
     return (
-        <div className={"Dropdown-Item" + (props.selected ? " Dropdown-Item-selected" : "")} onClick={props.onClick} style={props.style}>{props.children}</div>
+        <div ref={ref} className={"Dropdown-Item" + (props.selected ? " Dropdown-Item-selected" : "")} onClick={props.onClick} style={props.style}>{props.children}</div>
     );
-};
+}
+
+Dropdown.Item = Item;

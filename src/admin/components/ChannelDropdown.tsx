@@ -9,7 +9,7 @@ export function ChannelDropdown(props: {value: string|null, server: ServerInfo, 
     let [expanded, setExpanded] = useState(false);
     if (expanded) {
         items = Object.values(props.server.channels).sort((a, b) => a.name.localeCompare(b.name)).map(x => (
-            <Dropdown.Item key={x.id} onClick={() => props.onValueChanged(x.id)}>{`#${x.name}`}</Dropdown.Item>
+            <Dropdown.Item key={x.id} onClick={() => props.onValueChanged(x.id)} selected={x.id === props.value}>{`#${x.name}`}</Dropdown.Item>
         ));
     }
     return (
