@@ -78,3 +78,41 @@
   width: 64px
   height: 64px
   margin-right: 32px
+
+.AdminMain-unsavedPopup-container
+  position: absolute
+  left: 0
+  right: 0
+  bottom: 0
+  height: 150px
+  overflow: hidden
+  pointer-events: none
+
+.AdminMain-unsavedPopup
+  align-items: center
+  display: flex
+  position: absolute
+  left: 0
+  right: 0
+  bottom: -80px
+  margin: 0 auto
+  width: 1000px
+  background: #4E4E4E
+  border: 1px solid #707070
+  border-radius: 4px
+  padding: 8px
+  box-sizing: border-box
+  text-align: left
+  pointer-events: auto
+  transition: bottom 0.5s cubic-bezier(0.36, 0, 0.66, -0.56)
+
+.AdminMain-unsavedPopup-container-visible .AdminMain-unsavedPopup
+  bottom: 40px
+  transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)
+
+.AdminMain-unsavedPopupText
+  flex-grow: 1
+  margin: 0 12px
+
+.AdminMain-unsavedPopup > .Button
+  margin-left: 8px
