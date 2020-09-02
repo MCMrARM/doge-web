@@ -55,7 +55,7 @@ export function AdminMain() {
 
     let content;
     if (rServerInfo?.info && rConfig?.config) {
-        content = <AdminMainRouter serverInfo={rServerInfo.info} config={rConfig.config} />;
+        content = <AdminMainRouter server={rServerInfo.info} config={rConfig.config} />;
     } else {
         content = (
             <div className="AdminPage">
@@ -90,7 +90,7 @@ export function AdminMain() {
     );
 }
 
-function AdminMainRouter(props: {serverInfo: ServerInfo, config: BotConfig}) {
+function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
     let [editableConfig, setEditableConfig] = useState<BotConfig>(props.config);
     useEffect(() => {
         if (props.config)
@@ -107,7 +107,7 @@ function AdminMainRouter(props: {serverInfo: ServerInfo, config: BotConfig}) {
         <div>
             <Switch>
                 <Route path="/admin/:id/xp">
-                    <Leveling config={editableConfig.xp} onChange={(changes) => setEditableConfig({...editableConfig, xp: {...editableConfig!.xp, ...changes}})} />
+                    <Leveling server={props.server} config={editableConfig.xp} onChange={(changes) => setEditableConfig({...editableConfig, xp: {...editableConfig!.xp, ...changes}})} />
                 </Route>
                 <Route path="/admin/:id">
                     <Overview/>
