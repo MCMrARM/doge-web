@@ -1,4 +1,4 @@
-import React, {DependencyList, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './AdminMain.sass';
 import {NavLink, Route, Switch, useParams} from "react-router-dom";
 import {DashboardIcon, EmojiEventsIcon, ExpandMoreIcon} from "../icons/Icons";
@@ -6,9 +6,11 @@ import {Overview} from "./Overview";
 import {Leveling} from "./Leveling";
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchConfig, selectConfigById} from './redux/serverConfig';
+import {fetchServerInfo, selectServerInfoById} from "./redux/serverInfo";
 import {RootState} from "../store";
 import {BotConfig} from "../shared/BotConfig";
 import {Button} from "../components/Button";
+import {ServerInfo} from "../shared/ServerInfo";
 
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -39,6 +41,12 @@ export function AdminMain() {
     const dispatch = useDispatch();
     let {id} = useParams<{id: string}>();
 
+    const rServerInfo = useSelector((s: RootState) => selectServerInfoById(s, id));
+    useEffect(() => {
+        if (!(rServerInfo?.state))
+            dispatch(fetchServerInfo(id));
+    }, [id, rServerInfo, dispatch]);
+
     const rConfig = useSelector((s: RootState) => selectConfigById(s, id));
     useEffect(() => {
         if (!(rConfig?.state))
@@ -46,8 +54,8 @@ export function AdminMain() {
     }, [id, rConfig, dispatch]);
 
     let content;
-    if (rConfig?.config) {
-        content = <AdminMainRouter config={rConfig.config} />;
+    if (rServerInfo?.info && rConfig?.config) {
+        content = <AdminMainRouter serverInfo={rServerInfo.info} config={rConfig.config} />;
     } else {
         content = (
             <div className="AdminPage">
@@ -62,8 +70,8 @@ export function AdminMain() {
             <div className="AdminMain">
                 <div className="AdminMain-sidebar">
                     <div className="AdminName-sidebar-server">
-                        <img src="data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E" className="Icon" />
-                        Server Name
+                        <img src={rServerInfo?.info?.iconUrl || "data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E"} alt="Server Icon" className="Icon" />
+                        {rServerInfo?.info?.name || "Server"}
                         <ExpandMoreIcon className="AdminName-sidebar-server-expand" />
                     </div>
                     <nav>
@@ -82,7 +90,7 @@ export function AdminMain() {
     );
 }
 
-function AdminMainRouter(props: {config: BotConfig}) {
+function AdminMainRouter(props: {serverInfo: ServerInfo, config: BotConfig}) {
     let [editableConfig, setEditableConfig] = useState<BotConfig>(props.config);
     useEffect(() => {
         if (props.config)

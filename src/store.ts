@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 
 import configReducer from './admin/redux/serverConfig'
+import serverInfoReducer from './admin/redux/serverInfo'
 
 export const store = configureStore({
     reducer: {
-        config: configReducer
+        config: configReducer,
+        server: serverInfoReducer
     },
 });
 

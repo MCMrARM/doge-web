@@ -1,4 +1,5 @@
 import {BotConfig} from "./shared/BotConfig";
+import {ServerInfo} from "./shared/ServerInfo";
 
 export class ResponseError extends Error {}
 
@@ -26,6 +27,11 @@ export default class ApiClient {
             throw new ResponseError(jsonData.message);
         }
     };
+
+    async getServerInfo(serverId: string): Promise<ServerInfo> {
+        return (await fetch(this.baseUrl + `${encodeURIComponent(serverId)}/admin/server`)
+            .then(this.jsonErrorTransform)) as ServerInfo;
+    }
 
     async getServerConfig(serverId: string): Promise<BotConfig> {
         return (await fetch(this.baseUrl + `${encodeURIComponent(serverId)}/admin/config`)
