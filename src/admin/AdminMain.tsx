@@ -116,7 +116,7 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
             <div className={"AdminMain-unsavedPopup-container" + (hasChanges ? " AdminMain-unsavedPopup-container-visible" : "")}>
                 <div className="AdminMain-unsavedPopup">
                     <span className="AdminMain-unsavedPopupText">You have unsaved changes!</span>
-                    <Button theme="secondary">Revert</Button>
+                    <Button theme="secondary" onClick={() => setEditableConfig(props.config)}>Revert</Button>
                     <Button>Save and apply</Button>
                 </div>
             </div>
