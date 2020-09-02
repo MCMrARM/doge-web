@@ -5,16 +5,16 @@ import {Slider} from "../components/Slider";
 import {Chip, ChipList} from "../components/ChipList";
 import {Dropdown} from "../components/Dropdown";
 import {TextArea} from "../components/TextArea";
+import {XpConfig} from "../shared/BotConfig";
 
-export function Leveling() {
+export function Leveling(props: {config: XpConfig, onChange: (changes: Partial<XpConfig>) => void}) {
     let multiplierValues = [0.25, 0.5, 1, 1.5, 2, 2.5, 3];
-    let [multiplierValue, setMultiplierValue] = useState(0);
 
     return (
         <div className="AdminPage">
             <h1 className="AdminPage-Title"><EmojiEventsIcon className="Icon"/> Leveling Settings</h1>
             <TwoColumnOption title="XP multiplier" description="Server-wide multiplier applied to gained experience">
-                <Slider value={multiplierValue} min={0} max={multiplierValues.length - 1} labels={multiplierValues.map((x, i) => [i, `x${x}`])} onValueChanged={(v) => setMultiplierValue(Math.round(v))} />
+                <Slider value={multiplierValues.indexOf(props.config.multiplier)} min={0} max={multiplierValues.length - 1} labels={multiplierValues.map((x, i) => [i, `x${x}`])} onValueChanged={(v) => props.onChange({multiplier: multiplierValues[Math.round(v)]})} />
             </TwoColumnOption>
             <TwoColumnOption title="Blacklisted channels" description="Experience cannot be gained in these channels">
                 <ChipList>

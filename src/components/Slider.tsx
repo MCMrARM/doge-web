@@ -26,7 +26,7 @@ export function Slider(props: { value: number, min: number, max: number, labels?
     };
     return (
         <div ref={slider} className="Slider" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
-            <div className="Slider-handle" style={{left: `${(props.value - props.min) / (props.max - props.min) * 100}%`}} />
+            <div className="Slider-handle" style={{left: `${Math.min(Math.max((props.value - props.min) / (props.max - props.min), 0), 1) * 100}%`}} />
             {labels}
         </div>
     );
