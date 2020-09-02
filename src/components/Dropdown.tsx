@@ -4,7 +4,7 @@ import {ExpandMoreIcon} from "../icons/Icons";
 
 export function Dropdown(props: { expanded?: boolean, selectedItem: React.ReactNode, children?: React.ReactNode|React.ReactNode[], style?: CSSProperties, onSetExpanded?: (expanded: boolean) => void }) {
     let expandedProp = useState(false);
-    let [expanded, setExpanded] = props.expanded && props.onSetExpanded ? [props.expanded, props.onSetExpanded] : expandedProp;
+    let [expanded, setExpanded] = props.expanded !== undefined && props.onSetExpanded ? [props.expanded, props.onSetExpanded] : expandedProp;
     let expandedRef = createRef<HTMLDivElement>();
     useEffect(() => {
         if (expanded)
