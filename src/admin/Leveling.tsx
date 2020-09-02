@@ -8,10 +8,15 @@ import {XpConfig} from "../shared/BotConfig";
 import {ChannelChipList} from "./components/ChannelChipList";
 import {ServerInfo} from "../shared/ServerInfo";
 import {RoleChipList} from "./components/RoleChipList";
+import {SimpleDropdown} from "./components/SimpleDropdown";
+
+const multiplierValues = [0.25, 0.5, 1, 1.5, 2, 2.5, 3];
+const levelUpAnnouncementModes = new Map<"channel"|"direct"|null, string>();
+levelUpAnnouncementModes.set(null, "Disabled");
+levelUpAnnouncementModes.set("direct", "Private message");
+levelUpAnnouncementModes.set("channel", "Channel message");
 
 export function Leveling(props: {server: ServerInfo, config: XpConfig, onChange: (changes: Partial<XpConfig>) => void}) {
-    let multiplierValues = [0.25, 0.5, 1, 1.5, 2, 2.5, 3];
-
     return (
         <div className="AdminPage">
             <h1 className="AdminPage-Title"><EmojiEventsIcon className="Icon"/> Leveling Settings</h1>
@@ -26,11 +31,7 @@ export function Leveling(props: {server: ServerInfo, config: XpConfig, onChange:
             </TwoColumnOption>
             <TwoColumnOption title="Level up message" description="A level up message can be sent either directly to the user or to a channel">
                 <div style={{width: "100%"}}>
-                    <Dropdown selectedItem={"Private message"}>
-                        <Dropdown.Item>Disabled</Dropdown.Item>
-                        <Dropdown.Item selected={true}>Private message</Dropdown.Item>
-                        <Dropdown.Item>Channel message</Dropdown.Item>
-                    </Dropdown>
+                    <SimpleDropdown value={props.config.levelUpAnnouncementMode} map={levelUpAnnouncementModes} onValueChanged={(v) => props.onChange({levelUpAnnouncementMode: v})}/>
                     <TextArea>{"Hey {user}, you reached level {level}!"}</TextArea>
                     <TextArea placeholder={"Add another message"} />
                 </div>
