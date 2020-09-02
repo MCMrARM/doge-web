@@ -1,12 +1,14 @@
 .ChipList
+  position: relative
   display: flex
   flex-flow: row wrap
   width: 100%
   background: #3C3C3C
   border: 1px solid #2C2C2C
   border-radius: 4px
-  padding: 8px
+  padding: 5px
   box-sizing: border-box
+  outline: none
 
 .Chip, .Chip-iconVariant
   display: flex
@@ -15,7 +17,7 @@
   align-items: center
   background: #6b6e71
   border-radius: 16px
-  margin-right: 6px
+  margin: 3px
   font-size: 14px
 
 .Chip
@@ -32,7 +34,45 @@
   width: 28px
   justify-content: center
   padding: 4px
+  user-select: none
 
 .Chip-iconVariant > *
   width: 16px
   height: 16px
+
+.Chip-add
+  position: relative
+  cursor: pointer
+
+.Chip-add-active:before
+  position: absolute
+  bottom: -6px
+  content: ''
+  width: 0
+  height: 0
+  border-left: 11px solid transparent
+  border-right: 11px solid transparent
+  border-bottom: 11px solid #2C2C2C
+
+.Chip-add-active:after
+  position: absolute
+  bottom: -6px
+  content: ''
+  width: 0
+  height: 0
+  border-left: 10px solid transparent
+  border-right: 10px solid transparent
+  border-bottom: 10px solid #3B3B3B
+  z-index: 10001
+
+.ChipAddDropdown
+  position: absolute
+  top: calc(100% - 3px)
+  left: 8px
+  right: 8px
+  background: #3B3B3B
+  border: 1px solid #2C2C2C
+  z-index: 10000
+  max-height: 300px
+  overflow-y: auto
+  border-radius: 4px

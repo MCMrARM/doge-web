@@ -20,8 +20,8 @@ export function Dropdown(props: { selectedItem: React.ReactNode, children?: Reac
     );
 }
 
-Dropdown.Item = function(props: { selected?: boolean, children: React.ReactNode|React.ReactNode[] }) {
+Dropdown.Item = function(props: { selected?: boolean, onClick?: () => void, children: React.ReactNode|React.ReactNode[] }) {
     return (
-        <div className={"Dropdown-Item" + (props.selected ? " Dropdown-Item-selected" : "")}>{props.children}</div>
+        <div className={"Dropdown-Item" + (props.selected ? " Dropdown-Item-selected" : "")} onClick={props.onClick}>{props.children}</div>
     );
 };

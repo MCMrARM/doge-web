@@ -7,11 +7,28 @@ export function Chip(props: { onRemove?: () => void, children: React.ReactNode|R
     return <div className="Chip">{props.children}{closeIcon}</div>;
 }
 
-export function ChipList(props: { children?: React.ReactNode|React.ReactNode[] }) {
+export function AddButtonChip(props: { active?: boolean, onClick?: () => void }) {
     return (
-        <div className="ChipList">
+        <div
+            className={"Chip-iconVariant Chip-add" + (props.active ? " Chip-add-active" : "")}
+            onClick={(e) => { props.onClick?.(); e.stopPropagation(); }}>
+            <AddIcon />
+        </div>
+    );
+}
+
+export function ChipAddDropdown(props: { children?: React.ReactNode|React.ReactNode[] }) {
+    return (
+        <div className="ChipAddDropdown" onClick={(e) => e.stopPropagation()}>
             {props.children}
-            <div className="Chip-iconVariant"><AddIcon /></div>
+        </div>
+    );
+}
+
+export function ChipList(props: { onCloseMenu?: () => void, children?: React.ReactNode|React.ReactNode[] }) {
+    return (
+        <div className="ChipList" onBlur={props.onCloseMenu} onClick={props.onCloseMenu} tabIndex={0}>
+            {props.children}
         </div>
     );
 }

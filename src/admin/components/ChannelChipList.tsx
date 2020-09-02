@@ -1,6 +1,7 @@
-import React from "react";
+import React, {useState} from "react";
 import {ServerInfo} from "../../shared/ServerInfo";
-import {Chip, ChipList} from "../../components/ChipList";
+import {AddButtonChip, Chip, ChipAddDropdown, ChipList} from "../../components/ChipList";
+import {Dropdown} from "../../components/Dropdown";
 
 export function ChannelChipList(props: {value: string[], server: ServerInfo, onValueChanged: (val: string[]) => void}) {
     let chips = [];
@@ -12,9 +13,23 @@ export function ChannelChipList(props: {value: string[], server: ServerInfo, onV
         };
         chips.push(<Chip onRemove={onRemove}>{name}</Chip>)
     }
+    let addDropdown = undefined;
+    let [expanded, setExpanded] = useState(false);
+    if (expanded) {
+        let valueSet = new Set(props.value);
+        let onClick = (id: string) => {
+            props.onValueChanged(props.value.concat([id]));
+        };
+        let channels = Object.values(props.server.channels).filter(x => !valueSet.has(x.id)).sort((a, b) => a.name.localeCompare(b.name)).map(x => (
+            <Dropdown.Item onClick={() => onClick(x.id)}>{`#${x.name}`}</Dropdown.Item>
+        ));
+        addDropdown = <ChipAddDropdown>{channels}</ChipAddDropdown>;
+    }
     return (
-        <ChipList>
+        <ChipList onCloseMenu={() => setExpanded(false)}>
             {chips}
+            <AddButtonChip active={expanded} onClick={() => setExpanded(!expanded)} />
+            {addDropdown}
         </ChipList>
     );
 }

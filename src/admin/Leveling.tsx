@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {EmojiEventsIcon} from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {Slider} from "../components/Slider";
-import {Chip, ChipList} from "../components/ChipList";
+import {AddButtonChip, ChipList} from "../components/ChipList";
 import {Dropdown} from "../components/Dropdown";
 import {TextArea} from "../components/TextArea";
 import {XpConfig} from "../shared/BotConfig";
@@ -22,7 +22,7 @@ export function Leveling(props: {server: ServerInfo, config: XpConfig, onChange:
                 <ChannelChipList value={props.config.disabledChannels} server={props.server} onValueChanged={(v) => props.onChange({disabledChannels: v})} />
             </TwoColumnOption>
             <TwoColumnOption title="Disabled roles" description="Experience cannot be gained by members that have these roles">
-                <ChipList />
+                <ChipList><AddButtonChip /></ChipList>
             </TwoColumnOption>
             <TwoColumnOption title="Level up message" description="A level up message can be sent either directly to the user or to a channel">
                 <div style={{width: "100%"}}>
