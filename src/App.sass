@@ -29,11 +29,12 @@ $topNavHeight: 65px
     list-style-type: none
     display: inline-block
     vertical-align: top
+    flex-grow: 1
 
 .App-topNav li
     display: inline-block
 
-.App-topNav li > a
+.App-topNav a
     display: inline-block
     height: 65px
     box-sizing: border-box
@@ -50,3 +51,24 @@ $topNavHeight: 65px
 
 .App-contentContainer
     text-align: center
+
+.TopBarUserSection
+    display: flex
+    align-items: center
+    font-weight: bold
+    font-size: 18px
+    user-select: none
+    cursor: pointer
+    padding: 0 16px
+
+.TopBarUserSection:hover
+    background: rgba(0, 0, 0, 0.1)
+
+.TopBarUserSection-avatar
+    width: 48px
+    height: 48px
+    border-radius: 32px
+    margin-right: 16px
+
+.TopBarUserSection-expandIcon
+    margin-left: 8px
