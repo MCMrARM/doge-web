@@ -3,8 +3,7 @@ import './App.sass';
 import {BrowserRouter, NavLink, Switch, Route, withRouter, RouteComponentProps, Redirect} from "react-router-dom";
 import {Home} from "./Home";
 import {AdminMain} from "./admin/AdminMain";
-import AuthApiClient from "./AuthApiClient";
-import {DiscordAuthPage} from "./DiscordAuthPage";
+import {createDiscordLoginUrl, DiscordAuthPage} from "./DiscordAuthPage";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "./store";
 import {ExpandMoreIcon} from "./icons/Icons";
@@ -27,7 +26,7 @@ function TopBarUserSection(props: RouteComponentProps) {
             {userMenu}
         </div>);
     } else {
-        return <a href={`https://discord.com/api/oauth2/authorize?client_id=${AuthApiClient.clientId}&response_type=code&scope=identify%20guilds&redirect_uri=${encodeURIComponent("http://localhost:3001/auth/discord")}`} className="App-topNav-login">Log in</a>;
+        return <a href={createDiscordLoginUrl(props.location.pathname)} className="App-topNav-login">Log in</a>;
     }
 }
 const TopBarUserSectionWithRouter = withRouter(TopBarUserSection);

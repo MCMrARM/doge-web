@@ -3,7 +3,8 @@ import AuthApiClient, {LoginResponse} from "../AuthApiClient";
 import {RootState, store} from "../store";
 
 type UserState = {
-    user?: LoginResponse
+    user?: LoginResponse,
+    hasPendingError?: boolean
 };
 
 const initialState: UserState = {};
@@ -26,12 +27,22 @@ const userSlice = createSlice({
     reducers: {
         logOut: state => {
             state.user = undefined;
+        },
+        clearPendingLoginError: state => {
+            state.hasPendingError = false;
         }
     },
     extraReducers: builder => {
+        builder.addCase(login.pending, (state) => {
+            state.hasPendingError = false;
+            state.user = undefined;
+        });
         builder.addCase(login.fulfilled, (state, action) => {
             console.log(action.payload);
             state.user = action.payload;
+        });
+        builder.addCase(login.rejected, (state) => {
+            state.hasPendingError = false;
         });
     }
 });
@@ -49,6 +60,6 @@ export function observeStoreForSaving(st: typeof store) {
     return st.subscribe(handleChange);
 }
 
-export const {logOut} = userSlice.actions;
+export const {logOut, clearPendingLoginError} = userSlice.actions;
 
 export default userSlice.reducer;
