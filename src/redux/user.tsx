@@ -23,7 +23,11 @@ export const login = createAsyncThunk(
 const userSlice = createSlice({
     name: 'user',
     initialState: loadUser(),
-    reducers: {},
+    reducers: {
+        logOut: state => {
+            state.user = undefined;
+        }
+    },
     extraReducers: builder => {
         builder.addCase(login.fulfilled, (state, action) => {
             console.log(action.payload);
@@ -44,5 +48,7 @@ export function observeStoreForSaving(st: typeof store) {
 
     return st.subscribe(handleChange);
 }
+
+export const {logOut} = userSlice.actions;
 
 export default userSlice.reducer;
