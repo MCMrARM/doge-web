@@ -13,8 +13,28 @@ export type LogConfig = {
     textAuditLogEventTypes: string[],
     errorMessageChannel: string|null
 };
+export type WelcomeBannerConfig = {
+    avatarLeft: number,
+    avatarTop: number,
+    avatarSize: number,
+    textColor: string,
+    textLeft: number,
+    textRight: number,
+    textCenterTop: number,
+    textMinSize: number,
+    textMaxSize: number,
+    textShadowOffsetLeft: number,
+    textShadowOffsetTop: number,
+    textShadowColor: string,
+    font: string
+};
+export type WelcomeConfig = {
+    banner: WelcomeBannerConfig|null,
+    channel: string|null
+};
 
 export type BotConfig = {
     xp: XpConfig,
     log: LogConfig
+    welcome: WelcomeConfig
 };

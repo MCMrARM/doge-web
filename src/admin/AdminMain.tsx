@@ -1,7 +1,7 @@
 import React, {FocusEvent, useEffect, useRef, useState} from 'react';
 import './AdminMain.sass';
 import {NavLink, Link, Route, Switch, useParams, Redirect} from "react-router-dom";
-import {DashboardIcon, EmojiEventsIcon, ExpandMoreIcon, HistoryEduIcon} from "../icons/Icons";
+import {ContactIcon, DashboardIcon, EmojiEventsIcon, ExpandMoreIcon, HistoryEduIcon} from "../icons/Icons";
 import {Overview} from "./Overview";
 import {Leveling} from "./Leveling";
 import {useDispatch, useSelector} from 'react-redux';
@@ -14,6 +14,7 @@ import {ServerInfo} from "../shared/ServerInfo";
 import {fetchGuildList} from "../redux/guildList";
 import {GuildListEntry} from "../AuthApiClient";
 import {Logging} from "./Logging";
+import {WelcomeCard} from "./WelcomeCard";
 
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -129,6 +130,7 @@ export function AdminMain() {
                             <li><NavLink to={`/admin/${id}`} exact={true}><DashboardIcon className="Icon"/> Overview</NavLink></li>
                             <li><NavLink to={`/admin/${id}/xp`}><EmojiEventsIcon className="Icon"/> Leveling</NavLink></li>
                             <li><NavLink to={`/admin/${id}/log`}><HistoryEduIcon className="Icon"/> Logging</NavLink></li>
+                            <li><NavLink to={`/admin/${id}/welcome`}><ContactIcon className="Icon"/> Welcome Card</NavLink></li>
                         </ul>
                     </nav>
                 </div>
@@ -162,6 +164,9 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
                 </Route>
                 <Route path="/admin/:id/log">
                     <Logging server={props.server} config={editableConfig.log} onChange={(changes) => setEditableConfig({...editableConfig, log: {...editableConfig!.log, ...changes}})} />
+                </Route>
+                <Route path="/admin/:id/welcome">
+                    <WelcomeCard server={props.server} config={editableConfig.welcome} onChange={(changes) => setEditableConfig({...editableConfig, welcome: {...editableConfig!.welcome, ...changes}})} />
                 </Route>
                 <Route path="/admin/:id">
                     <Overview/>

@@ -1,0 +1,79 @@
+.WelcomeCard-editor
+  display: flex
+  user-select: none
+
+.WelcomeCard-editor-image
+  position: relative
+  overflow: hidden
+
+.WelcomeCard-editor-image > img
+  width: 100%
+  pointer-events: none
+
+.WelcomeCard-editor-avatar
+  position: absolute
+  left: 0
+  top: 0
+  width: 100%
+  height: 100%
+  border-radius: 50%
+  pointer-events: none
+
+.WelcomeCard-editor-nickname
+  position: absolute
+  left: 0
+  top: 0
+  width: 100%
+  height: 100%
+  line-height: 100%
+  overflow: hidden
+  text-overflow: ellipsis
+  white-space: nowrap
+  word-break: break-all
+
+.ResizableArea
+  position: absolute
+  border: 1px solid #000
+  cursor: move
+
+$handleSize: 8px
+
+.ResizeableArea-handle
+  position: absolute
+  width: $handleSize
+  height: $handleSize
+  background: #fff
+  border: 1px solid #000
+
+.ResizeableArea-handle-tl
+  left: -$handleSize/2
+  top: -$handleSize/2
+  cursor: nwse-resize
+
+.ResizeableArea-handle-tr
+  right: -$handleSize/2
+  top: -$handleSize/2
+  cursor: nesw-resize
+
+.ResizeableArea-handle-bl
+  left: -$handleSize/2
+  bottom: -$handleSize/2
+  cursor: nesw-resize
+
+.ResizeableArea-handle-br
+  right: -$handleSize/2
+  bottom: -$handleSize/2
+  cursor: nwse-resize
+
+.WelcomeCard-editor-options
+  flex: 0 0 200px
+  margin-left: 16px
+
+.WelcomeCard-editor-options h4
+  margin: 0 0 8px 0
+  padding: 0
+  font-size: 16px
+  font-weight: bold
+
+.WelcomeCard-editor-options-row
+  display: flex

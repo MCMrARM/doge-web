@@ -55,6 +55,10 @@ export default class ApiClient {
         return this.get(`${encodeURIComponent(serverId)}/admin/config`);
     }
 
+    getWelcomeCardImagePath(serverId: string): string {
+        return this.baseUrl + `${encodeURIComponent(serverId)}/admin/images/welcomeCard`;
+    }
+
 }
 
 ApiClient.instance = new ApiClient("http://localhost:3000/");
