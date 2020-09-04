@@ -12,6 +12,7 @@ import {BotConfig} from "../shared/BotConfig";
 import {Button} from "../components/Button";
 import {ServerInfo} from "../shared/ServerInfo";
 import {fetchGuildList} from "../redux/guildList";
+import {GuildListEntry} from "../AuthApiClient";
 
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -38,15 +39,8 @@ function useDebounce<T>(value: T, delay: number): T {
     return debouncedValue;
 }
 
-function GuildListDropdown() {
-    const dispatch = useDispatch();
-    const guildList = useSelector((s: RootState) => s.guildList);
-    useEffect(() => {
-        if (!guildList.state)
-            dispatch(fetchGuildList());
-    }, [guildList, dispatch]);
-
-    const guildElements = (guildList.list || []).map((g) => {
+function GuildListDropdown(props: {list: GuildListEntry[]}) {
+    const guildElements = (props.list || []).map((g) => {
         let iconUrl = g.icon ? "https://cdn.discordapp.com/icons/" + g.id + "/" + g.icon + ".png?size=32" : null;
         return (
             <li>
@@ -97,7 +91,13 @@ export function AdminMain() {
             </div>
         );
     }
-    let serverListDropDown = serverListExpanded && <GuildListDropdown />;
+
+    const guildList = useSelector((s: RootState) => s.guildList);
+    useEffect(() => {
+        if (!guildList.state)
+            dispatch(fetchGuildList());
+    }, [guildList, dispatch]);
+    let serverListDropDown = serverListExpanded && <GuildListDropdown list={guildList.list || []} />;
 
     return (
         <div>
