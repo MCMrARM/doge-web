@@ -17,6 +17,8 @@ import {NumberInput} from "./components/NumberInput";
 import {Button} from "../components/Button";
 import {SimpleDropdown} from "./components/SimpleDropdown";
 import {Input} from "../components/Input";
+import {ColorPicker} from "../components/ColorPicker";
+import {ColorInput} from "../components/ColorInput";
 
 const defaultBanner: WelcomeBannerConfig = {
     avatarLeft: 0,
@@ -162,7 +164,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                     <h4>Nickname color</h4>
                     <div className="WelcomeCard-editor-options-row">
                         <PaletteIcon className="Icon" style={{marginRight: "8px"}} />
-                        <Input value={banner.textColor} onChange={(v)=> props.onChange({banner: {...banner, textColor: v}})} />
+                        <ColorInput value={banner.textColor} onChange={(v)=> props.onChange({banner: {...banner, textColor: v}})} />
                     </div>
                     <h4>Nickname shadow</h4>
                     <div className="WelcomeCard-editor-options-row">

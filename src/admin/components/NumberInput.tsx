@@ -21,7 +21,7 @@ export function NumberInput(props: { style?: CSSProperties, className?: string, 
             type="number"
             placeholder={props.placeholder}
             value={isEmpty ? "" : props.value.toString()}
-            onChange={onChange}
+            onValueChange={onChange}
             onBlur={onBlur} />
     );
 }

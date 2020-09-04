@@ -1,0 +1,59 @@
+.ColorPicker
+  height: 120px
+  display: flex
+  flex-direction: column
+
+.ColorPicker-sv
+  flex-grow: 1
+  position: relative
+  border-radius: 2px
+  margin-bottom: 8px
+
+.ColorPicker-sv-white
+  position: absolute
+  left: 0
+  top: 0
+  width: 100%
+  height: 100%
+  border-radius: 2px
+  background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%)
+
+.ColorPicker-sv-black
+  position: absolute
+  left: 0
+  top: 0
+  width: 100%
+  height: 100%
+  border-radius: 2px
+  background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%)
+
+.ColorPicker-sv-handle-wrap
+  position: absolute
+  left: 0
+  top: 0
+  right: 2px
+  bottom: 2px
+
+.ColorPicker-sv-handle
+  position: absolute
+  border: 2px solid white
+  border-radius: 4px
+  width: 4px
+  height: 4px
+  transform: translate(-3px, -3px)
+
+.ColorPicker-hue
+  position: relative
+  width: 100%
+  height: 10px
+  background: linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)
+  border-radius: 2px
+
+.ColorPicker-hue-handle
+  position: absolute
+  top: -2px
+  bottom: -2px
+  border: 2px solid white
+  border-radius: 4px
+  width: 4px
+  transform: translate(-2px, 0)
