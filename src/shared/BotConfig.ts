@@ -8,7 +8,13 @@ export type XpConfig = {
     levelUpMessages: string[],
     roles: [number, string, string|null][]
 };
+export type LogConfig = {
+    textAuditLogChannel: string|null,
+    textAuditLogEventTypes: string[],
+    errorMessageChannel: string|null
+};
 
 export type BotConfig = {
-    xp: XpConfig
+    xp: XpConfig,
+    log: LogConfig
 };

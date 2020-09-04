@@ -1,0 +1,25 @@
+.CheckBox
+  display: flex
+  align-items: center
+  outline: none
+  user-select: none
+
+.CheckBox-check
+  display: inline-block
+  width: 24px
+  height: 24px
+  background: #3C3C3C
+  border: 1px solid #2C2C2C
+  border-radius: 4px
+  cursor: pointer
+  margin-right: 8px
+  font-size: 14px
+
+.CheckBox:hover .CheckBox-check
+  border: 1px solid #000
+
+.CheckBox:active .CheckBox-check
+  background: #3A3A3A
+
+.CheckBox-checked .CheckBox-check
+  border: 1px solid #181818
