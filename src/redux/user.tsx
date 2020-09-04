@@ -38,19 +38,25 @@ const userSlice = createSlice({
     },
     extraReducers: builder => {
         builder.addCase(login.pending, (state) => {
-            state.hasPendingError = false;
-            state.user = undefined;
+            return {
+                hasPendingError: false
+            };
         });
         builder.addCase(login.fulfilled, (state, action) => {
-            console.log(action.payload);
-            state.user = action.payload;
+            return {
+                hasPendingError: false,
+                user: action.payload
+            };
         });
         builder.addCase(login.rejected, (state) => {
-            state.hasPendingError = false;
+            return {
+                hasPendingError: false
+            };
         });
         builder.addCase(logout.pending, (state) => {
-            state.hasPendingError = false;
-            state.user = undefined;
+            return {
+                hasPendingError: false
+            };
         });
     }
 });
