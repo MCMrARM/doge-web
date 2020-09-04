@@ -12,7 +12,7 @@ export function TextArea(props: { style?: CSSProperties, className?: string, val
     return (
         <textarea
             ref={textAreaRef}
-            className={"TextArea" + (props.className ? ` ${props.className}` : "")}
+            className={"Input TextArea" + (props.className ? ` ${props.className}` : "")}
             onInput={updateHeight}
             style={props.style}
             placeholder={props.placeholder}
