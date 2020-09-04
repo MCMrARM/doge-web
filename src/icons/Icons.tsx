@@ -48,3 +48,17 @@ export function ContactIcon(props: IconProps) {
         <path d="M 22,3 H 2 C 0.9,3 0,3.9 0,5 v 14 c 0,1.1 0.9,2 2,2 h 20 c 1.1,0 1.99,-0.9 1.99,-2 L 24,5 C 24,3.9 23.1,3 22,3 Z m 0,16 H 2 V 5 H 22 Z M 9,12 c 1.65,0 3,-1.35 3,-3 C 12,7.35 10.65,6 9,6 7.35,6 6,7.35 6,9 c 0,1.65 1.35,3 3,3 z M 9,8 c 0.55,0 1,0.45 1,1 0,0.55 -0.45,1 -1,1 C 8.45,10 8,9.55 8,9 8,8.45 8.45,8 9,8 Z m 6,8.59 c 0,-2.5 -3.97,-3.58 -6,-3.58 -2.03,0 -6,1.08 -6,3.58 V 18 H 15 Z M 5.48,16 C 6.22,15.5 7.7,15 9,15 c 1.3,0 2.77,0.49 3.52,1 z" />
     </svg>;
 }
+
+export function OpenWithIcon(props: IconProps) {
+    return <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"/>
+    </svg>;
+}
+export const MoveIcon = OpenWithIcon;
+
+export function ZoomOutIcon(props: IconProps) {
+    return <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M17.3 5.3l-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3h-6zM9 3H3v6l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3zm-.83 11.41L5.3 17.3 3 15v6h6l-2.3-2.3 2.89-2.87zm7.66 0l-1.42 1.42 2.89 2.87L15 21h6v-6l-2.3 2.3z"/>
+    </svg>;
+}
+export const ResizeIcon = ZoomOutIcon;

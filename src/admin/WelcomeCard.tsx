@@ -1,12 +1,12 @@
 import {ServerInfo} from "../shared/ServerInfo";
 import {WelcomeBannerConfig, WelcomeConfig} from "../shared/BotConfig";
-import {ContactIcon} from "../icons/Icons";
+import {ContactIcon, MoveIcon, ResizeIcon} from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {ChannelDropdown} from "./components/ChannelDropdown";
 import React, {PointerEvent, ReactNode, ReactNodeArray, useLayoutEffect, useRef, useState} from "react";
 import ApiClient from "../ApiClient";
 import "./WelcomeCard.sass";
-import {Input} from "../components/Input";
+import {NumberInput} from "./components/NumberInput";
 
 const defaultBanner: WelcomeBannerConfig = {
     avatarLeft: 0,
@@ -114,9 +114,11 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                 <div className="WelcomeCard-editor-options">
                     <h4>User avatar</h4>
                     <div className="WelcomeCard-editor-options-row">
-                        <Input type="number" value={banner.avatarLeft.toString()} />
-                        <Input type="number" value={banner.avatarTop.toString()} style={{marginLeft: "4px"}} />
-                        <Input type="number" value={banner.avatarSize.toString()} style={{marginLeft: "8px"}} />
+                        <MoveIcon className="Icon" style={{marginRight: "8px"}} />
+                        <NumberInput value={banner.avatarLeft} onChange={(v) => props.onChange({banner: {...banner, avatarLeft: v}})} />
+                        <NumberInput value={banner.avatarTop} style={{marginLeft: "4px"}} />
+                        <ResizeIcon className="Icon" style={{marginLeft: "16px", marginRight: "8px"}} />
+                        <NumberInput value={banner.avatarSize} />
                     </div>
                 </div>
             </div>
