@@ -68,3 +68,9 @@ export function ArrowExpandHorizontalIcon(props: IconProps) {
         <path d="M9,11H15V8L19,12L15,16V13H9V16L5,12L9,8V11M2,20V4H4V20H2M20,20V4H22V20H20Z"/>
     </svg>;
 }
+
+export function FormatSizeIcon(props: IconProps) {
+    return <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M2 4V7H7V19H10V7H15V4H2M21 9H12V12H15V19H18V12H21V9Z"/>
+    </svg>;
+}

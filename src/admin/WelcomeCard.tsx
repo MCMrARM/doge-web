@@ -1,6 +1,6 @@
 import {ServerInfo} from "../shared/ServerInfo";
 import {WelcomeBannerConfig, WelcomeConfig} from "../shared/BotConfig";
-import {ContactIcon, MoveIcon, ResizeIcon, ArrowExpandHorizontalIcon} from "../icons/Icons";
+import {ContactIcon, MoveIcon, ResizeIcon, ArrowExpandHorizontalIcon, FormatSizeIcon} from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {ChannelDropdown} from "./components/ChannelDropdown";
 import React, {PointerEvent, ReactNode, ReactNodeArray, useLayoutEffect, useRef, useState} from "react";
@@ -127,6 +127,13 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                         <NumberInput value={banner.textCenterTop} onChange={(v) => props.onChange({banner: {...banner, textCenterTop: v}})} style={{marginLeft: "4px"}} />
                         <ArrowExpandHorizontalIcon className="Icon" style={{marginLeft: "16px", marginRight: "8px"}} />
                         <NumberInput value={banner.textWidth} onChange={(v) => props.onChange({banner: {...banner, textWidth: v}})} />
+                    </div>
+                    <h4>Nickname font size range</h4>
+                    <div className="WelcomeCard-editor-options-row">
+                        <FormatSizeIcon className="Icon" style={{marginRight: "8px"}} />
+                        <NumberInput value={banner.textMinSize} onChange={(v) => props.onChange({banner: {...banner, textMinSize: v}})} />
+                        <span style={{margin: "0 8px"}}>-</span>
+                        <NumberInput value={banner.textMaxSize} onChange={(v) => props.onChange({banner: {...banner, textMaxSize: v}})} />
                     </div>
                 </div>
             </div>
