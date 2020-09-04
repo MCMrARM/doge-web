@@ -83,11 +83,25 @@ export function AdminMain() {
     let content;
     if (rServerInfo?.info && rConfig?.config) {
         content = <AdminMainRouter server={rServerInfo.info} config={rConfig.config} />;
+    } else if (rServerInfo?.state === "failed" || rConfig?.state === "failed") {
+        let retry = () => {
+            if (rServerInfo?.state === "failed")
+                dispatch(fetchServerInfo(id));
+            if (rConfig?.state === "failed")
+                dispatch(fetchConfig(id));
+        };
+        content = (
+            <div className="AdminPage">
+                <h1 className="AdminPage-Title"><DashboardIcon className="Icon"/> Administration</h1>
+                <p>Failed to load server information</p>
+                <Button onClick={retry}>Try again</Button>
+            </div>
+        );
     } else {
         content = (
             <div className="AdminPage">
                 <h1 className="AdminPage-Title"><DashboardIcon className="Icon"/> Administration</h1>
-                <p>Loading configuration, please wait...</p>
+                <p>Loading current configuration and server information, please wait...</p>
             </div>
         );
     }

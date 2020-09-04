@@ -23,8 +23,14 @@ const configSlice = createSlice({
     initialState: configAdapter.getInitialState(),
     reducers: {},
     extraReducers: builder => {
+        builder.addCase(fetchConfig.pending, (state, action) => {
+            configAdapter.upsertOne(state, {id: action.meta.arg, state: "pending"})
+        });
         builder.addCase(fetchConfig.fulfilled, (state, action) => {
             configAdapter.upsertOne(state, {id: action.meta.arg, state: "available", config: action.payload})
+        });
+        builder.addCase(fetchConfig.rejected, (state, action) => {
+            configAdapter.upsertOne(state, {id: action.meta.arg, state: "failed"})
         });
     }
 });

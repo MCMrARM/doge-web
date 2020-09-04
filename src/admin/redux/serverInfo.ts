@@ -23,8 +23,14 @@ const serverSlice = createSlice({
     initialState: serverAdapter.getInitialState(),
     reducers: {},
     extraReducers: builder => {
+        builder.addCase(fetchServerInfo.pending, (state, action) => {
+            serverAdapter.upsertOne(state, {id: action.meta.arg, state: "pending"})
+        });
         builder.addCase(fetchServerInfo.fulfilled, (state, action) => {
             serverAdapter.upsertOne(state, {id: action.meta.arg, state: "available", info: action.payload})
+        });
+        builder.addCase(fetchServerInfo.rejected, (state, action) => {
+            serverAdapter.upsertOne(state, {id: action.meta.arg, state: "failed"})
         });
     }
 });
