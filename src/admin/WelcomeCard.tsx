@@ -100,8 +100,9 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
     }, [imageSize, imageContainerRef]);
     let mapCoord = (x: number) => x / imageSize[0] * containerSize[0];
     let unmapCoord = (x: number) => x * imageSize[0] / containerSize[0];
-    console.log(imageSize, containerSize);
+    let [minFontSizeFocused, setMinFontSizeFocused] = useState(false);
     let banner = props.config.banner || defaultBanner;
+    let textResizableAreaH = minFontSizeFocused ? banner.textMinSize : banner.textMaxSize;
     return (
         <div className="AdminPage">
             <h1 className="AdminPage-Title"><ContactIcon className="Icon"/> Welcome Card Settings</h1>
@@ -123,11 +124,12 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                         </ResizableArea>
                         <ResizableArea
                             left={mapCoord(banner.textLeft)}
-                            top={mapCoord(banner.textCenterTop - banner.textMaxSize / 2)}
+                            top={mapCoord(banner.textCenterTop - textResizableAreaH / 2)}
                             width={mapCoord(banner.textWidth)}
-                            height={mapCoord(banner.textMaxSize)}
-                            onChange={(l, t, w, h) => props.onChange({banner: {...banner, textLeft: Math.round(unmapCoord(l)), textWidth: Math.round(unmapCoord(w))}})}>
-                            <span style={{fontSize: mapCoord(banner.textMaxSize) + "px", color: banner.textColor}} className="WelcomeCard-editor-nickname">Username</span>
+                            height={mapCoord(textResizableAreaH)}
+                            sizeRule={(w, h) => [w, mapCoord(textResizableAreaH)]}
+                            onChange={(l, t, w, h) => props.onChange({banner: {...banner, textLeft: Math.round(unmapCoord(l)), textWidth: Math.round(unmapCoord(w)), textCenterTop: Math.round(unmapCoord(t + h / 2)), textMaxSize: Math.round(unmapCoord(h))}})}>
+                            <span style={{fontSize: mapCoord(minFontSizeFocused ? banner.textMinSize : banner.textMaxSize) + "px", color: banner.textColor}} className="WelcomeCard-editor-nickname">Username</span>
                         </ResizableArea>
                     </div>
                     <Button style={{marginTop: "8px"}}>Upload new image</Button>
@@ -136,18 +138,18 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                     <h4>User avatar</h4>
                     <div className="WelcomeCard-editor-options-row">
                         <MoveIcon className="Icon" style={{marginRight: "8px"}} />
-                        <NumberInput value={banner.avatarLeft} onChange={(v) => props.onChange({banner: {...banner, avatarLeft: v}})} />
-                        <NumberInput value={banner.avatarTop} onChange={(v) => props.onChange({banner: {...banner, avatarTop: v}})} style={{marginLeft: "4px"}} />
+                        <NumberInput value={banner.avatarLeft} onValueChange={(v) => props.onChange({banner: {...banner, avatarLeft: v}})} />
+                        <NumberInput value={banner.avatarTop} onValueChange={(v) => props.onChange({banner: {...banner, avatarTop: v}})} style={{marginLeft: "4px"}} />
                         <ResizeIcon className="Icon" style={{marginLeft: "16px", marginRight: "8px"}} />
-                        <NumberInput value={banner.avatarSize} onChange={(v) => props.onChange({banner: {...banner, avatarSize: v}})} />
+                        <NumberInput value={banner.avatarSize} onValueChange={(v) => props.onChange({banner: {...banner, avatarSize: v}})} />
                     </div>
                     <h4>User nickname</h4>
                     <div className="WelcomeCard-editor-options-row">
                         <MoveIcon className="Icon" style={{marginRight: "8px"}} />
-                        <NumberInput value={banner.textLeft} onChange={(v) => props.onChange({banner: {...banner, textLeft: v}})} />
-                        <NumberInput value={banner.textCenterTop} onChange={(v) => props.onChange({banner: {...banner, textCenterTop: v}})} style={{marginLeft: "4px"}} />
+                        <NumberInput value={banner.textLeft} onValueChange={(v) => props.onChange({banner: {...banner, textLeft: v}})} />
+                        <NumberInput value={banner.textCenterTop} onValueChange={(v) => props.onChange({banner: {...banner, textCenterTop: v}})} style={{marginLeft: "4px"}} />
                         <ArrowExpandHorizontalIcon className="Icon" style={{marginLeft: "16px", marginRight: "8px"}} />
-                        <NumberInput value={banner.textWidth} onChange={(v) => props.onChange({banner: {...banner, textWidth: v}})} />
+                        <NumberInput value={banner.textWidth} onValueChange={(v) => props.onChange({banner: {...banner, textWidth: v}})} />
                     </div>
                     <h4>Font</h4>
                     <div className="WelcomeCard-editor-options-row">
@@ -157,9 +159,9 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                     <h4>Nickname font size range</h4>
                     <div className="WelcomeCard-editor-options-row">
                         <FormatSizeIcon className="Icon" style={{marginRight: "8px"}} />
-                        <NumberInput value={banner.textMinSize} onChange={(v) => props.onChange({banner: {...banner, textMinSize: v}})} />
+                        <NumberInput value={banner.textMinSize} onValueChange={(v) => props.onChange({banner: {...banner, textMinSize: v}})} onFocus={() => setMinFontSizeFocused(true)} onBlur={() => setMinFontSizeFocused(false)} />
                         <span style={{margin: "0 8px"}}>-</span>
-                        <NumberInput value={banner.textMaxSize} onChange={(v) => props.onChange({banner: {...banner, textMaxSize: v}})} />
+                        <NumberInput value={banner.textMaxSize} onValueChange={(v) => props.onChange({banner: {...banner, textMaxSize: v}})} />
                     </div>
                     <h4>Nickname color</h4>
                     <div className="WelcomeCard-editor-options-row">
@@ -169,10 +171,10 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                     <h4>Nickname shadow</h4>
                     <div className="WelcomeCard-editor-options-row">
                         <MoveIcon className="Icon" style={{marginRight: "8px"}} />
-                        <NumberInput value={banner.textShadowOffsetLeft} onChange={(v) => props.onChange({banner: {...banner, textShadowOffsetLeft: v}})} />
-                        <NumberInput value={banner.textShadowOffsetTop} onChange={(v) => props.onChange({banner: {...banner, textShadowOffsetTop: v}})} style={{marginLeft: "4px"}} />
+                        <NumberInput value={banner.textShadowOffsetLeft} onValueChange={(v) => props.onChange({banner: {...banner, textShadowOffsetLeft: v}})} />
+                        <NumberInput value={banner.textShadowOffsetTop} onValueChange={(v) => props.onChange({banner: {...banner, textShadowOffsetTop: v}})} style={{marginLeft: "4px"}} />
                         <BlurIcon className="Icon" style={{marginLeft: "12px", marginRight: "8px"}} />
-                        <NumberInput value={banner.textShadowBlur} onChange={(v) => props.onChange({banner: {...banner, textShadowBlur: v}})} />
+                        <NumberInput value={banner.textShadowBlur} onValueChange={(v) => props.onChange({banner: {...banner, textShadowBlur: v}})} />
                         <Button theme="colorless" style={{padding: "8px", alignSelf: "stretch", display: "flex", alignItems: "center", marginLeft: "8px"}}><PaletteIcon /></Button>
                     </div>
                 </div>

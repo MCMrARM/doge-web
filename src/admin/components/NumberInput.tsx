@@ -2,26 +2,21 @@ import React, {CSSProperties, useLayoutEffect, useState} from 'react';
 import "./NumberInput.sass";
 import {Input} from "../../components/Input";
 
-export function NumberInput(props: { style?: CSSProperties, className?: string, value: number, placeholder?: string, onChange?: (value: number) => void, onBlur?: () => void }) {
+export function NumberInput(props: {value: number, onValueChange?: (value: number) => void } & React.InputHTMLAttributes<HTMLInputElement>) {
     let [isEmpty, setIsEmpty] = useState(false);
     useLayoutEffect(() => setIsEmpty(false), [props.value]);
-    let onChange = (str: string) => {
+    let onValueChange = (str: string) => {
         setIsEmpty(str.length === 0);
         if (str.length > 0 && !isNaN(parseInt(str)))
-            props.onChange?.(parseInt(str));
-    };
-    let onBlur = () => {
-        setIsEmpty(false);
-        props.onBlur?.();
+            props.onValueChange?.(parseInt(str));
     };
     return (
         <Input
+            {...props}
             className={"NumberInput" + (props.className ? ` ${props.className}` : "")}
-            style={props.style}
             type="number"
-            placeholder={props.placeholder}
             value={isEmpty ? "" : props.value.toString()}
-            onValueChange={onChange}
-            onBlur={onBlur} />
+            onValueChange={onValueChange}
+            onBlur={(e) => { setIsEmpty(false); props.onBlur?.(e); }} />
     );
 }
