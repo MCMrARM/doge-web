@@ -12,9 +12,11 @@ export function ColorPicker(props: {hsv: [number, number, number], onHsvChange: 
 
     let [pointerDown, setPointerDown] = useState(false);
     let onPointerDown = (e: PointerEvent) => {
+        pointerDown = true;
         setPointerDown(true);
         if ((e.target as any).setPointerCapture)
             (e.target as any).setPointerCapture(e.pointerId);
+        onPointerMove(e);
 
     };
     let onPointerMove = (e: PointerEvent) => {
@@ -28,10 +30,11 @@ export function ColorPicker(props: {hsv: [number, number, number], onHsvChange: 
 
     let [huePointerDown, setHuePointerDown] = useState(false);
     let onHuePointerDown = (e: PointerEvent) => {
+        huePointerDown = true;
         setHuePointerDown(true);
         if ((e.target as any).setPointerCapture)
             (e.target as any).setPointerCapture(e.pointerId);
-
+        onHuePointerMove(e);
     };
     let onHuePointerMove = (e: PointerEvent) => {
         if (huePointerDown) {
