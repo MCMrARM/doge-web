@@ -7,7 +7,7 @@ import {createDiscordLoginUrl, DiscordAuthPage} from "./DiscordAuthPage";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "./store";
 import {ExpandMoreIcon} from "./icons/Icons";
-import { logOut } from './redux/user';
+import {logout} from "./redux/user";
 
 function TopBarUserSection(props: RouteComponentProps) {
     const userInfo = useSelector((s: RootState) => s.user.user);
@@ -34,7 +34,7 @@ const TopBarUserSectionWithRouter = withRouter(TopBarUserSection);
 function LogOutPage(props: RouteComponentProps) {
     let dispatch = useDispatch();
     useEffect(() => {
-        dispatch(logOut());
+        dispatch(logout());
     });
     return <Redirect to={(props.location.state as any)?.returnTo || {pathname: "/"}} />;
 }

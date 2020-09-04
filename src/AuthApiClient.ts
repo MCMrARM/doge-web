@@ -46,6 +46,15 @@ export default class AuthApiClient {
         }).then(this.jsonErrorTransform)) as LoginResponse;
     }
 
+    async logout(): Promise<{}> {
+        return (await fetch(this.baseUrl + `logout`, {
+            method: "POST",
+            body: JSON.stringify({}),
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'include'
+        }).then(this.jsonErrorTransform)) as {};
+    }
+
 }
 
 AuthApiClient.instance = new AuthApiClient("http://localhost:3004/api/v1/auth/");

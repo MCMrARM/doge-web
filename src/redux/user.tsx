@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import AuthApiClient, {LoginResponse} from "../AuthApiClient";
-import {RootState, store} from "../store";
+import {store} from "../store";
 
 type UserState = {
     user?: LoginResponse,
@@ -16,8 +16,15 @@ let loadUser = (): UserState => {
 
 export const login = createAsyncThunk(
     'user/login',
-    async (serverId: string) => {
-        return AuthApiClient.instance.login(serverId);
+    async (code: string) => {
+        return AuthApiClient.instance.login(code);
+    }
+);
+
+export const logout = createAsyncThunk(
+    'user/logout',
+    async () => {
+        return AuthApiClient.instance.logout();
     }
 );
 
@@ -25,9 +32,6 @@ const userSlice = createSlice({
     name: 'user',
     initialState: loadUser(),
     reducers: {
-        logOut: state => {
-            state.user = undefined;
-        },
         clearPendingLoginError: state => {
             state.hasPendingError = false;
         }
@@ -43,6 +47,10 @@ const userSlice = createSlice({
         });
         builder.addCase(login.rejected, (state) => {
             state.hasPendingError = false;
+        });
+        builder.addCase(logout.pending, (state) => {
+            state.hasPendingError = false;
+            state.user = undefined;
         });
     }
 });
@@ -60,6 +68,6 @@ export function observeStoreForSaving(st: typeof store) {
     return st.subscribe(handleChange);
 }
 
-export const {logOut, clearPendingLoginError} = userSlice.actions;
+export const {clearPendingLoginError} = userSlice.actions;
 
 export default userSlice.reducer;
