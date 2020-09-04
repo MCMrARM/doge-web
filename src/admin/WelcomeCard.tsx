@@ -1,12 +1,22 @@
 import {ServerInfo} from "../shared/ServerInfo";
 import {WelcomeBannerConfig, WelcomeConfig} from "../shared/BotConfig";
-import {ContactIcon, MoveIcon, ResizeIcon, ArrowExpandHorizontalIcon, FormatSizeIcon} from "../icons/Icons";
+import {
+    ContactIcon,
+    MoveIcon,
+    ResizeIcon,
+    ArrowExpandHorizontalIcon,
+    FormatSizeIcon,
+    PaletteIcon, BlurIcon
+} from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {ChannelDropdown} from "./components/ChannelDropdown";
 import React, {PointerEvent, ReactNode, ReactNodeArray, useLayoutEffect, useRef, useState} from "react";
 import ApiClient from "../ApiClient";
 import "./WelcomeCard.sass";
 import {NumberInput} from "./components/NumberInput";
+import {Button} from "../components/Button";
+import {SimpleDropdown} from "./components/SimpleDropdown";
+import {Input} from "../components/Input";
 
 const defaultBanner: WelcomeBannerConfig = {
     avatarLeft: 0,
@@ -20,9 +30,15 @@ const defaultBanner: WelcomeBannerConfig = {
     textMaxSize: 64,
     textShadowOffsetLeft: 2,
     textShadowOffsetTop: 2,
+    textShadowBlur: 0,
     textShadowColor: "#000",
     font: "Roboto"
 };
+const availableFonts = new Map(Object.entries({
+    "Roboto": "Roboto",
+    "Roboto Bold": "Roboto Bold",
+    "Raleway": "Raleway"
+}));
 
 function ResizableArea(props: {left: number, top: number, width: number, height: number, sizeRule?: (w: number, h: number) => [number, number], onChange: (left: number, top: number, width: number, height: number) => void, children: ReactNode|ReactNodeArray}) {
     let [dragging, setDragging] = useState<[boolean, number, number]>([false, 0, 0]);
@@ -91,25 +107,28 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                 <ChannelDropdown value={props.config.channel} server={props.server} noneOption="Disabled" onValueChanged={(v) => props.onChange({channel: v})} />
             </TwoColumnOption>
             <div className="WelcomeCard-editor">
-                <div className="WelcomeCard-editor-image" ref={imageContainerRef}>
-                    <img src={ApiClient.instance.getWelcomeCardImagePath(props.server.id)} onLoad={(i) => setImageSize([i.currentTarget.naturalWidth, i.currentTarget.naturalHeight])} />
-                    <ResizableArea
-                        left={mapCoord(banner.avatarLeft)}
-                        top={mapCoord(banner.avatarTop)}
-                        width={mapCoord(banner.avatarSize)}
-                        height={mapCoord(banner.avatarSize)}
-                        sizeRule={(w, h) => [Math.min(w, h), Math.min(w, h)]}
-                        onChange={(l, t, w, h) => props.onChange({banner: {...banner, avatarLeft: Math.round(unmapCoord(l)), avatarTop: Math.round(unmapCoord(t)), avatarSize: Math.round(unmapCoord(w))}})}>
-                        <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" className="WelcomeCard-editor-avatar" />
-                    </ResizableArea>
-                    <ResizableArea
-                        left={mapCoord(banner.textLeft)}
-                        top={mapCoord(banner.textCenterTop - banner.textMaxSize / 2)}
-                        width={mapCoord(banner.textWidth)}
-                        height={mapCoord(banner.textMaxSize)}
-                        onChange={(l, t, w, h) => props.onChange({banner: {...banner, textLeft: Math.round(unmapCoord(l)), textWidth: Math.round(unmapCoord(w))}})}>
-                        <span style={{fontSize: mapCoord(banner.textMaxSize) + "px"}} className="WelcomeCard-editor-nickname">Username</span>
-                    </ResizableArea>
+                <div>
+                    <div className="WelcomeCard-editor-image" ref={imageContainerRef}>
+                        <img src={ApiClient.instance.getWelcomeCardImagePath(props.server.id)} onLoad={(i) => setImageSize([i.currentTarget.naturalWidth, i.currentTarget.naturalHeight])} />
+                        <ResizableArea
+                            left={mapCoord(banner.avatarLeft)}
+                            top={mapCoord(banner.avatarTop)}
+                            width={mapCoord(banner.avatarSize)}
+                            height={mapCoord(banner.avatarSize)}
+                            sizeRule={(w, h) => [Math.min(w, h), Math.min(w, h)]}
+                            onChange={(l, t, w, h) => props.onChange({banner: {...banner, avatarLeft: Math.round(unmapCoord(l)), avatarTop: Math.round(unmapCoord(t)), avatarSize: Math.round(unmapCoord(w))}})}>
+                            <img src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Avatar" className="WelcomeCard-editor-avatar" />
+                        </ResizableArea>
+                        <ResizableArea
+                            left={mapCoord(banner.textLeft)}
+                            top={mapCoord(banner.textCenterTop - banner.textMaxSize / 2)}
+                            width={mapCoord(banner.textWidth)}
+                            height={mapCoord(banner.textMaxSize)}
+                            onChange={(l, t, w, h) => props.onChange({banner: {...banner, textLeft: Math.round(unmapCoord(l)), textWidth: Math.round(unmapCoord(w))}})}>
+                            <span style={{fontSize: mapCoord(banner.textMaxSize) + "px", color: banner.textColor}} className="WelcomeCard-editor-nickname">Username</span>
+                        </ResizableArea>
+                    </div>
+                    <Button style={{marginTop: "8px"}}>Upload new image</Button>
                 </div>
                 <div className="WelcomeCard-editor-options">
                     <h4>User avatar</h4>
@@ -128,12 +147,31 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                         <ArrowExpandHorizontalIcon className="Icon" style={{marginLeft: "16px", marginRight: "8px"}} />
                         <NumberInput value={banner.textWidth} onChange={(v) => props.onChange({banner: {...banner, textWidth: v}})} />
                     </div>
+                    <h4>Font</h4>
+                    <div className="WelcomeCard-editor-options-row">
+                        <FormatSizeIcon className="Icon" style={{marginRight: "8px"}} />
+                        <SimpleDropdown value={banner.font} map={availableFonts} onValueChanged={(v)=> props.onChange({banner: {...banner, font: v}})} />
+                    </div>
                     <h4>Nickname font size range</h4>
                     <div className="WelcomeCard-editor-options-row">
                         <FormatSizeIcon className="Icon" style={{marginRight: "8px"}} />
                         <NumberInput value={banner.textMinSize} onChange={(v) => props.onChange({banner: {...banner, textMinSize: v}})} />
                         <span style={{margin: "0 8px"}}>-</span>
                         <NumberInput value={banner.textMaxSize} onChange={(v) => props.onChange({banner: {...banner, textMaxSize: v}})} />
+                    </div>
+                    <h4>Nickname color</h4>
+                    <div className="WelcomeCard-editor-options-row">
+                        <PaletteIcon className="Icon" style={{marginRight: "8px"}} />
+                        <Input value={banner.textColor} onChange={(v)=> props.onChange({banner: {...banner, textColor: v}})} />
+                    </div>
+                    <h4>Nickname shadow</h4>
+                    <div className="WelcomeCard-editor-options-row">
+                        <MoveIcon className="Icon" style={{marginRight: "8px"}} />
+                        <NumberInput value={banner.textShadowOffsetLeft} onChange={(v) => props.onChange({banner: {...banner, textShadowOffsetLeft: v}})} />
+                        <NumberInput value={banner.textShadowOffsetTop} onChange={(v) => props.onChange({banner: {...banner, textShadowOffsetTop: v}})} style={{marginLeft: "4px"}} />
+                        <BlurIcon className="Icon" style={{marginLeft: "12px", marginRight: "8px"}} />
+                        <NumberInput value={banner.textShadowBlur} onChange={(v) => props.onChange({banner: {...banner, textShadowBlur: v}})} />
+                        <Button theme="colorless" style={{padding: "8px", alignSelf: "stretch", display: "flex", alignItems: "center", marginLeft: "8px"}}><PaletteIcon /></Button>
                     </div>
                 </div>
             </div>

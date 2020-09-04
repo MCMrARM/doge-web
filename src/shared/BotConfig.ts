@@ -25,6 +25,7 @@ export type WelcomeBannerConfig = {
     textMaxSize: number,
     textShadowOffsetLeft: number,
     textShadowOffsetTop: number,
+    textShadowBlur: number,
     textShadowColor: string,
     font: string
 };
