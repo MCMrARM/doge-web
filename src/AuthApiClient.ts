@@ -8,6 +8,11 @@ export type LoginResponse = {
         avatar: string
     }
 };
+export type GuildListEntry = {
+    id: string,
+    name: string,
+    iconUrl: string
+};
 
 export default class AuthApiClient {
 
@@ -53,6 +58,13 @@ export default class AuthApiClient {
             headers: {'Content-Type': 'application/json'},
             credentials: 'include'
         }).then(this.jsonErrorTransform)) as {};
+    }
+
+    async getGuilds(): Promise<GuildListEntry[]> {
+        return (await fetch(this.baseUrl + `guilds`, {
+            method: "GET",
+            credentials: 'include'
+        }).then(this.jsonErrorTransform)) as GuildListEntry[];
     }
 
 }
