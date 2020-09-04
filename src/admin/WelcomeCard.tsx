@@ -1,6 +1,6 @@
 import {ServerInfo} from "../shared/ServerInfo";
 import {WelcomeBannerConfig, WelcomeConfig} from "../shared/BotConfig";
-import {ContactIcon, MoveIcon, ResizeIcon} from "../icons/Icons";
+import {ContactIcon, MoveIcon, ResizeIcon, ArrowExpandHorizontalIcon} from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {ChannelDropdown} from "./components/ChannelDropdown";
 import React, {PointerEvent, ReactNode, ReactNodeArray, useLayoutEffect, useRef, useState} from "react";
@@ -119,6 +119,14 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                         <NumberInput value={banner.avatarTop} style={{marginLeft: "4px"}} />
                         <ResizeIcon className="Icon" style={{marginLeft: "16px", marginRight: "8px"}} />
                         <NumberInput value={banner.avatarSize} />
+                    </div>
+                    <h4>User nickname</h4>
+                    <div className="WelcomeCard-editor-options-row">
+                        <MoveIcon className="Icon" style={{marginRight: "8px"}} />
+                        <NumberInput value={banner.textLeft} onChange={(v) => props.onChange({banner: {...banner, textLeft: v}})} />
+                        <NumberInput value={banner.textCenterTop} onChange={(v) => props.onChange({banner: {...banner, textCenterTop: v}})} style={{marginLeft: "4px"}} />
+                        <ArrowExpandHorizontalIcon className="Icon" style={{marginLeft: "16px", marginRight: "8px"}} />
+                        <NumberInput value={banner.textRight - banner.textLeft} />
                     </div>
                 </div>
             </div>

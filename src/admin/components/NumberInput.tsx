@@ -7,7 +7,7 @@ export function NumberInput(props: { style?: CSSProperties, className?: string, 
     useLayoutEffect(() => setIsEmpty(false), [props.value]);
     let onChange = (str: string) => {
         setIsEmpty(str.length === 0);
-        if (str.length > 0 && parseInt(str))
+        if (str.length > 0 && !isNaN(parseInt(str)))
             props.onChange?.(parseInt(str));
     };
     let onBlur = () => {
