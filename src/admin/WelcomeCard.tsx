@@ -14,7 +14,7 @@ const defaultBanner: WelcomeBannerConfig = {
     avatarSize: 64,
     textColor: "#fff",
     textLeft: 0,
-    textRight: 100,
+    textWidth: 100,
     textCenterTop: 64,
     textMinSize: 16,
     textMaxSize: 64,
@@ -105,9 +105,9 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                     <ResizableArea
                         left={mapCoord(banner.textLeft)}
                         top={mapCoord(banner.textCenterTop - banner.textMaxSize / 2)}
-                        width={mapCoord(banner.textRight - banner.textLeft)}
+                        width={mapCoord(banner.textWidth)}
                         height={mapCoord(banner.textMaxSize)}
-                        onChange={(l, t, w, h) => props.onChange({banner: {...banner, textLeft: Math.round(unmapCoord(l)), textRight: Math.round(unmapCoord(l + w))}})}>
+                        onChange={(l, t, w, h) => props.onChange({banner: {...banner, textLeft: Math.round(unmapCoord(l)), textWidth: Math.round(unmapCoord(w))}})}>
                         <span style={{fontSize: mapCoord(banner.textMaxSize) + "px"}} className="WelcomeCard-editor-nickname">Username</span>
                     </ResizableArea>
                 </div>
@@ -126,7 +126,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                         <NumberInput value={banner.textLeft} onChange={(v) => props.onChange({banner: {...banner, textLeft: v}})} />
                         <NumberInput value={banner.textCenterTop} onChange={(v) => props.onChange({banner: {...banner, textCenterTop: v}})} style={{marginLeft: "4px"}} />
                         <ArrowExpandHorizontalIcon className="Icon" style={{marginLeft: "16px", marginRight: "8px"}} />
-                        <NumberInput value={banner.textRight - banner.textLeft} />
+                        <NumberInput value={banner.textWidth} />
                     </div>
                 </div>
             </div>

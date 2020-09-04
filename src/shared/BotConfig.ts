@@ -19,7 +19,7 @@ export type WelcomeBannerConfig = {
     avatarSize: number,
     textColor: string,
     textLeft: number,
-    textRight: number,
+    textWidth: number,
     textCenterTop: number,
     textMinSize: number,
     textMaxSize: number,
