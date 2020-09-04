@@ -3,10 +3,15 @@ import {ServerInfo} from "./shared/ServerInfo";
 
 export class ResponseError extends Error {}
 
+interface ApiAuthProvider {
+    getAppJwt(): string|undefined;
+}
+
 export default class ApiClient {
 
     static instance: ApiClient;
     private baseUrl: string;
+    authProvider?: ApiAuthProvider;
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
@@ -28,14 +33,26 @@ export default class ApiClient {
         }
     };
 
+    private createAuthHeader(): {[key: string]: string} {
+        let appJwt = this.authProvider?.getAppJwt();
+        return appJwt ? {"Authorization": "Bearer " + appJwt} : {};
+    }
+
+    private async get(url: string): Promise<any> {
+        return (await fetch(this.baseUrl + url, {
+            headers: {
+                ...this.createAuthHeader()
+            }
+        })
+            .then(this.jsonErrorTransform));
+    }
+
     async getServerInfo(serverId: string): Promise<ServerInfo> {
-        return (await fetch(this.baseUrl + `${encodeURIComponent(serverId)}/admin/server`)
-            .then(this.jsonErrorTransform)) as ServerInfo;
+        return this.get(`${encodeURIComponent(serverId)}/admin/server`);
     }
 
     async getServerConfig(serverId: string): Promise<BotConfig> {
-        return (await fetch(this.baseUrl + `${encodeURIComponent(serverId)}/admin/config`)
-            .then(this.jsonErrorTransform)) as BotConfig;
+        return this.get(`${encodeURIComponent(serverId)}/admin/config`);
     }
 
 }
