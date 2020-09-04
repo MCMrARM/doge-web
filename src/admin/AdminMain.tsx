@@ -1,6 +1,6 @@
 import React, {FocusEvent, useEffect, useRef, useState} from 'react';
 import './AdminMain.sass';
-import {NavLink, Link, Route, Switch, useParams} from "react-router-dom";
+import {NavLink, Link, Route, Switch, useParams, Redirect} from "react-router-dom";
 import {DashboardIcon, EmojiEventsIcon, ExpandMoreIcon} from "../icons/Icons";
 import {Overview} from "./Overview";
 import {Leveling} from "./Leveling";
@@ -66,6 +66,10 @@ function GuildListDropdown() {
 export function AdminMain() {
     const dispatch = useDispatch();
     let {id} = useParams<{id: string}>();
+
+    useEffect(() => {
+        localStorage.lastAdminServerId = id;
+    }, [id]);
 
     let [serverListExpanded, setServerListExpanded] = useState(false);
     let onServerListBlur = (ev: FocusEvent) => { if (!ev.currentTarget.contains(ev.relatedTarget as Node)) setServerListExpanded(false) };
@@ -153,4 +157,21 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
             </div>
         </div>
     );
+}
+
+export function AdminRedirectToLast() {
+    let dispatch = useDispatch();
+    let [serverId, setServerId] = useState(localStorage.lastAdminServerId);
+
+    const guildList = useSelector((s: RootState) => s.guildList);
+    useEffect(() => {
+        if (!guildList.state && !serverId)
+            dispatch(fetchGuildList());
+        if (guildList.list && guildList.list.length > 0 && !serverId)
+            setServerId(guildList.list[0].id)
+    }, [guildList, serverId, dispatch]);
+
+    if (serverId)
+        return <Redirect to={`/admin/${serverId}`} />;
+    return null;
 }

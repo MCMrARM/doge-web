@@ -2,7 +2,7 @@ import React, {FocusEvent, useEffect, useState} from 'react';
 import './App.sass';
 import {BrowserRouter, NavLink, Switch, Route, withRouter, RouteComponentProps, Redirect} from "react-router-dom";
 import {Home} from "./Home";
-import {AdminMain} from "./admin/AdminMain";
+import {AdminMain, AdminRedirectToLast} from "./admin/AdminMain";
 import {createDiscordLoginUrl, DiscordAuthPage} from "./DiscordAuthPage";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "./store";
@@ -66,6 +66,9 @@ function App() {
                         </Route>
                         <Route path="/admin/:id">
                             <AdminMain />
+                        </Route>
+                        <Route path="/admin" exact={true}>
+                            <AdminRedirectToLast />
                         </Route>
                         <Route path="/">
                             <Home />
