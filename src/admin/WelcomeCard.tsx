@@ -116,9 +116,9 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                     <div className="WelcomeCard-editor-options-row">
                         <MoveIcon className="Icon" style={{marginRight: "8px"}} />
                         <NumberInput value={banner.avatarLeft} onChange={(v) => props.onChange({banner: {...banner, avatarLeft: v}})} />
-                        <NumberInput value={banner.avatarTop} style={{marginLeft: "4px"}} />
+                        <NumberInput value={banner.avatarTop} onChange={(v) => props.onChange({banner: {...banner, avatarTop: v}})} style={{marginLeft: "4px"}} />
                         <ResizeIcon className="Icon" style={{marginLeft: "16px", marginRight: "8px"}} />
-                        <NumberInput value={banner.avatarSize} />
+                        <NumberInput value={banner.avatarSize} onChange={(v) => props.onChange({banner: {...banner, avatarSize: v}})} />
                     </div>
                     <h4>User nickname</h4>
                     <div className="WelcomeCard-editor-options-row">
@@ -126,7 +126,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                         <NumberInput value={banner.textLeft} onChange={(v) => props.onChange({banner: {...banner, textLeft: v}})} />
                         <NumberInput value={banner.textCenterTop} onChange={(v) => props.onChange({banner: {...banner, textCenterTop: v}})} style={{marginLeft: "4px"}} />
                         <ArrowExpandHorizontalIcon className="Icon" style={{marginLeft: "16px", marginRight: "8px"}} />
-                        <NumberInput value={banner.textWidth} />
+                        <NumberInput value={banner.textWidth} onChange={(v) => props.onChange({banner: {...banner, textWidth: v}})} />
                     </div>
                 </div>
             </div>
