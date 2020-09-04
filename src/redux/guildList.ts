@@ -1,11 +1,16 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import AuthApiClient, {GuildListEntry} from "../AuthApiClient";
 
-const initialState: GuildListEntry[] = [];
+type GuildListState = {
+    state?: "available" | "pending" | "failed",
+    list?: GuildListEntry[]
+}
+
+const initialState: GuildListState = {};
 
 export const fetchGuildList = createAsyncThunk(
     'guildList/fetchGuildList',
-    async (code: string) => {
+    async () => {
         return AuthApiClient.instance.getGuilds();
     }
 );
@@ -15,8 +20,17 @@ const guildListSlice = createSlice({
     initialState: initialState,
     reducers: {},
     extraReducers: builder => {
+        builder.addCase(fetchGuildList.pending, (state) => {
+            return {state: "pending"};
+        });
+        builder.addCase(fetchGuildList.rejected, (state) => {
+            return {state: "failed"};
+        });
         builder.addCase(fetchGuildList.fulfilled, (state, action) => {
-            return action.payload;
+            return {
+                state: "available",
+                list: action.payload
+            };
         });
     }
 });

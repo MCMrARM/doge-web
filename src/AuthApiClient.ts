@@ -11,7 +11,7 @@ export type LoginResponse = {
 export type GuildListEntry = {
     id: string,
     name: string,
-    iconUrl: string
+    icon: string
 };
 
 export default class AuthApiClient {

@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {FocusEvent, useEffect, useRef, useState} from 'react';
 import './AdminMain.sass';
-import {NavLink, Route, Switch, useParams} from "react-router-dom";
+import {NavLink, Link, Route, Switch, useParams} from "react-router-dom";
 import {DashboardIcon, EmojiEventsIcon, ExpandMoreIcon} from "../icons/Icons";
 import {Overview} from "./Overview";
 import {Leveling} from "./Leveling";
@@ -11,6 +11,7 @@ import {RootState} from "../store";
 import {BotConfig} from "../shared/BotConfig";
 import {Button} from "../components/Button";
 import {ServerInfo} from "../shared/ServerInfo";
+import {fetchGuildList} from "../redux/guildList";
 
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -37,9 +38,37 @@ function useDebounce<T>(value: T, delay: number): T {
     return debouncedValue;
 }
 
+function GuildListDropdown() {
+    const dispatch = useDispatch();
+    const guildList = useSelector((s: RootState) => s.guildList);
+    useEffect(() => {
+        if (!guildList.state)
+            dispatch(fetchGuildList());
+    }, [guildList, dispatch]);
+
+    const guildElements = (guildList.list || []).map((g) => {
+        let iconUrl = g.icon ? "https://cdn.discordapp.com/icons/" + g.id + "/" + g.icon + ".png?size=32" : null;
+        return (
+            <li>
+                <Link to={`/admin/${g.id}`}>
+                    <img src={iconUrl || "data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E"} alt="Server Icon" className="Icon" />
+                    {g.name}
+                </Link>
+            </li>
+        );
+    });
+
+    return <ul className="AdminName-sidebar-server-list">
+        {guildElements}
+    </ul>;
+}
+
 export function AdminMain() {
     const dispatch = useDispatch();
     let {id} = useParams<{id: string}>();
+
+    let [serverListExpanded, setServerListExpanded] = useState(false);
+    let onServerListBlur = (ev: FocusEvent) => { if (!ev.currentTarget.contains(ev.relatedTarget as Node)) setServerListExpanded(false) };
 
     const rServerInfo = useSelector((s: RootState) => selectServerInfoById(s, id));
     useEffect(() => {
@@ -64,15 +93,17 @@ export function AdminMain() {
             </div>
         );
     }
+    let serverListDropDown = serverListExpanded && <GuildListDropdown />;
 
     return (
         <div>
             <div className="AdminMain">
                 <div className="AdminMain-sidebar">
-                    <div className="AdminName-sidebar-server">
+                    <div className="AdminName-sidebar-server" onClick={() => setServerListExpanded(!serverListExpanded)} onBlur={onServerListBlur} tabIndex={0}>
                         <img src={rServerInfo?.info?.iconUrl || "data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E"} alt="Server Icon" className="Icon" />
                         {rServerInfo?.info?.name || "Server"}
                         <ExpandMoreIcon className="AdminName-sidebar-server-expand" />
+                        {serverListDropDown}
                     </div>
                     <nav>
                         <ul>
