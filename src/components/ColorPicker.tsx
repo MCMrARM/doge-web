@@ -2,9 +2,10 @@ import {CSSProperties, useState} from "react";
 import hsvToRgb from "hsv-rgb";
 import React, {PointerEvent} from "react";
 import "./ColorPicker.sass";
-import {colorArrToString} from "../util";
+import {colorArrToString, parseColor} from "../util";
+import rgbToHsv from "rgb-hsv";
 
-export function ColorPicker(props: {hsv: [number, number, number], onHsvChange: (hsv: [number, number, number]) => void, style?: CSSProperties}) {
+export function HsvColorPicker(props: {hsv: [number, number, number], onHsvChange: (hsv: [number, number, number]) => void, style?: CSSProperties}) {
     let hueBaseColor = colorArrToString(hsvToRgb(props.hsv[0], 100, 100));
     let currentColor = colorArrToString(hsvToRgb(props.hsv[0], props.hsv[1], props.hsv[2]));
 
@@ -60,4 +61,19 @@ export function ColorPicker(props: {hsv: [number, number, number], onHsvChange: 
             </div>
         </div>
     )
+}
+
+export function ColorPicker(props: {value: string, onChange?: (value: string) => void, style?: CSSProperties}) {
+    let [hsv, setHsv] = useState<[number, number, number]>([0, 0, 0]);
+    let hsvRgb = hsvToRgb(hsv[0], hsv[1], hsv[2]);
+    let parsedValue = parseColor(props.value);
+    if (parsedValue !== null && (parsedValue[0] !== hsvRgb[0] || parsedValue[1] !== hsvRgb[1] || parsedValue[2] !== hsvRgb[2])) {
+        hsv = rgbToHsv(parsedValue[0], parsedValue[1], parsedValue[2]);
+    }
+    let onHsvChange = (value: [number, number, number]) => {
+        let rgb = hsvToRgb(value[0], value[1], value[2]);
+        setHsv(value);
+        props.onChange?.(colorArrToString(rgb));
+    };
+    return <HsvColorPicker hsv={hsv} onHsvChange={onHsvChange} style={props.style} />
 }

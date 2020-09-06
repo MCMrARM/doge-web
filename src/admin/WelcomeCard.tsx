@@ -177,7 +177,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                         <NumberInput value={banner.textShadowBlur} onValueChange={(v) => props.onChange({banner: {...banner, textShadowBlur: v}})} />
                         <Button theme="colorless" style={{padding: "8px", alignSelf: "stretch", display: "flex", alignItems: "center", marginLeft: "8px"}}><PaletteIcon /></Button>
                         <div className="WelcomeCard-editor-shadow-color-dropdown">
-                            <ColorPicker hsv={[0, 0, 0]} onHsvChange={() => {}} />
+                            <ColorPicker value={banner.textShadowColor} onChange={(v) => props.onChange({banner: {...banner, textShadowColor: v}})} />
                         </div>
                     </div>
                 </div>
