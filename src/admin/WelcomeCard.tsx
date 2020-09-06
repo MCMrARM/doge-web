@@ -129,7 +129,11 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                             height={mapCoord(textResizableAreaH)}
                             sizeRule={(w, h) => [w, mapCoord(textResizableAreaH)]}
                             onChange={(l, t, w, h) => props.onChange({banner: {...banner, textLeft: Math.round(unmapCoord(l)), textWidth: Math.round(unmapCoord(w)), textCenterTop: Math.round(unmapCoord(t + h / 2)), textMaxSize: Math.round(unmapCoord(h))}})}>
-                            <span style={{fontSize: mapCoord(minFontSizeFocused ? banner.textMinSize : banner.textMaxSize) + "px", color: banner.textColor}} className="WelcomeCard-editor-nickname">Username</span>
+                            <span style={{
+                                fontSize: mapCoord(minFontSizeFocused ? banner.textMinSize : banner.textMaxSize) + "px",
+                                color: banner.textColor,
+                                textShadow: `${mapCoord(banner.textShadowOffsetLeft)}px ${mapCoord(banner.textShadowOffsetTop)}px ${mapCoord(banner.textShadowBlur)}px ${banner.textShadowColor}`
+                            }} className="WelcomeCard-editor-nickname">Username</span>
                         </ResizableArea>
                     </div>
                     <Button style={{marginTop: "8px"}}>Upload new image</Button>
