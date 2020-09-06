@@ -169,13 +169,16 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                         <ColorInput value={banner.textColor} onChange={(v)=> props.onChange({banner: {...banner, textColor: v}})} />
                     </div>
                     <h4>Nickname shadow</h4>
-                    <div className="WelcomeCard-editor-options-row">
+                    <div className="WelcomeCard-editor-options-row" style={{position: "relative"}}>
                         <MoveIcon className="Icon" style={{marginRight: "8px"}} />
                         <NumberInput value={banner.textShadowOffsetLeft} onValueChange={(v) => props.onChange({banner: {...banner, textShadowOffsetLeft: v}})} />
                         <NumberInput value={banner.textShadowOffsetTop} onValueChange={(v) => props.onChange({banner: {...banner, textShadowOffsetTop: v}})} style={{marginLeft: "4px"}} />
                         <BlurIcon className="Icon" style={{marginLeft: "12px", marginRight: "8px"}} />
                         <NumberInput value={banner.textShadowBlur} onValueChange={(v) => props.onChange({banner: {...banner, textShadowBlur: v}})} />
                         <Button theme="colorless" style={{padding: "8px", alignSelf: "stretch", display: "flex", alignItems: "center", marginLeft: "8px"}}><PaletteIcon /></Button>
+                        <div className="WelcomeCard-editor-shadow-color-dropdown">
+                            <ColorPicker hsv={[0, 0, 0]} onHsvChange={() => {}} />
+                        </div>
                     </div>
                 </div>
             </div>
