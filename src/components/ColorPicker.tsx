@@ -5,11 +5,11 @@ import "./ColorPicker.sass";
 import {colorArrToString, parseColor} from "../util";
 import rgbToHsv from "rgb-hsv";
 
+let clamp = (v: number, min: number, max: number) => Math.max(Math.min(v, max), min);
+
 export function HsvColorPicker(props: {hsv: [number, number, number], onHsvChange: (hsv: [number, number, number]) => void, style?: CSSProperties}) {
     let hueBaseColor = colorArrToString(hsvToRgb(props.hsv[0], 100, 100));
     let currentColor = colorArrToString(hsvToRgb(props.hsv[0], props.hsv[1], props.hsv[2]));
-
-    let clamp = (v: number, min: number, max: number) => Math.max(Math.min(v, max), min);
 
     let [pointerDown, setPointerDown] = useState(false);
     let onPointerDown = (e: PointerEvent) => {
@@ -63,6 +63,36 @@ export function HsvColorPicker(props: {hsv: [number, number, number], onHsvChang
     )
 }
 
+function HsvAlphaColorPicker(props: {hsv: [number, number, number], onHsvChange: (hsv: [number, number, number]) => void, alpha: number, onAlphaChange: (alpha: number) => void, style?: CSSProperties}) {
+    let colorRgb = hsvToRgb(props.hsv[0], props.hsv[1], props.hsv[2]);
+    let [alphaPointerDown, setAlphaPointerDown] = useState(false);
+    let onAlphaPointerDown = (e: PointerEvent) => {
+        alphaPointerDown = true;
+        setAlphaPointerDown(true);
+        if ((e.target as any).setPointerCapture)
+            (e.target as any).setPointerCapture(e.pointerId);
+        onAlphaPointerMove(e);
+    };
+    let onAlphaPointerMove = (e: PointerEvent) => {
+        if (alphaPointerDown) {
+            let bbox = e.currentTarget.getBoundingClientRect();
+            let alpha = e.clientY - bbox.top;
+            props.onAlphaChange(clamp(1 - alpha / e.currentTarget.scrollHeight, 0, 1));
+        }
+    };
+    return (
+        <div className="HsvAlphaColorPicker" style={props.style}>
+            <HsvColorPicker hsv={props.hsv} onHsvChange={props.onHsvChange} />
+            <div className="ColorPicker-alpha" onPointerDown={onAlphaPointerDown} onPointerUp={() => setAlphaPointerDown(false)} onPointerMove={onAlphaPointerMove}>
+                <div className="ColorPicker-alpha-colored" style={{background: `linear-gradient(to bottom, ${colorArrToString(colorRgb)} 0%, ${colorArrToString([...colorRgb, 0])} 100%)`}} />
+                <div className="ColorPicker-alpha-handle-wrap">
+                    <div className="ColorPicker-alpha-handle" style={{top: (100 - props.alpha * 100) + "%", background: colorArrToString(colorRgb)}} />
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export function ColorPicker(props: {value: string, onChange?: (value: string) => void, style?: CSSProperties}) {
     let [hsv, setHsv] = useState<[number, number, number]>([0, 0, 0]);
     let hsvRgb = hsvToRgb(hsv[0], hsv[1], hsv[2]);
@@ -70,10 +100,15 @@ export function ColorPicker(props: {value: string, onChange?: (value: string) =>
     if (parsedValue !== null && (parsedValue[0] !== hsvRgb[0] || parsedValue[1] !== hsvRgb[1] || parsedValue[2] !== hsvRgb[2])) {
         hsv = rgbToHsv(parsedValue[0], parsedValue[1], parsedValue[2]);
     }
+    let alpha = parsedValue ? (parsedValue[3] / 255) : 1;
     let onHsvChange = (value: [number, number, number]) => {
-        let rgb = hsvToRgb(value[0], value[1], value[2]);
+        let rgb = [...hsvToRgb(value[0], value[1], value[2]), alpha];
         setHsv(value);
         props.onChange?.(colorArrToString(rgb));
     };
-    return <HsvColorPicker hsv={hsv} onHsvChange={onHsvChange} style={props.style} />
+    let onAlphaChange = (value: number) => {
+        let rgb = [...hsvRgb, value];
+        props.onChange?.(colorArrToString(rgb));
+    };
+    return <HsvAlphaColorPicker hsv={hsv} onHsvChange={onHsvChange} alpha={alpha} onAlphaChange={onAlphaChange} style={props.style} />
 }

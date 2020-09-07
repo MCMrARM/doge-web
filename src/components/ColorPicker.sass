@@ -57,3 +57,39 @@
   border-radius: 4px
   width: 4px
   transform: translate(-2px, 0)
+
+.HsvAlphaColorPicker
+  display: flex
+  height: 120px
+  align-items: stretch
+
+.HsvAlphaColorPicker .ColorPicker
+  height: auto
+  flex-grow: 1
+
+.ColorPicker-alpha
+  position: relative
+  width: 10px
+  background-color: #EEE
+  background-image: linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%)
+  background-size: 10px 10px, 10px 10px
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0px
+  border-radius: 2px
+  margin-left: 8px
+
+.ColorPicker-alpha-colored
+  position: absolute
+  left: 0
+  top: 0
+  right: 0
+  bottom: 0
+
+.ColorPicker-alpha-handle
+  position: absolute
+  left: -2px
+  right: -2px
+  background: #222
+  border: 2px solid white
+  border-radius: 4px
+  height: 4px
+  transform: translate(0, -2px)
