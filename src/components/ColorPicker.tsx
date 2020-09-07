@@ -108,7 +108,7 @@ export function ColorPicker(props: {value: string, onChange?: (value: string) =>
         props.onChange?.(colorArrToString(rgb));
     };
     let onAlphaChange = (value: number) => {
-        let rgb = [...hsvRgb, value];
+        let rgb = [...(parsedValue ? parsedValue.slice(0, 3) : hsvRgb), value];
         props.onChange?.(colorArrToString(rgb));
     };
     return <HsvAlphaColorPicker hsv={hsv} onHsvChange={onHsvChange} alpha={alpha} onAlphaChange={onAlphaChange} style={props.style} />
