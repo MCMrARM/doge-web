@@ -10,7 +10,16 @@ import {
 } from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {ChannelDropdown} from "./components/ChannelDropdown";
-import React, {PointerEvent, ReactNode, ReactNodeArray, useLayoutEffect, useRef, useState} from "react";
+import React, {
+    FocusEvent,
+    PointerEvent,
+    ReactNode,
+    ReactNodeArray,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState
+} from "react";
 import ApiClient from "../ApiClient";
 import "./WelcomeCard.sass";
 import {NumberInput} from "./components/NumberInput";
@@ -88,6 +97,25 @@ function ResizableArea(props: {left: number, top: number, width: number, height:
             <div className="ResizeableArea-handle ResizeableArea-handle-bl" onPointerDown={onResizePointerDown} onPointerMove={(e) => onResizePointerMove(e, -1, 1)} onPointerUp={onResizePointerUp} />
             <div className="ResizeableArea-handle ResizeableArea-handle-br" onPointerDown={onResizePointerDown} onPointerMove={(e) => onResizePointerMove(e, 1, 1)} onPointerUp={onResizePointerUp} />
         </div>
+    );
+}
+
+function ShadowColorDropdown(props: {value: string, onChange: (value: string) => void}) {
+    let [visible, setVisible] = useState(false);
+    let dropdownRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (visible)
+            dropdownRef.current?.focus();
+    }, [visible]);
+    let onBlur = (ev: FocusEvent) => { if (!ev.currentTarget.contains(ev.relatedTarget as Node)) setVisible(false) };
+    return (
+        <>
+            <Button theme="colorless" style={{padding: "8px", alignSelf: "stretch", display: "flex", alignItems: "center", marginLeft: "8px"}} onClick={() => setVisible(true)} ><PaletteIcon /></Button>
+            {visible && <div ref={dropdownRef} className="WelcomeCard-editor-shadow-color-dropdown" tabIndex={0} onBlur={onBlur}>
+                <ColorPicker value={props.value} onChange={props.onChange} />
+                <Input type={"text"} value={props.value} onValueChange={props.onChange} style={{marginTop: "16px", fontSize: "12px", padding: "4px 8px"}} />
+            </div>}
+        </>
     );
 }
 
@@ -179,10 +207,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                         <NumberInput value={banner.textShadowOffsetTop} onValueChange={(v) => props.onChange({banner: {...banner, textShadowOffsetTop: v}})} style={{marginLeft: "4px"}} />
                         <BlurIcon className="Icon" style={{marginLeft: "12px", marginRight: "8px"}} />
                         <NumberInput value={banner.textShadowBlur} onValueChange={(v) => props.onChange({banner: {...banner, textShadowBlur: v}})} />
-                        <Button theme="colorless" style={{padding: "8px", alignSelf: "stretch", display: "flex", alignItems: "center", marginLeft: "8px"}}><PaletteIcon /></Button>
-                        <div className="WelcomeCard-editor-shadow-color-dropdown">
-                            <ColorPicker value={banner.textShadowColor} onChange={(v) => props.onChange({banner: {...banner, textShadowColor: v}})} />
-                        </div>
+                        <ShadowColorDropdown value={banner.textShadowColor} onChange={(v) => props.onChange({banner: {...banner, textShadowColor: v}})}/>
                     </div>
                 </div>
             </div>
