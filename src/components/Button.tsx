@@ -1,8 +1,10 @@
-import React, {CSSProperties} from "react";
+import React from "react";
 import "./Button.sass";
 
-export function Button(props: { theme?: "colorless"|"secondary", children?: React.ReactNode|React.ReactNode[], onClick?: () => void, style?: CSSProperties }) {
+export function Button(props: {
+    theme?: "colorless" | "secondary"
+} & React.InputHTMLAttributes<HTMLButtonElement>) {
     return (
-        <div className={"Button" + (props.theme ? ` Button-${props.theme}` : "")} tabIndex={0} style={props.style} onClick={props.onClick}>{props.children}</div>
+        <button {...props} type="button" className={"Button" + (props.theme ? ` Button-${props.theme}` : "")} />
     );
 }
