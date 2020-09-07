@@ -77,7 +77,8 @@ function HsvAlphaColorPicker(props: {hsv: [number, number, number], onHsvChange:
         if (alphaPointerDown) {
             let bbox = e.currentTarget.getBoundingClientRect();
             let alpha = e.clientY - bbox.top;
-            props.onAlphaChange(clamp(1 - alpha / e.currentTarget.scrollHeight, 0, 1));
+            let v = clamp(1 - alpha / e.currentTarget.scrollHeight, 0, 1);
+            props.onAlphaChange(Math.round(v * 100) / 100);
         }
     };
     return (
