@@ -8,6 +8,7 @@ import {Input} from "../components/Input";
 import {Button} from "../components/Button";
 import {ChannelChipList} from "./components/ChannelChipList";
 import {generateRandomHexString} from "../util";
+import {SimpleDropdown} from "./components/SimpleDropdown";
 
 function PermissionGroupSettings(props: {server: ServerInfo, forcedName?: string, config: PermissionGroup, onChange: (changes: PermissionGroup) => void, onDelete?: () => void}) {
     return <div className="Permissions-group">
@@ -38,6 +39,9 @@ function PermissionGroupSettings(props: {server: ServerInfo, forcedName?: string
 }
 
 export function Permissions(props: {server: ServerInfo, config: PermissionConfig, onChange: (changes: Partial<PermissionConfig>) => void}) {
+    let customGroupMapKv: [string, string][] = props.config.custom.filter(x => x.id).map(x => [x.id!, x.name || "(unnamed)"]);
+    customGroupMapKv.unshift(["default:admin", "Administration"], ["default:mod", "Moderation"], ["default:misc", "Miscellaneous"]);
+    let customGroupMap = new Map(customGroupMapKv);
     let addCustomGroup = () => {
         props.onChange({custom: [...props.config.custom, {
             id: generateRandomHexString(),
@@ -72,6 +76,18 @@ export function Permissions(props: {server: ServerInfo, config: PermissionConfig
                     <Button onClick={addCustomGroup}>Add new custom group</Button>
                 </div>
             </div>
+
+            <h3>Command Permissions</h3>
+            <table className="Permissions-command-list-ctr">
+                <tbody>
+                    {props.server.globalCommands.map(x => (
+                        <tr>
+                            <th className="Permissions-command-name">{`/${x[0]}`}</th>
+                            <td><SimpleDropdown value={props.config.commands[x[0]] || "default:" + x[1]} map={customGroupMap} onValueChanged={(v) => props.onChange({commands: {...props.config.commands, [x[0]]: v}})}/></td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 }

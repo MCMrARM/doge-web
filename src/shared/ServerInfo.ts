@@ -14,5 +14,6 @@ export type ServerInfo = {
     name: string,
     iconUrl: string,
     channels: {[id: string]: ChannelInfo},
-    roles: {[id: string]: RoleInfo}
+    roles: {[id: string]: RoleInfo},
+    globalCommands: [string, string][]
 };

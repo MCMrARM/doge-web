@@ -47,7 +47,8 @@ export type PermissionConfig = {
         mod: PermissionGroup,
         misc: PermissionGroup
     },
-    custom: PermissionGroup[]
+    custom: PermissionGroup[],
+    commands: {[command: string]: string}
 };
 
 export type BotConfig = {
