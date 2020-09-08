@@ -3,11 +3,13 @@ import {ServerInfo} from "../../shared/ServerInfo";
 import {AddButtonChip, Chip, ChipAddDropdown, ChipList} from "../../components/ChipList";
 import {Dropdown} from "../../components/Dropdown";
 
-export function ChannelChipList(props: {value: string[], server: ServerInfo, onValueChanged: (val: string[]) => void}) {
+export function ChannelChipList(props: {withAllChannels?: boolean, value: string[], server: ServerInfo, onValueChanged: (val: string[]) => void}) {
     let chips = [];
     for (let i = 0; i < props.value.length; i++) {
         let id = props.value[i];
         let name = "#" + (props.server.channels[id]?.name || id);
+        if (id === "*")
+            name = "All channels";
         let onRemove = () => {
             props.onValueChanged([...props.value.slice(0, i), ...props.value.slice(i + 1)]);
         };

@@ -6,7 +6,7 @@ import {
     ResizeIcon,
     ArrowExpandHorizontalIcon,
     FormatSizeIcon,
-    PaletteIcon, BlurIcon
+    PaletteIcon, BlurIcon, CancelIcon
 } from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {ChannelDropdown} from "./components/ChannelDropdown";
@@ -110,7 +110,7 @@ function ShadowColorDropdown(props: {value: string, onChange: (value: string) =>
     let onBlur = (ev: FocusEvent) => { if (!ev.currentTarget.contains(ev.relatedTarget as Node)) setVisible(false) };
     return (
         <>
-            <Button theme="colorless" style={{padding: "8px", alignSelf: "stretch", display: "flex", alignItems: "center", marginLeft: "8px"}} onClick={() => setVisible(true)} ><PaletteIcon /></Button>
+            <Button theme="colorless icon" style={{alignSelf: "stretch", marginLeft: "8px"}} onClick={() => setVisible(true)} ><PaletteIcon className="Icon" style={{width: "16px", height: "16px"}} /></Button>
             {visible && <div ref={dropdownRef} className="WelcomeCard-editor-shadow-color-dropdown" tabIndex={0} onBlur={onBlur}>
                 <ColorPicker value={props.value} onChange={props.onChange} />
                 <Input type={"text"} value={props.value} onValueChange={props.onChange} style={{marginTop: "16px", fontSize: "12px", padding: "4px 8px"}} />

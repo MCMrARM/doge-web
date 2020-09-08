@@ -1,7 +1,14 @@
 import React, {FocusEvent, useEffect, useRef, useState} from 'react';
 import './AdminMain.sass';
 import {NavLink, Link, Route, Switch, useParams, Redirect} from "react-router-dom";
-import {ContactIcon, DashboardIcon, EmojiEventsIcon, ExpandMoreIcon, HistoryEduIcon} from "../icons/Icons";
+import {
+    ContactIcon,
+    DashboardIcon,
+    EmojiEventsIcon,
+    ExpandMoreIcon,
+    HistoryEduIcon,
+    SecurityIcon
+} from "../icons/Icons";
 import {Overview} from "./Overview";
 import {Leveling} from "./Leveling";
 import {useDispatch, useSelector} from 'react-redux';
@@ -15,6 +22,7 @@ import {fetchGuildList} from "../redux/guildList";
 import {GuildListEntry} from "../AuthApiClient";
 import {Logging} from "./Logging";
 import {WelcomeCard} from "./WelcomeCard";
+import {Permissions} from "./Permissions";
 
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -131,6 +139,7 @@ export function AdminMain() {
                             <li><NavLink to={`/admin/${id}/xp`}><EmojiEventsIcon className="Icon"/> Leveling</NavLink></li>
                             <li><NavLink to={`/admin/${id}/log`}><HistoryEduIcon className="Icon"/> Logging</NavLink></li>
                             <li><NavLink to={`/admin/${id}/welcome`}><ContactIcon className="Icon"/> Welcome Card</NavLink></li>
+                            <li><NavLink to={`/admin/${id}/permission`}><SecurityIcon className="Icon"/> Permissions</NavLink></li>
                         </ul>
                     </nav>
                 </div>
@@ -167,6 +176,9 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
                 </Route>
                 <Route path="/admin/:id/welcome">
                     <WelcomeCard server={props.server} config={editableConfig.welcome} onChange={(changes) => setEditableConfig({...editableConfig, welcome: {...editableConfig!.welcome, ...changes}})} />
+                </Route>
+                <Route path="/admin/:id/permission">
+                    <Permissions server={props.server} config={editableConfig.permission} onChange={(changes) => setEditableConfig({...editableConfig, permission: {...editableConfig!.permission, ...changes}})} />
                 </Route>
                 <Route path="/admin/:id">
                     <Overview/>

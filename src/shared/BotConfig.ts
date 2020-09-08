@@ -33,9 +33,24 @@ export type WelcomeConfig = {
     banner: WelcomeBannerConfig|null,
     channel: string|null
 };
+export type PermissionGroup = {
+    name?: string,
+    allowedRoles: string[],
+    disallowedRoles: string[],
+    allowedChannels: string[],
+    disallowedChannels: string[]
+};
+export type PermissionConfig = {
+    default: {
+        admin: PermissionGroup,
+        mod: PermissionGroup,
+        misc: PermissionGroup
+    }
+};
 
 export type BotConfig = {
     xp: XpConfig,
-    log: LogConfig
-    welcome: WelcomeConfig
+    log: LogConfig,
+    welcome: WelcomeConfig,
+    permission: PermissionConfig
 };
