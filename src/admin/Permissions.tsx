@@ -1,7 +1,7 @@
 import {ServerInfo} from "../shared/ServerInfo";
 import {PermissionConfig, PermissionGroup} from "../shared/BotConfig";
 import {CancelIcon, CheckCircleIcon, RemoveCircleIcon, SecurityIcon} from "../icons/Icons";
-import React from "react";
+import React, {useRef} from "react";
 import {RoleChipList} from "./components/RoleChipList";
 import "./Permissions.sass";
 import {Input} from "../components/Input";
@@ -73,7 +73,7 @@ export function Permissions(props: {server: ServerInfo, config: PermissionConfig
                     <PermissionGroupSettings config={x} server={props.server} onChange={(v) => updateCustomGroup(i, v)} onDelete={() => deleteCustomGroup(i)} />
                 )}
                 <div className="Permissions-group Permissions-group-new">
-                    <Button onClick={addCustomGroup}>Add new custom group</Button>
+                    <Button onClick={(ev) => { ev.currentTarget.blur(); addCustomGroup(); }}>Add new custom group</Button>
                 </div>
             </div>
 
