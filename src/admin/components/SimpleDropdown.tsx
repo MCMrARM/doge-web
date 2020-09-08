@@ -1,7 +1,7 @@
 import React, {CSSProperties, ReactNode, useState} from "react";
 import {Dropdown} from "../../components/Dropdown";
 
-export function SimpleDropdown<T>(props: {value: T, map: Map<T, ReactNode>, onValueChanged: (value: T) => void, style?: CSSProperties}) {
+export function SimpleDropdown<T>(props: {value: T, fallback?: ReactNode, map: Map<T, ReactNode>, onValueChanged: (value: T) => void, style?: CSSProperties}) {
     let [expanded, setExpanded] = useState(false);
     let items = null;
     if (expanded) {
@@ -11,7 +11,7 @@ export function SimpleDropdown<T>(props: {value: T, map: Map<T, ReactNode>, onVa
     }
 
     return (
-        <Dropdown selectedItem={props.map.get(props.value)} expanded={expanded} onSetExpanded={setExpanded} style={props.style}>
+        <Dropdown selectedItem={props.map.has(props.value) ? props.map.get(props.value) : props.fallback} expanded={expanded} onSetExpanded={setExpanded} style={props.style}>
             {items}
         </Dropdown>
     );

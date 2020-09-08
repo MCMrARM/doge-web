@@ -83,7 +83,7 @@ export function Permissions(props: {server: ServerInfo, config: PermissionConfig
                     {props.server.globalCommands.map(x => (
                         <tr>
                             <th className="Permissions-command-name">{`/${x[0]}`}</th>
-                            <td><SimpleDropdown value={props.config.commands[x[0]] || "default:" + x[1]} map={customGroupMap} onValueChanged={(v) => props.onChange({commands: {...props.config.commands, [x[0]]: v}})}/></td>
+                            <td><SimpleDropdown value={props.config.commands[x[0]] || "default:" + x[1]} fallback={"(invalid)"} map={customGroupMap} onValueChanged={(v) => props.onChange({commands: {...props.config.commands, [x[0]]: v}})}/></td>
                         </tr>
                     ))}
                 </tbody>
