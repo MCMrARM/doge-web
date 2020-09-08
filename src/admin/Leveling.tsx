@@ -26,7 +26,7 @@ function AutoRoleOptions(props: {config: [number, string, string|null][], server
             <td style={{width: "40%"}}><Input placeholder="Custom name" value={name || undefined} /></td>
         </tr>
     );
-    return <table style={{width: "100%"}}>
+    return <table style={{flexGrow: 1}}>
         {props.config.map(x => createRow(x[0], x[1], x[2]))}
         {createRow(null, null, null)}
     </table>;
@@ -46,7 +46,7 @@ export function Leveling(props: {server: ServerInfo, config: XpConfig, onChange:
                 <RoleChipList value={props.config.disabledRoles} server={props.server} onValueChanged={(v) => props.onChange({disabledRoles: v})} />
             </TwoColumnOption>
             <TwoColumnOption title="Level up message" description="A level up message will be sent either directly to the user or to a channel">
-                <div style={{width: "100%"}}>
+                <div style={{flexGrow: 1}}>
                     <SimpleDropdown value={props.config.levelUpAnnouncementMode} map={levelUpAnnouncementModes} onValueChanged={(v) => props.onChange({levelUpAnnouncementMode: v})} style={{marginBottom: "4px"}} />
                     {props.config.levelUpAnnouncementMode === "channel" &&
                         <ChannelDropdown value={props.config.levelUpChannel} server={props.server} onValueChanged={(v) => props.onChange({levelUpChannel: v})} style={{marginBottom: "16px"}} />}
