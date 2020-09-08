@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {ServerInfo} from "../../shared/ServerInfo";
 import {AddButtonChip, Chip, ChipAddDropdown, ChipList} from "../../components/ChipList";
 import {Dropdown} from "../../components/Dropdown";
-import {colorIntToHexString} from "../../util";
+import {colorIntToHexString} from "../../colorUtil";
 
 export function RoleChipList(props: {value: string[], server: ServerInfo, onValueChanged: (val: string[]) => void}) {
     let chips = [];

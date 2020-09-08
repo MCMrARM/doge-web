@@ -1,7 +1,7 @@
 import React, {CSSProperties, ReactNode, useState} from "react";
 import {ServerInfo} from "../../shared/ServerInfo";
 import {Dropdown} from "../../components/Dropdown";
-import {colorIntToHexString} from "../../util";
+import {colorIntToHexString} from "../../colorUtil";
 
 export function RoleDropdown(props: {value: string|null, server: ServerInfo, onValueChanged: (val: string) => void, placeholder?: ReactNode, style?: CSSProperties}) {
     let items = undefined;

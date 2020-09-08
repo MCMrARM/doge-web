@@ -2,7 +2,7 @@ import {CSSProperties, useState} from "react";
 import hsvToRgb from "hsv-rgb";
 import React, {PointerEvent} from "react";
 import "./ColorPicker.sass";
-import {colorArrToString, parseColor} from "../util";
+import {colorArrToString, parseColor} from "../colorUtil";
 import rgbToHsv from "rgb-hsv";
 
 let clamp = (v: number, min: number, max: number) => Math.max(Math.min(v, max), min);
