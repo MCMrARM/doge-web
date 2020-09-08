@@ -4,16 +4,11 @@ import {login, clearPendingLoginError} from "./redux/user";
 import {useDispatch, useSelector} from "react-redux";
 import AuthApiClient from "./AuthApiClient";
 import {RootState} from "./store";
-
-function generateLoginNonce() {
-    let arr = new Uint8Array(8);
-    window.crypto.getRandomValues(arr);
-    return Array.from(arr, (x) => x.toString(16).padStart(2, "0")).join('');
-}
+import {generateRandomHexString} from "./util";
 
 export function createDiscordLoginUrl(returnTo: string) {
     if (!localStorage.discordLoginNonce)
-        localStorage.discordLoginNonce = generateLoginNonce();
+        localStorage.discordLoginNonce = generateRandomHexString();
     let state = JSON.stringify({
         nonce: localStorage.discordLoginNonce,
         returnTo: returnTo

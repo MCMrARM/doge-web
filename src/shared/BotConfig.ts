@@ -34,6 +34,7 @@ export type WelcomeConfig = {
     channel: string|null
 };
 export type PermissionGroup = {
+    id?: string,
     name?: string,
     allowedRoles: string[],
     disallowedRoles: string[],
@@ -45,7 +46,8 @@ export type PermissionConfig = {
         admin: PermissionGroup,
         mod: PermissionGroup,
         misc: PermissionGroup
-    }
+    },
+    custom: PermissionGroup[]
 };
 
 export type BotConfig = {

@@ -7,13 +7,14 @@ import "./Permissions.sass";
 import {Input} from "../components/Input";
 import {Button} from "../components/Button";
 import {ChannelChipList} from "./components/ChannelChipList";
+import {generateRandomHexString} from "../util";
 
-function PermissionGroupSettings(props: {server: ServerInfo, forcedName?: string, config: PermissionGroup, onChange: (changes: PermissionGroup) => void}) {
+function PermissionGroupSettings(props: {server: ServerInfo, forcedName?: string, config: PermissionGroup, onChange: (changes: PermissionGroup) => void, onDelete?: () => void}) {
     return <div className="Permissions-group">
         {props.forcedName && <h2>{props.forcedName}</h2>}
         {!props.forcedName && <div className="Permissions-group-header-row">
             <Input className={"Permissions-group-customTitle"} placeholder={"Name your custom permission group"} value={props.config.name || ""} onValueChange={(v) => props.onChange({...props.config, name: v})} />
-            <Button theme="secondary icon"><CancelIcon className="Icon" /></Button>
+            <Button theme="secondary icon" onClick={props.onDelete}><CancelIcon className="Icon" /></Button>
         </div>}
         <h4>Roles</h4>
         <div className="Permissions-group-row">
@@ -37,18 +38,38 @@ function PermissionGroupSettings(props: {server: ServerInfo, forcedName?: string
 }
 
 export function Permissions(props: {server: ServerInfo, config: PermissionConfig, onChange: (changes: Partial<PermissionConfig>) => void}) {
+    let addCustomGroup = () => {
+        props.onChange({custom: [...props.config.custom, {
+            id: generateRandomHexString(),
+            allowedChannels: ["*"],
+            disallowedChannels: [],
+            allowedRoles: [props.server.id],
+            disallowedRoles: []
+        }]})
+    };
+    let updateCustomGroup = (i: number, v: PermissionGroup) => {
+        let newCustom = [...props.config.custom];
+        newCustom[i] = v;
+        props.onChange({custom: newCustom});
+    };
+    let deleteCustomGroup = (i: number) => {
+        props.onChange({custom: [...props.config.custom.slice(0, i), ...props.config.custom.slice(i + 1)]});
+    };
     return (
         <div className="AdminPage">
             <h1 className="AdminPage-Title"><SecurityIcon className="Icon"/> Permission Settings</h1>
             <h3>Permission Groups</h3>
-            <p>In most cases, you have several permission power level roles to which you want later grant permissions. As such this bot has a permission system reflecting this. You first need to define the "power levels", which are called groups, and later assign the commands to one of them. Members with the Administrator permission bypass all role restrictions.</p>
+            <p>In most cases, you have several permission power level roles to which you want later grant permissions. As such this bot has a permission system reflecting this. You first need to define the "power levels", which are called groups, and later assign the commands to one of them. Members with the Administrator (on Discord) permission bypass all role restrictions.</p>
 
             <div className="Permissions-group-list-ctr">
                 <PermissionGroupSettings forcedName="Administration" config={props.config.default.admin} server={props.server} onChange={(v) => props.onChange({default: {...props.config.default, admin: v}})} />
                 <PermissionGroupSettings forcedName="Moderation" config={props.config.default.mod} server={props.server} onChange={(v) => props.onChange({default: {...props.config.default, mod: v}})} />
                 <PermissionGroupSettings forcedName="Miscellaneous" config={props.config.default.misc} server={props.server} onChange={(v) => props.onChange({default: {...props.config.default, misc: v}})} />
+                {props.config.custom.map((x, i) =>
+                    <PermissionGroupSettings config={x} server={props.server} onChange={(v) => updateCustomGroup(i, v)} onDelete={() => deleteCustomGroup(i)} />
+                )}
                 <div className="Permissions-group Permissions-group-new">
-                    <Button>Add new custom group</Button>
+                    <Button onClick={addCustomGroup}>Add new custom group</Button>
                 </div>
             </div>
         </div>
