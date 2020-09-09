@@ -48,17 +48,17 @@ export default class ApiClient {
     }
 
     async getServerInfo(serverId: string): Promise<ServerInfo> {
-        return this.get(`${encodeURIComponent(serverId)}/admin/server`);
+        return this.get(`servers/${encodeURIComponent(serverId)}/admin/server`);
     }
 
     async getServerConfig(serverId: string): Promise<BotConfig> {
-        return this.get(`${encodeURIComponent(serverId)}/admin/config`);
+        return this.get(`servers/${encodeURIComponent(serverId)}/admin/config`);
     }
 
     getWelcomeCardImagePath(serverId: string): string {
-        return this.baseUrl + `${encodeURIComponent(serverId)}/admin/images/welcomeCard`;
+        return this.baseUrl + `servers/${encodeURIComponent(serverId)}/admin/images/welcomeCard`;
     }
 
 }
 
-ApiClient.instance = new ApiClient("http://localhost:3000/");
+ApiClient.instance = new ApiClient("http://localhost:3000/api/v1/");
