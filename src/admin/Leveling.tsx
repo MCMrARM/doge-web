@@ -13,12 +13,17 @@ import {Input} from "../components/Input";
 import {RoleDropdown} from "./components/RoleDropdown";
 import {Button} from "../components/Button";
 import {NumberInput} from "./components/NumberInput";
+import {CheckBox} from "../components/CheckBox";
 
 const multiplierValues = [0.25, 0.5, 1, 1.5, 2, 2.5, 3];
 const levelUpAnnouncementModes = new Map<"channel"|"direct"|null, string>();
 levelUpAnnouncementModes.set(null, "Disabled");
 levelUpAnnouncementModes.set("direct", "Private message");
 levelUpAnnouncementModes.set("channel", "Channel message");
+
+const enableOptions = new Map<boolean, string>();
+enableOptions.set(false, "Disabled");
+enableOptions.set(true, "Enabled");
 
 function AutoRoleOptions(props: {config: [number, string, string|null][], server: ServerInfo, onChange: (changes: [number, string, string|null][]) => void}) {
     let [lastEntry, setLastEntry] = useState<[number|undefined, string|null, string|null]>([undefined, null, null]);
@@ -54,11 +59,13 @@ function AutoRoleOptions(props: {config: [number, string, string|null][], server
         </tbody>
     </table>;
 }
-
 export function Leveling(props: {server: ServerInfo, config: XpConfig, onChange: (changes: Partial<XpConfig>) => void}) {
     return (
         <div className="AdminPage">
             <h1 className="AdminPage-Title"><EmojiEventsIcon className="Icon"/> Leveling Settings</h1>
+            <TwoColumnOption title="XP system" description={"Whether the XP system is enabled"}>
+                <SimpleDropdown value={props.config.enabled} map={enableOptions} onValueChanged={(v) => props.onChange({enabled: v})} />
+            </TwoColumnOption>
             <TwoColumnOption title="XP multiplier" description="Server-wide multiplier applied to gained experience">
                 <Slider value={multiplierValues.indexOf(props.config.multiplier)} min={0} max={multiplierValues.length - 1} labels={multiplierValues.map((x, i) => [i, `x${x}`])} onValueChanged={(v) => props.onChange({multiplier: multiplierValues[Math.round(v)]})} />
             </TwoColumnOption>
