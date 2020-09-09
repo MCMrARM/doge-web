@@ -6,12 +6,16 @@ import {TwoColumnOption} from "./TwoColumnOption";
 import {Input} from "../components/Input";
 import {RoleChipList} from "./components/RoleChipList";
 import "./PersistentRoles.sass";
+import {Button} from "../components/Button";
 
-function ModroleOptions(props: {server: ServerInfo, modrole: ModRoleConfig, onChange: (value: ModRoleConfig) => void}) {
+function ModroleOptions(props: {server: ServerInfo, modrole: ModRoleConfig, onChange: (value: ModRoleConfig) => void, onDelete: () => void}) {
     return (
         <div className="PersistentRoles-modrole">
             <TwoColumnOption title="Identifier" description="Name of this modrole. It will be shown in moderation logs and cannot be changed later.">
-                <Input placeholder="Identifier" value={props.modrole.id} />
+                <div style={{display: "flex", flexGrow: 1}}>
+                    <Input placeholder="Identifier" value={props.modrole.id} disabled={true} />
+                    <Button theme="colorless" style={{alignSelf: "stretch", marginLeft: "10px"}} onClick={props.onDelete}>Delete</Button>
+                </div>
             </TwoColumnOption>
             <TwoColumnOption title="Display text" description="The text to use to refer to this role in responses. Usually the past form of the role name.">
                 <div style={{flexGrow: 1}}>
@@ -36,6 +40,17 @@ function ModroleOptions(props: {server: ServerInfo, modrole: ModRoleConfig, onCh
 }
 
 export function PersistentRoles(props: {server: ServerInfo, config: RoleConfig, onChange: (changes: Partial<RoleConfig>) => void}) {
+    let deleteModrole = (i: number) => {
+        props.onChange({modroles: [...props.config.modroles.slice(0, i), ...props.config.modroles.slice(i + 1)]});
+    };
+    let editModrole = (i: number, value: ModRoleConfig) => {
+        let newArr = [...props.config.modroles];
+        newArr[i] = value;
+        props.onChange({modroles: newArr});
+    };
+    let createNewModrole = () => {
+        props.onChange({modroles: [...props.config.modroles, {id: "", displayText: "", addRoles: [], removeRoles: [], assignCommand: [], removeCommand: []}]});
+    };
     return (
         <div className="AdminPage">
             <h1 className="AdminPage-Title"><AccessTimeIcon className="Icon"/> Saved & Timed Role Settings</h1>
@@ -47,7 +62,10 @@ export function PersistentRoles(props: {server: ServerInfo, config: RoleConfig, 
             <p>Timed moderation roles (modroles) allow you to easily create commands that assign or remove specific roles for a time duration specified using the command. This feature can be used to create timed mutes or XP bans.</p>
             <p style={{marginBottom: "32px"}}>Assigned roles that have not been set to sticky in the previous section will be automatically removed once the moderation role expires, even if the user had one of the roles assigned before. Non-sticky removed roles are also not added back. You can override this behavior by setting the specific roles as sticky. If a role is set to sticky, the bot will keep track whether the user had the rule before and reassign them after expiration appropriately.</p>
 
-            {props.config.modroles.map(x => <ModroleOptions modrole={x} server={props.server} onChange={() => {}}/>)}
+            {props.config.modroles.map((x, i) => <ModroleOptions modrole={x} server={props.server} onChange={(v) => editModrole(i, v)} onDelete={() => deleteModrole(i)}/>)}
+            <div style={{display: "flex", alignItems: "center", justifyContent: "center", marginTop: "40px"}}>
+                <Button onClick={createNewModrole}>Add a new modrole</Button>
+            </div>
         </div>
     );
 }
