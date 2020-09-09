@@ -69,4 +69,4 @@ export default class AuthApiClient {
 
 }
 
-AuthApiClient.instance = new AuthApiClient("http://localhost:3004/api/v1/auth/");
+AuthApiClient.instance = new AuthApiClient(process.env["REACT_APP_AUTH_API_BASE_URL"]!);

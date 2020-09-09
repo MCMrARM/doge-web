@@ -61,4 +61,4 @@ export default class ApiClient {
 
 }
 
-ApiClient.instance = new ApiClient("http://localhost:3000/api/v1/");
+ApiClient.instance = new ApiClient(process.env["REACT_APP_API_BASE_URL"]!);
