@@ -1,5 +1,5 @@
-import React from 'react';
-import {EmojiEventsIcon} from "../icons/Icons";
+import React, {useState} from 'react';
+import {CancelIcon, CloseIcon, EmojiEventsIcon} from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {Slider} from "../components/Slider";
 import {XpConfig} from "../shared/BotConfig";
@@ -11,6 +11,8 @@ import {ChannelDropdown} from "./components/ChannelDropdown";
 import {TextAreaList} from "./components/TextAreaList";
 import {Input} from "../components/Input";
 import {RoleDropdown} from "./components/RoleDropdown";
+import {Button} from "../components/Button";
+import {NumberInput} from "./components/NumberInput";
 
 const multiplierValues = [0.25, 0.5, 1, 1.5, 2, 2.5, 3];
 const levelUpAnnouncementModes = new Map<"channel"|"direct"|null, string>();
@@ -19,16 +21,37 @@ levelUpAnnouncementModes.set("direct", "Private message");
 levelUpAnnouncementModes.set("channel", "Channel message");
 
 function AutoRoleOptions(props: {config: [number, string, string|null][], server: ServerInfo, onChange: (changes: [number, string, string|null][]) => void}) {
-    let createRow = (level: number|null, roleId: string|null, name: string|null) => (
-        <tr>
-            <td style={{width: "20%"}}><Input value={level?.toString()} type="number" placeholder="Level" /></td>
-            <td style={{width: "40%"}}><RoleDropdown value={roleId} server={props.server} onValueChanged={(v) => {}} placeholder={<span className="placeholder">Role</span>} style={{width: "100%"}} /></td>
-            <td style={{width: "40%"}}><Input placeholder="Custom name" value={name || undefined} /></td>
+    let [lastEntry, setLastEntry] = useState<[number|undefined, string|null, string|null]>([undefined, null, null]);
+    let updateEntry = (index: number, value: [number|undefined, string|null, string|null]) => {
+        if (index !== props.config.length) {
+            let arr = [...props.config];
+            arr[index] = value as [number, string, string|null];
+            props.onChange(arr);
+        } else {
+            if (value[0] !== undefined && value[1] !== null) {
+                props.onChange([...props.config, value as [number, string, string|null]]);
+                setLastEntry([undefined, null, null]);
+            } else {
+                setLastEntry(value);
+            }
+        }
+    };
+    let deleteEntry = (index: number) => {
+        props.onChange([...props.config.slice(0, index), ...props.config.slice(index + 1)]);
+    };
+    let createRow = (index: number, level: number|undefined, roleId: string|null, name: string|null) => (
+        <tr key={index}>
+            <td style={{width: "20%"}}><NumberInput value={level} type="number" placeholder="Level" onValueChange={(v) => updateEntry(index, [v, roleId, name])} /></td>
+            <td style={{width: "40%"}}><RoleDropdown value={roleId} server={props.server} onValueChanged={(v) => updateEntry(index, [level, v, name])} placeholder={<span className="placeholder">Role</span>} /></td>
+            <td style={{width: "40%"}}><Input placeholder="Custom name" value={name || undefined} onValueChange={(v) => updateEntry(index, [level, roleId, v])} /></td>
+            <td style={{width: "40px"}}>{index !== props.config.length && <Button theme="secondary icon" onClick={() => deleteEntry(index)}><CancelIcon className="Icon" /></Button>}</td>
         </tr>
     );
     return <table style={{flexGrow: 1}}>
-        {props.config.map(x => createRow(x[0], x[1], x[2]))}
-        {createRow(null, null, null)}
+        <tbody>
+            {props.config.map((x, i) => createRow(i, x[0], x[1], x[2]))}
+            {createRow(props.config.length, lastEntry[0], lastEntry[1], lastEntry[2])}
+        </tbody>
     </table>;
 }
 
