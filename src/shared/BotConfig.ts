@@ -50,10 +50,23 @@ export type PermissionConfig = {
     custom: PermissionGroup[],
     commands: {[command: string]: string}
 };
+export type ModRoleConfig = {
+    id: string,
+    displayText: string,
+    addRoles: string[],
+    removeRoles: string[],
+    assignCommand: string[],
+    removeCommand: string[]
+};
+export type RoleConfig = {
+    stickyRoles: string[],
+    modroles: ModRoleConfig[]
+}
 
 export type BotConfig = {
     xp: XpConfig,
     log: LogConfig,
     welcome: WelcomeConfig,
-    permission: PermissionConfig
+    permission: PermissionConfig,
+    role: RoleConfig
 };

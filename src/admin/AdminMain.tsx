@@ -7,7 +7,8 @@ import {
     EmojiEventsIcon,
     ExpandMoreIcon,
     HistoryEduIcon,
-    SecurityIcon
+    SecurityIcon,
+    AccessTimeIcon
 } from "../icons/Icons";
 import {Overview} from "./Overview";
 import {Leveling} from "./Leveling";
@@ -23,6 +24,7 @@ import {GuildListEntry} from "../AuthApiClient";
 import {Logging} from "./Logging";
 import {WelcomeCard} from "./WelcomeCard";
 import {Permissions} from "./Permissions";
+import {PersistentRoles} from "./PersistentRoles";
 
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -139,6 +141,7 @@ export function AdminMain() {
                             <li><NavLink to={`/admin/${id}/xp`}><EmojiEventsIcon className="Icon"/> Leveling</NavLink></li>
                             <li><NavLink to={`/admin/${id}/log`}><HistoryEduIcon className="Icon"/> Logging</NavLink></li>
                             <li><NavLink to={`/admin/${id}/welcome`}><ContactIcon className="Icon"/> Welcome Card</NavLink></li>
+                            <li><NavLink to={`/admin/${id}/role`}><AccessTimeIcon className="Icon"/> Saved & Timed Roles</NavLink></li>
                             <li><NavLink to={`/admin/${id}/permission`}><SecurityIcon className="Icon"/> Permissions</NavLink></li>
                         </ul>
                     </nav>
@@ -176,6 +179,9 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
                 </Route>
                 <Route path="/admin/:id/welcome">
                     <WelcomeCard server={props.server} config={editableConfig.welcome} onChange={(changes) => setEditableConfig({...editableConfig, welcome: {...editableConfig!.welcome, ...changes}})} />
+                </Route>
+                <Route path="/admin/:id/role">
+                    <PersistentRoles server={props.server} config={editableConfig.role} onChange={(changes) => setEditableConfig({...editableConfig, role: {...editableConfig!.role, ...changes}})} />
                 </Route>
                 <Route path="/admin/:id/permission">
                     <Permissions server={props.server} config={editableConfig.permission} onChange={(changes) => setEditableConfig({...editableConfig, permission: {...editableConfig!.permission, ...changes}})} />
