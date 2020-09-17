@@ -72,7 +72,7 @@ export default class ApiClient {
     }
 
     getWelcomeCardImagePath(serverId: string): string {
-        return this.baseUrl + `servers/${encodeURIComponent(serverId)}/admin/images/welcomeCard`;
+        return this.baseUrl + `servers/${encodeURIComponent(serverId)}/admin/images/welcome_banner`;
     }
 
 }
