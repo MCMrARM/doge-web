@@ -13,7 +13,7 @@ export function createDiscordLoginUrl(returnTo: string) {
         nonce: localStorage.discordLoginNonce,
         returnTo: returnTo
     });
-    return `https://discord.com/api/oauth2/authorize?client_id=${AuthApiClient.clientId}&response_type=code&scope=identify%20guilds&redirect_uri=${encodeURIComponent("http://localhost:3001/auth/discord")}&state=${encodeURIComponent(state)}`;
+    return `https://discord.com/api/oauth2/authorize?client_id=${AuthApiClient.clientId}&response_type=code&scope=identify%20guilds&redirect_uri=${encodeURIComponent(process.env["REACT_APP_HOST"] + "auth/discord")}&state=${encodeURIComponent(state)}`;
 }
 
 export function DiscordAuthPage() {
