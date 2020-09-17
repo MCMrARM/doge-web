@@ -1,3 +1,5 @@
+import {WelcomeBannerConfig} from "./BotConfig";
+
 export type ChannelInfo = {
     id: string,
     name: string
@@ -15,5 +17,6 @@ export type ServerInfo = {
     iconUrl: string,
     channels: {[id: string]: ChannelInfo},
     roles: {[id: string]: RoleInfo},
-    globalCommands: [string, string][]
+    globalCommands: [string, string][],
+    fallbackBannerConfig: WelcomeBannerConfig
 };

@@ -1,5 +1,5 @@
 import {ServerInfo} from "../shared/ServerInfo";
-import {WelcomeBannerConfig, WelcomeConfig} from "../shared/BotConfig";
+import {WelcomeConfig} from "../shared/BotConfig";
 import {
     ContactIcon,
     MoveIcon,
@@ -29,22 +29,6 @@ import {Input} from "../components/Input";
 import {ColorPicker} from "../components/ColorPicker";
 import {ColorInput} from "../components/ColorInput";
 
-const defaultBanner: WelcomeBannerConfig = {
-    avatarLeft: 0,
-    avatarTop: 0,
-    avatarSize: 64,
-    textColor: "#fff",
-    textLeft: 0,
-    textWidth: 100,
-    textCenterTop: 64,
-    textMinSize: 16,
-    textMaxSize: 64,
-    textShadowOffsetLeft: 2,
-    textShadowOffsetTop: 2,
-    textShadowBlur: 0,
-    textShadowColor: "#000",
-    font: "Roboto"
-};
 const availableFonts = new Map(Object.entries({
     "Roboto": "Roboto",
     "Roboto Bold": "Roboto Bold",
@@ -129,7 +113,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
     let mapCoord = (x: number) => x / imageSize[0] * containerSize[0];
     let unmapCoord = (x: number) => x * imageSize[0] / containerSize[0];
     let [minFontSizeFocused, setMinFontSizeFocused] = useState(false);
-    let banner = props.config.banner || defaultBanner;
+    let banner = props.config.banner || props.server.fallbackBannerConfig;
     let textResizableAreaH = minFontSizeFocused ? banner.textMinSize : banner.textMaxSize;
     return (
         <div className="AdminPage">
