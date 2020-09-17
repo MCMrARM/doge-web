@@ -13,7 +13,7 @@ import {
 import {Overview} from "./Overview";
 import {Leveling} from "./Leveling";
 import {useDispatch, useSelector} from 'react-redux';
-import {fetchConfig, selectConfigById} from './redux/serverConfig';
+import {fetchConfig, selectConfigById, uploadConfig} from './redux/serverConfig';
 import {fetchServerInfo, selectServerInfoById} from "./redux/serverInfo";
 import {RootState} from "../store";
 import {BotConfig} from "../shared/BotConfig";
@@ -156,6 +156,8 @@ export function AdminMain() {
 }
 
 function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
+    const dispatch = useDispatch();
+
     let [editableConfig, setEditableConfig] = useState<BotConfig>(props.config);
     useEffect(() => {
         if (props.config)
@@ -167,6 +169,10 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
     useEffect(() => {
         setHasChanges(JSON.stringify(debouncedEditableConfig) !== JSON.stringify(props.config));
     }, [debouncedEditableConfig, props.config]);
+
+    let save = () => {
+        dispatch(uploadConfig({serverId: props.server.id, config: editableConfig}));
+    };
 
     return (
         <div>
@@ -194,7 +200,7 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
                 <div className="AdminMain-unsavedPopup">
                     <span className="AdminMain-unsavedPopupText">You have unsaved changes!</span>
                     <Button theme="secondary" onClick={() => setEditableConfig(props.config)}>Revert</Button>
-                    <Button>Save and apply</Button>
+                    <Button onClick={() => save()}>Save and apply</Button>
                 </div>
             </div>
         </div>

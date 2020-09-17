@@ -18,6 +18,13 @@ export const fetchConfig = createAsyncThunk(
     }
 );
 
+export const uploadConfig = createAsyncThunk(
+    'admin/config/uploadConfig',
+    async (args: {serverId: string, config: BotConfig}) => {
+        return ApiClient.instance.uploadServerConfig(args.serverId, args.config);
+    }
+);
+
 const configSlice = createSlice({
     name: 'admin/config',
     initialState: configAdapter.getInitialState(),
@@ -31,6 +38,9 @@ const configSlice = createSlice({
         });
         builder.addCase(fetchConfig.rejected, (state, action) => {
             configAdapter.upsertOne(state, {id: action.meta.arg, state: "failed"})
+        });
+        builder.addCase(uploadConfig.fulfilled, (state, action) => {
+            configAdapter.upsertOne(state, {id: action.meta.arg.serverId, state: "available", config: action.payload})
         });
     }
 });

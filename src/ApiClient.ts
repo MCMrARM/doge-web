@@ -47,12 +47,28 @@ export default class ApiClient {
             .then(this.jsonErrorTransform));
     }
 
+    private async post(url: string, body: string, contentType: string = "application/json"): Promise<any> {
+        return (await fetch(this.baseUrl + url, {
+            method: "POST",
+            body: body,
+            headers: {
+                "Content-Type": contentType,
+                ...this.createAuthHeader()
+            }
+        })
+            .then(this.jsonErrorTransform));
+    }
+
     async getServerInfo(serverId: string): Promise<ServerInfo> {
         return this.get(`servers/${encodeURIComponent(serverId)}/admin/server`);
     }
 
     async getServerConfig(serverId: string): Promise<BotConfig> {
         return this.get(`servers/${encodeURIComponent(serverId)}/admin/config`);
+    }
+
+    async uploadServerConfig(serverId: string, config: BotConfig): Promise<BotConfig> {
+        return this.post(`servers/${encodeURIComponent(serverId)}/admin/config`, JSON.stringify(config));
     }
 
     getWelcomeCardImagePath(serverId: string): string {
