@@ -138,7 +138,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                 <ChannelDropdown value={props.config.channel} server={props.server} noneOption="Disabled" onValueChanged={(v) => props.onChange({channel: v})} />
             </TwoColumnOption>
             <div className="WelcomeCard-editor">
-                <div>
+                <div style={{flexGrow: 1}}>
                     <div className="WelcomeCard-editor-image" ref={imageContainerRef}>
                         <img src={ApiClient.instance.getWelcomeCardImagePath(props.server.id)} onLoad={(i) => setImageSize([i.currentTarget.naturalWidth, i.currentTarget.naturalHeight])} />
                         <ResizableArea
