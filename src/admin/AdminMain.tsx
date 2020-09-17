@@ -25,6 +25,7 @@ import {Logging} from "./Logging";
 import {WelcomeCard} from "./WelcomeCard";
 import {Permissions} from "./Permissions";
 import {PersistentRoles} from "./PersistentRoles";
+import {JsonEdit} from "./JsonEdit";
 
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -191,6 +192,9 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
                 </Route>
                 <Route path="/admin/:id/permission">
                     <Permissions server={props.server} config={editableConfig.permission} onChange={(changes) => setEditableConfig({...editableConfig, permission: {...editableConfig!.permission, ...changes}})} />
+                </Route>
+                <Route path="/admin/:id/rawjson">
+                    <JsonEdit server={props.server} config={editableConfig} onChange={(config) => setEditableConfig(config)} />
                 </Route>
                 <Route path="/admin/:id">
                     <Overview/>
