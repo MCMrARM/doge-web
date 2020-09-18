@@ -1,4 +1,4 @@
-import React, {CSSProperties, useLayoutEffect, useState} from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import "./NumberInput.sass";
 import {Input} from "../../components/Input";
 

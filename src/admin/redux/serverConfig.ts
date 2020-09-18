@@ -20,8 +20,8 @@ export const fetchConfig = createAsyncThunk(
 
 export const uploadConfig = createAsyncThunk(
     'admin/config/uploadConfig',
-    async (args: {serverId: string, config: BotConfig}) => {
-        return ApiClient.instance.uploadServerConfig(args.serverId, args.config);
+    async (args: {serverId: string, config: BotConfig, images: {[key: string]: string}}) => {
+        return ApiClient.instance.uploadServerConfig(args.serverId, args.config, args.images);
     }
 );
 

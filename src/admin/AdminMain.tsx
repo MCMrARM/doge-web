@@ -160,9 +160,12 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
     const dispatch = useDispatch();
 
     let [editableConfig, setEditableConfig] = useState<BotConfig>(props.config);
+    let [overrideImages, setOverrideImages] = useState<{[key: string]: [string, File]}>({});
     useEffect(() => {
-        if (props.config)
+        if (props.config) {
             setEditableConfig(props.config);
+            setOverrideImages({});
+        }
     }, [props.config]);
 
     let debouncedEditableConfig = useDebounce(editableConfig, 100);
@@ -170,9 +173,13 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
     useEffect(() => {
         setHasChanges(JSON.stringify(debouncedEditableConfig) !== JSON.stringify(props.config));
     }, [debouncedEditableConfig, props.config]);
+    let uiHasChanges = hasChanges || Object.keys(overrideImages).length > 0;
 
     let save = () => {
-        dispatch(uploadConfig({serverId: props.server.id, config: editableConfig}));
+        const images: {[key: string]: string} = {};
+        for (const k in overrideImages)
+            images[k] = overrideImages[k][0];
+        dispatch(uploadConfig({serverId: props.server.id, config: editableConfig, images: images}));
     };
 
     return (
@@ -185,7 +192,7 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
                     <Logging server={props.server} config={editableConfig.log} onChange={(changes) => setEditableConfig({...editableConfig, log: {...editableConfig!.log, ...changes}})} />
                 </Route>
                 <Route path="/admin/:id/welcome">
-                    <WelcomeCard server={props.server} config={editableConfig.welcome} onChange={(changes) => setEditableConfig({...editableConfig, welcome: {...editableConfig!.welcome, ...changes}})} />
+                    <WelcomeCard server={props.server} config={editableConfig.welcome} onChange={(changes) => setEditableConfig({...editableConfig, welcome: {...editableConfig!.welcome, ...changes}})} overrideImages={overrideImages} onSetImage={(k, v, f) => setOverrideImages({...overrideImages, [k]: [v, f]})} />
                 </Route>
                 <Route path="/admin/:id/role">
                     <PersistentRoles server={props.server} config={editableConfig.role} onChange={(changes) => setEditableConfig({...editableConfig, role: {...editableConfig!.role, ...changes}})} />
@@ -200,10 +207,10 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
                     <Overview/>
                 </Route>
             </Switch>
-            <div className={"AdminMain-unsavedPopup-container" + (hasChanges ? " AdminMain-unsavedPopup-container-visible" : "")}>
+            <div className={"AdminMain-unsavedPopup-container" + (uiHasChanges ? " AdminMain-unsavedPopup-container-visible" : "")}>
                 <div className="AdminMain-unsavedPopup">
                     <span className="AdminMain-unsavedPopupText">You have unsaved changes!</span>
-                    <Button theme="secondary" onClick={() => setEditableConfig(props.config)}>Revert</Button>
+                    <Button theme="secondary" onClick={() => { setEditableConfig(props.config); setOverrideImages({}); }}>Revert</Button>
                     <Button onClick={() => save()}>Save and apply</Button>
                 </div>
             </div>

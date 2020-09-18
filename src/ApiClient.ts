@@ -7,6 +7,13 @@ interface ApiAuthProvider {
     getAppJwt(): string|undefined;
 }
 
+export interface ImageUploadRequest {
+    on(type: "progress", cb: (uploaded: number, total: number) => void): void;
+    on(type: "error", cb: () => void): void;
+    on(type: "end", cb: (name: string) => void): void;
+    send(): void;
+}
+
 export default class ApiClient {
 
     static instance: ApiClient;
@@ -47,7 +54,7 @@ export default class ApiClient {
             .then(this.jsonErrorTransform));
     }
 
-    private async post(url: string, body: string, contentType: string = "application/json"): Promise<any> {
+    private async post(url: string, body: File|string, contentType: string = "application/json"): Promise<any> {
         return (await fetch(this.baseUrl + url, {
             method: "POST",
             body: body,
@@ -67,12 +74,57 @@ export default class ApiClient {
         return this.get(`servers/${encodeURIComponent(serverId)}/admin/config`);
     }
 
-    async uploadServerConfig(serverId: string, config: BotConfig): Promise<BotConfig> {
-        return this.post(`servers/${encodeURIComponent(serverId)}/admin/config`, JSON.stringify(config));
+    async uploadServerConfig(serverId: string, config: BotConfig, images: {[key: string]: string}): Promise<BotConfig> {
+        let configJson: any = config;
+        if (Object.keys(images).length > 0)
+            configJson = {...config, "$images": images};
+        return this.post(`servers/${encodeURIComponent(serverId)}/admin/config`, JSON.stringify(configJson));
     }
 
     getWelcomeCardImagePath(serverId: string): string {
         return this.baseUrl + `servers/${encodeURIComponent(serverId)}/admin/images/welcome_banner`;
+    }
+
+    uploadWelcomeCardImage(serverId: string, file: File): ImageUploadRequest {
+        let progressCb: ((uploaded: number, total: number) => void) | null = null;
+        let errorCb: (() => void) | null = null;
+        let endCb: ((name: string) => void) | null = null;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', this.baseUrl + `servers/${encodeURIComponent(serverId)}/admin/images/welcome_banner`, true);
+        xhr.responseType = 'json';
+        for (const [k, v] of Object.entries(this.createAuthHeader()))
+            xhr.setRequestHeader(k, v);
+        xhr.setRequestHeader("Content-Type", "application/octet-stream");
+        xhr.addEventListener("load", (e) => {
+            console.log("Image upload complete", xhr.status, xhr.response);
+            if (xhr.status !== 200) {
+                errorCb?.();
+                return;
+            }
+            endCb?.(xhr.response["name"]);
+        });
+        xhr.addEventListener("error", (e) => {
+            console.log("Image upload failed");
+            errorCb?.();
+        });
+        xhr.addEventListener("progress", (e) => {
+            progressCb?.(e.loaded, e.total);
+        });
+
+        return {
+            on: (listenerName: string, listener: any) => {
+                if (listenerName === "progress")
+                    progressCb = listener;
+                else if (listenerName === "error")
+                    errorCb = listener;
+                else if (listenerName === "end")
+                    endCb = listener;
+            },
+            send: () => {
+                xhr.send(file);
+            }
+        };
     }
 
 }

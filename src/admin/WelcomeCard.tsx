@@ -28,6 +28,8 @@ import {SimpleDropdown} from "./components/SimpleDropdown";
 import {Input} from "../components/Input";
 import {ColorPicker} from "../components/ColorPicker";
 import {ColorInput} from "../components/ColorInput";
+import {ImageUploadButton} from "./components/ImageUploadButton";
+import {useObjectURL} from "../util";
 
 const availableFonts = new Map(Object.entries({
     "Roboto": "Roboto",
@@ -103,7 +105,8 @@ function ShadowColorDropdown(props: {value: string, onChange: (value: string) =>
     );
 }
 
-export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, onChange: (changes: Partial<WelcomeConfig>) => void}) {
+export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, onChange: (changes: Partial<WelcomeConfig>) => void, onSetImage: (key: string, value: string, file: File) => void, overrideImages: {[key: string]: [string, File]}}) {
+    let previewFileUrl = useObjectURL(props.overrideImages["welcome_banner"]?.[1] || null);
     let [imageSize, setImageSize] = useState<[number, number]>([0, 0]);
     let imageContainerRef = useRef<HTMLDivElement>(null);
     let [containerSize, setContainerSize] = useState<[number, number]>([0, 0]);
@@ -124,7 +127,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
             <div className="WelcomeCard-editor">
                 <div style={{flexGrow: 1}}>
                     <div className="WelcomeCard-editor-image" ref={imageContainerRef}>
-                        <img src={ApiClient.instance.getWelcomeCardImagePath(props.server.id)} onLoad={(i) => setImageSize([i.currentTarget.naturalWidth, i.currentTarget.naturalHeight])} />
+                        <img src={previewFileUrl || ApiClient.instance.getWelcomeCardImagePath(props.server.id)} onLoad={(i) => setImageSize([i.currentTarget.naturalWidth, i.currentTarget.naturalHeight])} />
                         <ResizableArea
                             left={mapCoord(banner.avatarLeft)}
                             top={mapCoord(banner.avatarTop)}
@@ -148,7 +151,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                             }} className="WelcomeCard-editor-nickname">Username</span>
                         </ResizableArea>
                     </div>
-                    <Button style={{marginTop: "8px"}}>Upload new image</Button>
+                    <div style={{marginTop: "8px"}}><ImageUploadButton uploader={(f) => ApiClient.instance.uploadWelcomeCardImage(props.server.id, f)} onUploaded={(v, file) => props.onSetImage("welcome_banner", v, file)} /></div>
                 </div>
                 <div className="WelcomeCard-editor-options">
                     <h4>User avatar</h4>
