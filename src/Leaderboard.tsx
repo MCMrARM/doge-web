@@ -6,6 +6,7 @@ import {RootState} from "./store";
 import {fetchLeaderboard, selectLeaderboardById} from "./redux/leaderboard";
 import {LeaderboardEntry} from "./shared/LeaderboardData";
 import {Button} from "./components/Button";
+import {colorIntToHexString} from "./colorUtil";
 
 function LeaderboardEntryElementWrapped(props: {rank: number, entry: LeaderboardEntry}) {
     return (
@@ -86,15 +87,13 @@ export function Leaderboard() {
                 <div className="Leaderboard-info">
                     <h3>Roles</h3>
                     You can get special roles by leveling up:
-                    <table style={{marginTop: "8px"}}>
+                    <table style={{marginTop: "8px"}} className="Leaderboard-role-table">
                         <tbody>
-                            <tr>
-                                <th>Level</th>
-                                <th>Role</th>
-                            </tr>
                             {rData?.data?.meta?.xpRoles.map(x => <tr>
-                                <td>{x.level}</td>
-                                <td>{x.roleName}</td>
+                                <td style={{width: "20%"}} />
+                                <td style={{width: "0px"}}><span className="lvl">LVL</span></td>
+                                <td style={{width: "0px"}}>{x.level}</td>
+                                <td style={{width: "100%"}}><span className="role" style={{color: colorIntToHexString(x.roleColor), borderColor: colorIntToHexString(x.roleColor)}}>{x.roleName}</span></td>
                             </tr>)}
                         </tbody>
                     </table>
