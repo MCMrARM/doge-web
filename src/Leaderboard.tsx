@@ -88,7 +88,7 @@ export function Leaderboard() {
             <div className="Leaderboard-info-ctr">
                 <div className="Leaderboard-info">
                     <h3>Information</h3>
-                    This is the {rData?.data?.meta?.serverName}'s server leaderboard.<br />
+                    This is the {rData?.data?.meta?.serverName} server's leaderboard.<br />
                     The server uses a leveling system, which rewards users who are active and engage with the community. Every minute you chat you get around {avgXp}XP.
                 </div>
                 <div className="Leaderboard-info">
@@ -96,7 +96,7 @@ export function Leaderboard() {
                     You can get special roles by leveling up:
                     <table style={{marginTop: "8px"}} className="Leaderboard-role-table">
                         <tbody>
-                            {rData?.data?.meta?.xpRoles.map(x => <tr>
+                            {rData?.data?.meta?.xpRoles.map((x, i) => <tr key={"rank-" + i}>
                                 <td style={{width: "20%"}} />
                                 <td style={{width: "0px"}}><span className="lvl">LVL</span></td>
                                 <td style={{width: "0px"}}>{x.level}</td>
