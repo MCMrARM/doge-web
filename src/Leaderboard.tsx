@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useRef} from "react";
 import "./Leaderboard.sass";
 import {useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -7,6 +7,7 @@ import {fetchLeaderboard, selectLeaderboardById} from "./redux/leaderboard";
 import {LeaderboardEntry} from "./shared/LeaderboardData";
 import {Button} from "./components/Button";
 import {colorIntToHexString} from "./colorUtil";
+import {usePageScrollCallback} from "./util";
 
 function LeaderboardEntryElementWrapped(props: {rank: number, entry: LeaderboardEntry}) {
     return (
@@ -40,11 +41,20 @@ const LeaderboardEntryElement = React.memo(LeaderboardEntryElementWrapped);
 export function Leaderboard() {
     const {id} = useParams<{id: string}>();
     const dispatch = useDispatch();
+    const loadMoreButton = useRef<HTMLButtonElement>(null);
     const rData = useSelector((s: RootState) => selectLeaderboardById(s, id));
     useEffect(() => {
         if (!(rData?.state))
             dispatch(fetchLeaderboard({serverId: id}));
     }, [id, rData, dispatch]);
+    usePageScrollCallback(() => {
+        if (rData?.state === "available" && rData?.loadMore === undefined && rData?.data?.after) {
+            const rect = loadMoreButton.current?.getBoundingClientRect();
+            if (!rect || rect.x + rect.width <= 0 || rect.x >= window.innerWidth || rect.y + rect.height <= 0 || rect.y >= window.innerHeight)
+                return;
+            dispatch(fetchLeaderboard({serverId: id, after: rData.data.after}));
+        }
+    }, [loadMoreButton]);
 
     if (rData?.state === "failed") {
         const retry = () => {
@@ -83,7 +93,7 @@ export function Leaderboard() {
             <div className="Leaderboard-main">
                 {rData?.data?.leaderboard?.map((x, i) => <LeaderboardEntryElement key={"lb-" + i} rank={i + 1} entry={x}/>)}
                 {rData?.loadMore === "pending" && <span>Loading more...</span>}
-                {rData?.loadMore !== "pending" && rData?.data?.after && <Button theme="colorless" onClick={loadMore}>Load more</Button>}
+                {rData?.loadMore !== "pending" && rData?.data?.after && <Button ref={loadMoreButton} theme="colorless" onClick={loadMore}>Load more</Button>}
             </div>
             <div className="Leaderboard-info-ctr">
                 <div className="Leaderboard-info">

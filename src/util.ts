@@ -1,4 +1,5 @@
-import {useEffect, useState} from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import {DependencyList, useEffect, useState} from "react";
 
 export function generateRandomHexString(length?: number) {
     let arr = new Uint8Array(length || 8);
@@ -14,4 +15,13 @@ export function useObjectURL(file: File|null) {
         return () => { url && URL.revokeObjectURL(url); };
     }, [file]);
     return objectURL;
+}
+
+export function usePageScrollCallback(cb: () => void, deps: DependencyList) {
+    useEffect(() => {
+        window.addEventListener("scroll", cb);
+        return () => {
+            window.removeEventListener("scroll", cb);
+        };
+    }, [cb].concat(deps));
 }
