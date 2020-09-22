@@ -57,7 +57,7 @@ function GuildListDropdown(props: {list: GuildListEntry[]}) {
         let iconUrl = g.icon ? "https://cdn.discordapp.com/icons/" + g.id + "/" + g.icon + ".png?size=32" : null;
         return (
             <li key={g.id}>
-                <Link to={`/admin/${g.id}`}>
+                <Link to={`/${g.id}/admin`}>
                     <img src={iconUrl || "data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E"} alt="Server Icon" className="Icon" />
                     {g.name}
                 </Link>
@@ -138,12 +138,12 @@ export function AdminMain() {
                     </div>
                     <nav>
                         <ul>
-                            <li><NavLink to={`/admin/${id}`} exact={true}><DashboardIcon className="Icon"/> Overview</NavLink></li>
-                            <li><NavLink to={`/admin/${id}/xp`}><EmojiEventsIcon className="Icon"/> Leveling</NavLink></li>
-                            <li><NavLink to={`/admin/${id}/log`}><HistoryEduIcon className="Icon"/> Logging</NavLink></li>
-                            <li><NavLink to={`/admin/${id}/welcome`}><ContactIcon className="Icon"/> Welcome Card</NavLink></li>
-                            <li><NavLink to={`/admin/${id}/role`}><AccessTimeIcon className="Icon"/> Saved & Timed Roles</NavLink></li>
-                            <li><NavLink to={`/admin/${id}/permission`}><SecurityIcon className="Icon"/> Permissions</NavLink></li>
+                            <li><NavLink to={`/${id}/admin`} exact={true}><DashboardIcon className="Icon"/> Overview</NavLink></li>
+                            <li><NavLink to={`/${id}/admin/xp`}><EmojiEventsIcon className="Icon"/> Leveling</NavLink></li>
+                            <li><NavLink to={`/${id}/admin/log`}><HistoryEduIcon className="Icon"/> Logging</NavLink></li>
+                            <li><NavLink to={`/${id}/admin/welcome`}><ContactIcon className="Icon"/> Welcome Card</NavLink></li>
+                            <li><NavLink to={`/${id}/admin/role`}><AccessTimeIcon className="Icon"/> Saved & Timed Roles</NavLink></li>
+                            <li><NavLink to={`/${id}/admin/permission`}><SecurityIcon className="Icon"/> Permissions</NavLink></li>
                         </ul>
                     </nav>
                 </div>
@@ -185,25 +185,25 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
     return (
         <div>
             <Switch>
-                <Route path="/admin/:id/xp">
+                <Route path="/:id/admin/xp">
                     <Leveling server={props.server} config={editableConfig.xp} onChange={(changes) => setEditableConfig({...editableConfig, xp: {...editableConfig!.xp, ...changes}})} />
                 </Route>
-                <Route path="/admin/:id/log">
+                <Route path="/:id/admin/log">
                     <Logging server={props.server} config={editableConfig.log} onChange={(changes) => setEditableConfig({...editableConfig, log: {...editableConfig!.log, ...changes}})} />
                 </Route>
-                <Route path="/admin/:id/welcome">
+                <Route path="/:id/admin/welcome">
                     <WelcomeCard server={props.server} config={editableConfig.welcome} onChange={(changes) => setEditableConfig({...editableConfig, welcome: {...editableConfig!.welcome, ...changes}})} overrideImages={overrideImages} onSetImage={(k, v, f) => setOverrideImages({...overrideImages, [k]: [v, f]})} />
                 </Route>
-                <Route path="/admin/:id/role">
+                <Route path="/:id/admin/role">
                     <PersistentRoles server={props.server} config={editableConfig.role} onChange={(changes) => setEditableConfig({...editableConfig, role: {...editableConfig!.role, ...changes}})} />
                 </Route>
-                <Route path="/admin/:id/permission">
+                <Route path="/:id/admin/permission">
                     <Permissions server={props.server} config={editableConfig.permission} onChange={(changes) => setEditableConfig({...editableConfig, permission: {...editableConfig!.permission, ...changes}})} />
                 </Route>
-                <Route path="/admin/:id/rawjson">
+                <Route path="/:id/admin/rawjson">
                     <JsonEdit server={props.server} config={editableConfig} onChange={(config) => setEditableConfig(config)} />
                 </Route>
-                <Route path="/admin/:id">
+                <Route path="/:id/admin">
                     <Overview/>
                 </Route>
             </Switch>
@@ -231,6 +231,6 @@ export function AdminRedirectToLast() {
     }, [guildList, serverId, dispatch]);
 
     if (serverId)
-        return <Redirect to={`/admin/${serverId}`} />;
+        return <Redirect to={`/${serverId}/admin`} />;
     return null;
 }

@@ -65,7 +65,7 @@ function App() {
                         <Route path="/auth/discord">
                             <DiscordAuthPage />
                         </Route>
-                        <Route path="/admin/:id">
+                        <Route path="/:id/admin">
                             <AdminMain />
                         </Route>
                         <Route path="/admin" exact={true}>
