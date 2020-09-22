@@ -8,6 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "./store";
 import {ExpandMoreIcon} from "./icons/Icons";
 import {logout} from "./redux/user";
+import {Leaderboard} from "./Leaderboard";
 
 function TopBarUserSection(props: RouteComponentProps) {
     const userInfo = useSelector((s: RootState) => s.user.user);
@@ -69,6 +70,9 @@ function App() {
                         </Route>
                         <Route path="/admin" exact={true}>
                             <AdminRedirectToLast />
+                        </Route>
+                        <Route path="/:id/leaderboard">
+                            <Leaderboard />
                         </Route>
                         <Route path="/">
                             <Home />

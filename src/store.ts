@@ -4,6 +4,7 @@ import userReducer, {observeStoreForSaving} from './redux/user'
 import guildListReducer from './redux/guildList'
 import configReducer from './admin/redux/serverConfig'
 import serverInfoReducer from './admin/redux/serverInfo'
+import leaderboardReducer from './redux/leaderboard'
 import ApiClient from "./ApiClient";
 
 export const store = configureStore({
@@ -11,7 +12,8 @@ export const store = configureStore({
         user: userReducer,
         guildList: guildListReducer,
         config: configReducer,
-        server: serverInfoReducer
+        server: serverInfoReducer,
+        leaderboard: leaderboardReducer
     }
 });
 

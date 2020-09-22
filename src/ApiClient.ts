@@ -1,5 +1,6 @@
 import {BotConfig} from "./shared/BotConfig";
 import {ServerInfo} from "./shared/ServerInfo";
+import {LeaderboardData} from "./shared/LeaderboardData";
 
 export class ResponseError extends Error {}
 
@@ -79,6 +80,10 @@ export default class ApiClient {
         if (Object.keys(images).length > 0)
             configJson = {...config, "$images": images};
         return this.post(`servers/${encodeURIComponent(serverId)}/admin/config`, JSON.stringify(configJson));
+    }
+
+    async getLeaderboard(serverId: string): Promise<LeaderboardData> {
+        return this.get(`servers/${encodeURIComponent(serverId)}/leaderboard`);
     }
 
     getWelcomeCardImagePath(serverId: string): string {
