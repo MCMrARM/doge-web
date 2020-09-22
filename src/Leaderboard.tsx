@@ -43,13 +43,13 @@ export function Leaderboard() {
     const rData = useSelector((s: RootState) => selectLeaderboardById(s, id));
     useEffect(() => {
         if (!(rData?.state))
-            dispatch(fetchLeaderboard(id));
+            dispatch(fetchLeaderboard({serverId: id}));
     }, [id, rData, dispatch]);
 
     if (rData?.state === "failed") {
-        let retry = () => {
+        const retry = () => {
             if (rData?.state === "failed")
-                dispatch(fetchLeaderboard(id));
+                dispatch(fetchLeaderboard({serverId: id}));
         };
         return (
             <div style={{marginTop: "64px"}}>
@@ -66,6 +66,11 @@ export function Leaderboard() {
         );
     }
 
+    const loadMore = () => {
+        if (rData?.loadMore !== "pending" && rData?.data?.after)
+            dispatch(fetchLeaderboard({serverId: id, after: rData.data.after}));
+    };
+
     const xpMultiplier = rData?.data?.meta?.xpMultiplier || 0;
     const avgXp = Math.floor((Math.floor(xpMultiplier * 15) + Math.floor(xpMultiplier * 25)) / 2);
 
@@ -77,6 +82,8 @@ export function Leaderboard() {
             </div>
             <div className="Leaderboard-main">
                 {rData?.data?.leaderboard?.map((x, i) => <LeaderboardEntryElement key={"lb-" + i} rank={i + 1} entry={x}/>)}
+                {rData?.loadMore === "pending" && <span>Loading more...</span>}
+                {rData?.loadMore !== "pending" && rData?.data?.after && <Button theme="colorless" onClick={loadMore}>Load more</Button>}
             </div>
             <div className="Leaderboard-info-ctr">
                 <div className="Leaderboard-info">

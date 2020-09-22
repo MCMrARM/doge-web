@@ -16,5 +16,6 @@ export type LeaderboardEntry = {
 
 export type LeaderboardData = {
     meta?: LeaderboardMeta,
-    leaderboard: LeaderboardEntry[]
+    leaderboard: LeaderboardEntry[],
+    after: number|string|null
 };

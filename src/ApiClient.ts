@@ -82,7 +82,9 @@ export default class ApiClient {
         return this.post(`servers/${encodeURIComponent(serverId)}/admin/config`, JSON.stringify(configJson));
     }
 
-    async getLeaderboard(serverId: string): Promise<LeaderboardData> {
+    async getLeaderboard(serverId: string, after?: number|string): Promise<LeaderboardData> {
+        if (after)
+            return this.get(`servers/${encodeURIComponent(serverId)}/leaderboard?after=${encodeURIComponent(after)}`);
         return this.get(`servers/${encodeURIComponent(serverId)}/leaderboard`);
     }
 
