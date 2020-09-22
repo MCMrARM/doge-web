@@ -12,7 +12,7 @@ export function CheckBoxList(props: {value: string[], map: {[key: string]: strin
                 props.onChange(props.value.filter(x => x !== key));
         }
     };
-    let checkBoxes = Object.entries(props.map).map(([k, v]) => <CheckBox value={valueSet.has(k)} onChange={(v) => setValue(k, v)}>{v}</CheckBox>);
+    let checkBoxes = Object.entries(props.map).map(([k, v]) => <CheckBox key={k} value={valueSet.has(k)} onChange={(v) => setValue(k, v)}>{v}</CheckBox>);
     return (
         <div className="CheckBoxList" style={props.style}>
             {checkBoxes}

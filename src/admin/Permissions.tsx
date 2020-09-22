@@ -1,7 +1,7 @@
 import {ServerInfo} from "../shared/ServerInfo";
 import {PermissionConfig, PermissionGroup} from "../shared/BotConfig";
 import {CancelIcon, CheckCircleIcon, RemoveCircleIcon, SecurityIcon} from "../icons/Icons";
-import React, {useRef} from "react";
+import React from "react";
 import {RoleChipList} from "./components/RoleChipList";
 import "./Permissions.sass";
 import {Input} from "../components/Input";
@@ -70,7 +70,7 @@ export function Permissions(props: {server: ServerInfo, config: PermissionConfig
                 <PermissionGroupSettings forcedName="Moderation" config={props.config.default.mod} server={props.server} onChange={(v) => props.onChange({default: {...props.config.default, mod: v}})} />
                 <PermissionGroupSettings forcedName="Miscellaneous" config={props.config.default.misc} server={props.server} onChange={(v) => props.onChange({default: {...props.config.default, misc: v}})} />
                 {props.config.custom.map((x, i) =>
-                    <PermissionGroupSettings config={x} server={props.server} onChange={(v) => updateCustomGroup(i, v)} onDelete={() => deleteCustomGroup(i)} />
+                    <PermissionGroupSettings key={"group-" + i} config={x} server={props.server} onChange={(v) => updateCustomGroup(i, v)} onDelete={() => deleteCustomGroup(i)} />
                 )}
                 <div className="Permissions-group Permissions-group-new">
                     <Button onClick={(ev) => { ev.currentTarget.blur(); addCustomGroup(); }}>Add new custom group</Button>
@@ -81,7 +81,7 @@ export function Permissions(props: {server: ServerInfo, config: PermissionConfig
             <table className="Permissions-command-list-ctr">
                 <tbody>
                     {props.server.globalCommands.map(x => (
-                        <tr>
+                        <tr key={"command-" + x[0]}>
                             <th className="Permissions-command-name">{`/${x[0]}`}</th>
                             <td><SimpleDropdown value={props.config.commands[x[0]] || "default:" + x[1]} fallback={"(invalid)"} map={customGroupMap} onValueChanged={(v) => props.onChange({commands: {...props.config.commands, [x[0]]: v}})}/></td>
                         </tr>

@@ -56,7 +56,7 @@ function GuildListDropdown(props: {list: GuildListEntry[]}) {
     const guildElements = (props.list || []).map((g) => {
         let iconUrl = g.icon ? "https://cdn.discordapp.com/icons/" + g.id + "/" + g.icon + ".png?size=32" : null;
         return (
-            <li>
+            <li key={g.id}>
                 <Link to={`/admin/${g.id}`}>
                     <img src={iconUrl || "data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E"} alt="Server Icon" className="Icon" />
                     {g.name}

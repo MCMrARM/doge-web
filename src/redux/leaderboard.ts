@@ -2,7 +2,6 @@ import {createEntityAdapter, createSlice, createAsyncThunk} from '@reduxjs/toolk
 import ApiClient from "../ApiClient";
 import {RootState} from "../store";
 import {LeaderboardData} from "../shared/LeaderboardData";
-import {act} from "react-dom/test-utils";
 
 type LeaderboardWrapper = {
     id: string,

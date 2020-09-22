@@ -1,5 +1,5 @@
 import {ServerInfo} from "../shared/ServerInfo";
-import {BotConfig, LogConfig} from "../shared/BotConfig";
+import {BotConfig} from "../shared/BotConfig";
 import {CodeIcon} from "../icons/Icons";
 import React, {useState} from "react";
 import {TextArea} from "../components/TextArea";

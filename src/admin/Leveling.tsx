@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {CancelIcon, CloseIcon, EmojiEventsIcon} from "../icons/Icons";
+import {CancelIcon, EmojiEventsIcon} from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {Slider} from "../components/Slider";
 import {XpConfig} from "../shared/BotConfig";
@@ -13,7 +13,6 @@ import {Input} from "../components/Input";
 import {RoleDropdown} from "./components/RoleDropdown";
 import {Button} from "../components/Button";
 import {NumberInput} from "./components/NumberInput";
-import {CheckBox} from "../components/CheckBox";
 
 const multiplierValues = [0.25, 0.5, 1, 1.5, 2, 2.5, 3];
 const levelUpAnnouncementModes = new Map<"channel"|"direct"|null, string>();

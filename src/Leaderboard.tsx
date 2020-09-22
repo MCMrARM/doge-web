@@ -12,7 +12,7 @@ function LeaderboardEntryElementWrapped(props: {rank: number, entry: Leaderboard
     return (
         <div className="Leaderboard-entry">
             <div className="Leaderboard-rank">{props.rank}</div>
-            <img className="Leaderboard-avatar" src={props.entry.userImageUrl} />
+            <img className="Leaderboard-avatar" src={props.entry.userImageUrl} alt="" />
             <div className="Leaderboard-name">{props.entry.userName}</div>
             <div className="Leaderboard-counter">
                 <span className="title">Messages</span>
@@ -77,7 +77,7 @@ export function Leaderboard() {
     return (
         <div className="Leaderboard-container">
             <div className="Leaderboard-title">
-                <img className="Leaderboard-server-icon" src={rData?.data?.meta?.serverIconUrl} />
+                <img className="Leaderboard-server-icon" src={rData?.data?.meta?.serverIconUrl} alt="" />
                 <span className="Leaderboard-server-name"><strong>{rData?.data?.meta?.serverName}</strong>'s leaderboard</span>
             </div>
             <div className="Leaderboard-main">

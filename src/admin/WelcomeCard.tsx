@@ -6,7 +6,7 @@ import {
     ResizeIcon,
     ArrowExpandHorizontalIcon,
     FormatSizeIcon,
-    PaletteIcon, BlurIcon, CancelIcon
+    PaletteIcon, BlurIcon
 } from "../icons/Icons";
 import {TwoColumnOption} from "./TwoColumnOption";
 import {ChannelDropdown} from "./components/ChannelDropdown";
@@ -127,7 +127,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
             <div className="WelcomeCard-editor">
                 <div style={{flexGrow: 1}}>
                     <div className="WelcomeCard-editor-image" ref={imageContainerRef}>
-                        <img src={previewFileUrl || ApiClient.instance.getWelcomeCardImagePath(props.server.id)} onLoad={(i) => setImageSize([i.currentTarget.naturalWidth, i.currentTarget.naturalHeight])} />
+                        <img src={previewFileUrl || ApiClient.instance.getWelcomeCardImagePath(props.server.id)} alt="Background" onLoad={(i) => setImageSize([i.currentTarget.naturalWidth, i.currentTarget.naturalHeight])} />
                         <ResizableArea
                             left={mapCoord(banner.avatarLeft)}
                             top={mapCoord(banner.avatarTop)}
