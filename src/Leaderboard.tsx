@@ -11,10 +11,10 @@ import {usePageScrollCallback} from "./util";
 
 function LeaderboardEntryElementWrapped(props: {rank: number, entry: LeaderboardEntry}) {
     return (
-        <div className="Leaderboard-entry">
+        <div className={"Leaderboard-entry" + (props.entry.userName === null ? " Leaderboard-entry-unknown" : "")}>
             <div className="Leaderboard-rank">{props.rank}</div>
             <img className="Leaderboard-avatar" src={props.entry.userImageUrl} alt="" />
-            <div className="Leaderboard-name">{props.entry.userName}</div>
+            <div className="Leaderboard-name">{props.entry.userName !== null ? props.entry.userName : "Unknown user"}</div>
             <div className="Leaderboard-counter">
                 <span className="title">Messages</span>
                 <span className="value">{props.entry.messages}</span>
