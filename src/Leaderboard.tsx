@@ -70,6 +70,10 @@ export function Leaderboard() {
 
     return (
         <div className="Leaderboard-container">
+            <div className="Leaderboard-title">
+                <img className="Leaderboard-server-icon" src={rData?.data?.meta?.serverIconUrl} />
+                <span className="Leaderboard-server-name"><strong>{rData?.data?.meta?.serverName}</strong>'s leaderboard</span>
+            </div>
             <div className="Leaderboard-main">
                 {rData?.data?.leaderboard?.map((x, i) => <LeaderboardEntryElement key={"lb-" + i} rank={i + 1} entry={x}/>)}
             </div>
