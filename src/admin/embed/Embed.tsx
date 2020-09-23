@@ -26,7 +26,7 @@ export type EmbedInfo = {
     }
 }
 
-export function splitFields(fields: EmbedField[]) {
+export function splitFields<T extends {inline?: boolean}>(fields: T[]): T[][] {
     const embedRows = [];
     let currentRow = [];
     let lastInline = false;
@@ -58,7 +58,7 @@ export function Embed(props: {embed: EmbedInfo}) {
                 {fieldRows.length > 0 && <div className="Embed-fields">
                     {fieldRows.flatMap((list, i) => (
                         list.map((x, j) => {
-                            const units = 6 / list.length;
+                            const units = 12 / list.length;
                             return <div className="Embed-field" key={"field-" + i + "-" + j} style={{gridColumn: `${1 + units * j}/${1 + units * (j + 1)}`}}>
                                 <div className="Embed-field-name">{x.name}</div>
                                 <div className="Embed-field-value">{x.value}</div>
