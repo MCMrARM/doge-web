@@ -26,7 +26,7 @@ export type EmbedInfo = {
     }
 }
 
-function splitFields(fields: EmbedField[]) {
+export function splitFields(fields: EmbedField[]) {
     const embedRows = [];
     let currentRow = [];
     let lastInline = false;
