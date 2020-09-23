@@ -1,0 +1,91 @@
+.Embed-wrapper
+  display: flex
+
+.Embed
+  display: grid
+  background: #2f3136
+  border-left: 4px solid #202225
+  border-radius: 4px
+  max-width: 520px
+  box-sizing: border-box
+  padding: .5rem 1rem 1rem .75rem
+  grid-template-columns: auto
+  grid-template-rows: auto
+
+.Embed > *
+  margin-top: 8px
+
+.Embed-author
+  display: flex
+  align-items: center
+  grid-column: 1/1
+
+.Embed-author-icon
+  width: 24px
+  height: 24px
+  margin-right: 8px
+  border-radius: 12px
+
+.Embed-author-text, .Embed-field-name
+  font-size: 0.875rem
+  font-weight: 600
+  color: #fff
+
+.Embed-title
+  font-size: 1em
+  line-height: 1.375rem
+  font-weight: 600
+
+.Embed-description, .Embed-field
+  font-size: 0.875rem
+  line-height: 1.125rem
+
+.Embed-description, .Embed-field-value
+  font-weight: 400
+  white-space: pre-line
+
+.Embed-description
+  grid-column: 1/1
+  color: #dcddde
+
+.Embed-fields
+  display: grid
+  grid-column: 1/1
+  grid-gap: 8px
+
+.Embed-field-name
+  margin-bottom: 2px
+
+.Embed-footer
+  display: flex
+  align-items: center
+
+.Embed-footer-icon
+  width: 20px
+  height: 20px
+  margin-right: 8px
+  border-radius: 10px
+
+.Embed-footer-text
+  font-size: 0.75rem
+  line-height: 1rem
+  font-weight: 500
+  color: #dcddde
+
+.Embed-media
+  margin-top: 16px
+  max-width: 400px
+  max-height: 300px
+  border-radius: 4px
+
+.Embed-thumbnail
+  max-width: 80px
+  max-height: 80px
+  grid-row: 1/8
+  grid-column: 2/2
+  margin-left: 16px
+  justify-self: end
+  border-radius: 4px
+
+.Embed-withThumbnail .Embed-media, .Embed-withThumbnail .Embed-footer
+  grid-column: 1/3
