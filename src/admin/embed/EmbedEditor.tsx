@@ -3,7 +3,7 @@ import {createEditor, Editor, Node as SlateNode, NodeEntry, Range} from 'slate';
 import {Slate, Editable, withReact, DefaultLeaf} from 'slate-react';
 import "./Embed.sass";
 import "./EmbedEditor.sass";
-import {OutlinedAddPhotoAlternativeIcon} from "../../icons/Icons";
+import {CloseIcon, OutlinedAddPhotoAlternativeIcon} from "../../icons/Icons";
 import {Button} from "../../components/Button";
 import {EmbedField, EmbedInfo, splitFields} from "./Embed";
 import {RenderLeafProps} from "slate-react/dist/components/editable";
@@ -97,6 +97,12 @@ export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Part
             fieldLayout: [...props.embed.fieldLayout, {inline: inline}]
         });
     };
+    const removeField = (index: number) => {
+        props.onChange({
+            fields: [...props.embed.fields.slice(0, index), ...props.embed.fields.slice(index + 1)],
+            fieldLayout: [...props.embed.fieldLayout.slice(0, index), ...props.embed.fieldLayout.slice(index + 1)]
+        });
+    };
     const updateField = (index: number, changes: Partial<EditableEmbedField>) => {
         if (!objectContains(props.embed.fields[index], changes)) {
             let copy = [...props.embed.fields];
@@ -110,6 +116,7 @@ export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Part
             const units = 12 / list.length;
             const k = ki++;
             return <div className="Embed-field" key={"field-" + i + "-" + j} style={{gridColumn: `${1 + units * j}/${1 + units * (j + 1)}`}}>
+                <CloseIcon className="EmbedEditor-field-remove" onClick={() => removeField(k)} />
                 <EditorField className="Embed-field-name" placeholder="Name" value={props.embed.fields[k].name} onChange={(v) => updateField(k, {name: v})}/>
                 <EditorField className="Embed-field-value" placeholder="Value" value={props.embed.fields[k].value} onChange={(v) => updateField(k, {value: v})}/>
             </div>;
