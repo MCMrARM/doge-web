@@ -3,7 +3,7 @@ import {createEditor, Editor, Node as SlateNode, NodeEntry, Range} from 'slate';
 import {Slate, Editable, withReact, DefaultLeaf} from 'slate-react';
 import "./Embed.sass";
 import "./EmbedEditor.sass";
-import {CloseIcon, OutlinedAddPhotoAlternativeIcon} from "../../icons/Icons";
+import {CloseIcon, LinkIcon, OutlinedAddPhotoAlternativeIcon} from "../../icons/Icons";
 import {Button} from "../../components/Button";
 import {EmbedField, EmbedInfo, splitFields} from "./Embed";
 import {RenderLeafProps} from "slate-react/dist/components/editable";
@@ -20,6 +20,8 @@ export type EditableEmbed = {
     footer: SlateNode[],
     image: File|null,
     thumbnail: File|null,
+    authorImage: File|null,
+    footerImage: File|null,
     fields: EditableEmbedField[],
     fieldLayout: {inline: boolean}[]
 };
@@ -33,16 +35,18 @@ export function convertEditableEmbed(embed: EditableEmbed): EmbedInfo {
     }));
     return {
         author: serialize(embed.author) ? {
-            name: serialize(embed.author)
+            name: serialize(embed.author),
+            icon_url: embed.authorImage ? "attachment://embed-author.png" : undefined
         } : undefined,
         title: serialize(embed.title),
         description: serialize(embed.description),
         fields: fields,
         footer: serialize(embed.footer) ? {
-            text: serialize(embed.footer)
+            text: serialize(embed.footer),
+            icon_url: embed.footerImage ? "attachment://embed-footer.png" : undefined
         } : undefined,
         image: embed.image ? {
-            url: "attachment://embedimage.png"
+            url: "attachment://embed-image.png"
         } : undefined,
         thumbnail: embed.thumbnail ? {
             url: "attachment://embed-thumbnail.png"
@@ -53,9 +57,13 @@ export function convertEditableEmbed(embed: EditableEmbed): EmbedInfo {
 export function extractEmbedFiles(embed: EditableEmbed): [string, File][] {
     const ret: [string, File][] = [];
     if (embed.image)
-        ret.push(["embedimage.png", embed.image]);
+        ret.push(["embed-image.png", embed.image]);
     if (embed.thumbnail)
         ret.push(["embed-thumbnail.png", embed.thumbnail]);
+    if (embed.authorImage)
+        ret.push(["embed-author.png", embed.authorImage]);
+    if (embed.footerImage)
+        ret.push(["embed-footer.png", embed.footerImage]);
     return ret;
 }
 
@@ -67,6 +75,8 @@ export const defaultEmbed: EditableEmbed = {
     footer: createDefaultNodes(),
     image: null,
     thumbnail: null,
+    authorImage: null,
+    footerImage: null,
     fields: [],
     fieldLayout: []
 };
@@ -107,29 +117,32 @@ function EditorField(props: {className: string, style?: CSSProperties, value: Sl
     );
 }
 
-function EditorImageField(props: {file: File|null, setFile: (file: File|null) => void}) {
-    const objectURL = useObjectURL(props.file);
-    const selectPic = () => {
-        let input = document.createElement("input");
-        input.type = "file";
-        input.onchange = () => {
-            if (!input.files || input.files.length === 0)
-                return;
-            props.setFile(input.files[0]);
-        };
-        input.click();
+function selectPic(callback: (file: File) => void) {
+    let input = document.createElement("input");
+    input.type = "file";
+    input.onchange = () => {
+        if (!input.files || input.files.length === 0)
+            return;
+        callback(input.files[0]);
     };
+    input.click();
+}
+
+function EditorImageField(props: {file: File|null, setFile: (file: File|null) => void, className?: string, noAddButton?: boolean}) {
+    const objectURL = useObjectURL(props.file);
     if (objectURL) {
         return (
-            <div className="EmbedEditor-image" onClick={() => props.setFile(null)}>
+            <div className={"EmbedEditor-image" + (props.className ? ` ${props.className}` : "")} onClick={() => props.setFile(null)}>
                 <img src={objectURL} alt="" />
                 <div className="EmbedEditor-imageDarken" />
                 <CloseIcon className="EmbedEditor-removeImage" />
             </div>
         );
     }
+    if (props.noAddButton)
+        return null;
     return (
-        <Button theme="secondary icon" className="EmbedEditor-addImage" onClick={selectPic}>
+        <Button theme="secondary icon" className="EmbedEditor-addImage" onClick={() => selectPic(props.setFile)}>
             <OutlinedAddPhotoAlternativeIcon />
         </Button>
     );
@@ -173,10 +186,20 @@ export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Part
     return (
         <div className="Embed-wrapper">
             <div className="Embed Embed-withThumbnail EmbedEditor">
-                <div className="Embed-author">
+                <div className="Embed-author Embed-inlineOptions-ctr">
+                    <EditorImageField className="EmbedEditor-image-small Embed-author-icon" file={props.embed.authorImage} setFile={(v) => props.onChange({authorImage: v})} noAddButton={true} />
                     <EditorField className="Embed-author-text" placeholder="Author" style={{flexGrow: 1}} value={props.embed.author} onChange={(v) => props.onChange({author: v})} />
+                    <div className="Embed-inlineOptions">
+                        <OutlinedAddPhotoAlternativeIcon className="Embed-inlineOption" onClick={() => selectPic((v) => props.onChange({authorImage: v}))} />
+                        <LinkIcon className="Embed-inlineOption"  />
+                    </div>
                 </div>
-                <EditorField className="Embed-title" placeholder="Title" value={props.embed.title} onChange={(v) => props.onChange({title: v})} />
+                <div className="Embed-title Embed-inlineOptions-ctr">
+                    <EditorField className="" style={{flexGrow: 1}} placeholder="Title" value={props.embed.title} onChange={(v) => props.onChange({title: v})} />
+                    <div className="Embed-inlineOptions">
+                        <LinkIcon className="Embed-inlineOption"  />
+                    </div>
+                </div>
                 <EditorField className="Embed-description" placeholder="Description" value={props.embed.description} onChange={(v) => props.onChange({description: v})} />
                 <div className="Embed-fields">
                     {fields}
@@ -190,8 +213,13 @@ export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Part
                 <div className="Embed-thumbnail EmbedEditor-imageContainer">
                     <EditorImageField file={props.embed.thumbnail} setFile={(v) => props.onChange({thumbnail: v})} />
                 </div>
-                <div className="Embed-footer">
+                <div className="Embed-footer Embed-inlineOptions-ctr">
+                    <EditorImageField className="EmbedEditor-image-small Embed-footer-icon" file={props.embed.footerImage} setFile={(v) => props.onChange({footerImage: v})} noAddButton={true} />
                     <EditorField className="Embed-footer-text" placeholder="Footer" style={{flexGrow: 1}} value={props.embed.footer} onChange={(v) => props.onChange({footer: v})} />
+                    <div className="Embed-inlineOptions">
+                        <OutlinedAddPhotoAlternativeIcon className="Embed-inlineOption" onClick={() => selectPic((v) => props.onChange({footerImage: v}))} />
+                        <LinkIcon className="Embed-inlineOption" />
+                    </div>
                 </div>
             </div>
         </div>
