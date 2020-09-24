@@ -1,4 +1,4 @@
-import React, {ReactNode, useCallback, useMemo} from "react";
+import React, {CSSProperties, ReactNode, useCallback, useMemo} from "react";
 import {createEditor, Editor, Node as SlateNode, NodeEntry, Range} from 'slate';
 import {Slate, Editable, withReact, DefaultLeaf} from 'slate-react';
 import "./Embed.sass";
@@ -48,8 +48,8 @@ export const defaultEmbed: EditableEmbed = {
     title: createDefaultNodes(),
     description: createDefaultNodes(),
     footer: createDefaultNodes(),
-    fields: [{name: createDefaultNodes(), value: createDefaultNodes()}, {name: createDefaultNodes(), value: createDefaultNodes()}],
-    fieldLayout: [{inline: true}, {inline: true}]
+    fields: [],
+    fieldLayout: []
 };
 
 function useDecorateWithPlaceholder(placeholder: string) {
@@ -78,23 +78,25 @@ const renderLeaf = (props: RenderLeafProps) => {
     return <DefaultLeaf {...props} children={children} />;
 };
 
-export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Partial<EditableEmbed>) => void}) {
-    const decorateWithNamePlaceholder = useDecorateWithPlaceholder("Name");
-    const decorateWithValuePlaceholder = useDecorateWithPlaceholder("Value");
-    const decorateWithAuthorPlaceholder = useDecorateWithPlaceholder("Author");
-    const decorateWithTitlePlaceholder = useDecorateWithPlaceholder("Title");
-    const decorateWithDescriptionPlaceholder = useDecorateWithPlaceholder("Description");
-    const decorateWithFooterPlaceholder = useDecorateWithPlaceholder("Footer");
+function EditorField(props: {className: string, style?: CSSProperties, value: SlateNode[], placeholder: string, onChange: (value: SlateNode[]) => void}) {
+    const editor = useMemo(() => withReact(createEditor()), []);
+    const decorate = useDecorateWithPlaceholder(props.placeholder);
+    return (
+        <Slate editor={editor} value={props.value} onChange={props.onChange}>
+            <Editable className={props.className} style={props.style} renderLeaf={renderLeaf} decorate={decorate} />
+        </Slate>
+    );
+}
 
+export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Partial<EditableEmbed>) => void}) {
     const fieldRows = splitFields(props.embed.fieldLayout || []);
 
-    const authorEditor = useMemo(() => withReact(createEditor()), []);
-    const titleEditor = useMemo(() => withReact(createEditor()), []);
-    const descriptionEditor = useMemo(() => withReact(createEditor()), []);
-    const footerEditor = useMemo(() => withReact(createEditor()), []);
-    const fieldKeyEditors = useMemo(() => Array.from({ length: props.embed.fieldLayout.length }, () => withReact(createEditor()) ), [props.embed.fieldLayout]);
-    const fieldValueEditors = useMemo(() => Array.from({ length: props.embed.fieldLayout.length }, () => withReact(createEditor()) ), [props.embed.fieldLayout]);
-
+    const addField = (inline: boolean) => {
+        props.onChange({
+            fields: [...props.embed.fields, {name: createDefaultNodes(), value: createDefaultNodes()}],
+            fieldLayout: [...props.embed.fieldLayout, {inline: inline}]
+        });
+    };
     const updateField = (index: number, changes: Partial<EditableEmbedField>) => {
         if (!objectContains(props.embed.fields[index], changes)) {
             let copy = [...props.embed.fields];
@@ -108,36 +110,25 @@ export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Part
             const units = 12 / list.length;
             const k = ki++;
             return <div className="Embed-field" key={"field-" + i + "-" + j} style={{gridColumn: `${1 + units * j}/${1 + units * (j + 1)}`}}>
-                <Slate editor={fieldKeyEditors[k]} value={props.embed.fields[k].name} onChange={(v) => updateField(k, {name: v})}>
-                    <Editable className="Embed-field-name" renderLeaf={renderLeaf} decorate={decorateWithNamePlaceholder} />
-                </Slate>
-                <Slate editor={fieldValueEditors[k]} value={props.embed.fields[k].value} onChange={(v) => updateField(k, {value: v})}>
-                    <Editable className="Embed-field-value" renderLeaf={renderLeaf} decorate={decorateWithValuePlaceholder} />
-                </Slate>
+                <EditorField className="Embed-field-name" placeholder="Name" value={props.embed.fields[k].name} onChange={(v) => updateField(k, {name: v})}/>
+                <EditorField className="Embed-field-value" placeholder="Value" value={props.embed.fields[k].value} onChange={(v) => updateField(k, {value: v})}/>
             </div>;
         })
     ));
-
 
     return (
         <div className="Embed-wrapper">
             <div className="Embed Embed-withThumbnail EmbedEditor">
                 <div className="Embed-author">
-                    <Slate editor={authorEditor} value={props.embed.author} onChange={(v) => props.onChange({author: v})}>
-                        <Editable className="Embed-author-text" style={{flexGrow: 1}} renderLeaf={renderLeaf} decorate={decorateWithAuthorPlaceholder} />
-                    </Slate>
+                    <EditorField className="Embed-author-text" placeholder="Author" style={{flexGrow: 1}} value={props.embed.author} onChange={(v) => props.onChange({author: v})} />
                 </div>
-                <Slate editor={titleEditor} value={props.embed.title} onChange={(v) => props.onChange({title: v})}>
-                    <Editable className="Embed-title" renderLeaf={renderLeaf} decorate={decorateWithTitlePlaceholder} />
-                </Slate>
-                <Slate editor={descriptionEditor} value={props.embed.description} onChange={(v) => props.onChange({description: v})}>
-                    <Editable className="Embed-description" renderLeaf={renderLeaf} decorate={decorateWithDescriptionPlaceholder} />
-                </Slate>
+                <EditorField className="Embed-title" placeholder="Title" value={props.embed.title} onChange={(v) => props.onChange({title: v})} />
+                <EditorField className="Embed-description" placeholder="Description" value={props.embed.description} onChange={(v) => props.onChange({description: v})} />
                 <div className="Embed-fields">
                     {fields}
                 </div>
                 <div className="EmbedEditor-field-actions">
-                    <a href="#">Add field</a> <a href="#">Add inline field</a>
+                    <button onClick={() => addField(false)}>Add field</button> <button onClick={() => addField(true)}>Add inline field</button>
                 </div>
                 <div className="Embed-media">
                     <Button theme="secondary icon"><OutlinedAddPhotoAlternativeIcon /></Button>
@@ -146,9 +137,7 @@ export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Part
                     <Button theme="secondary icon"><OutlinedAddPhotoAlternativeIcon /></Button>
                 </div>
                 <div className="Embed-footer">
-                    <Slate editor={footerEditor} value={props.embed.footer} onChange={(v) => props.onChange({footer: v})}>
-                        <Editable className="Embed-footer-text" style={{flexGrow: 1}} renderLeaf={renderLeaf} decorate={decorateWithFooterPlaceholder} />
-                    </Slate>
+                    <EditorField className="Embed-footer-text" placeholder="Footer" style={{flexGrow: 1}} value={props.embed.footer} onChange={(v) => props.onChange({footer: v})} />
                 </div>
             </div>
         </div>
