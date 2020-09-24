@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {DependencyList, useEffect, useState} from "react";
 
+export function objectContains(container: any, what: any) {
+    return Object.keys(what).every(x => container[x] === what[x]);
+}
+
 export function generateRandomHexString(length?: number) {
     let arr = new Uint8Array(length || 8);
     window.crypto.getRandomValues(arr);
