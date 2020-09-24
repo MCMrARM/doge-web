@@ -1,18 +1,55 @@
-.EmbedEditor .Embed-thumbnail, .EmbedEditor .Embed-media
-  display: flex
-  width: 32px
-  height: 28px
-  color: rgba(255, 255, 255, 0.33)
-  align-items: center
-  justify-content: center
+.EmbedEditor .Embed-media img, .EmbedEditor .Embed-media .EmbedEditor-imageDarken
+  max-width: 400px
+  max-height: 300px
+  border-radius: 4px
 
-.EmbedEditor .Embed-thumbnail svg, .EmbedEditor .Embed-media svg
+.EmbedEditor .Embed-thumbnail img, .EmbedEditor .Embed-thumbnail .EmbedEditor-imageDarken
+  max-width: 80px
+  max-height: 80px
+  border-radius: 4px
+
+.EmbedEditor-imageContainer
+  display: flex
+  align-items: flex-start
+
+.EmbedEditor-image
+  position: relative
+  min-width: 32px
+  min-height: 32px
+  cursor: pointer
+
+.EmbedEditor-addImage
+  color: rgba(255, 255, 255, 0.33) !important
+
+.EmbedEditor-addImage svg
   display: block
   width: 24px
   height: 24px
 
-.EmbedEditor .Embed-thumbnail:hover svg, .EmbedEditor .Embed-media:hover svg, .EmbedEditor-field-actions button:hover
+.EmbedEditor-addImage:hover svg, .EmbedEditor-field-actions button:hover
   color: rgba(255, 255, 255, 0.5)
+
+.EmbedEditor-image:hover .EmbedEditor-imageDarken
+  content: ''
+  position: absolute
+  left: 0
+  top: 0
+  bottom: 0
+  right: 0
+  background: rgba(0, 0, 0, 0.2)
+  pointer-events: none
+
+.EmbedEditor-removeImage
+  position: absolute
+  right: 8px
+  top: 8px
+  width: 24px
+  height: 24px
+  display: none
+  pointer-events: none
+
+.EmbedEditor-image:hover .EmbedEditor-removeImage
+  display: block
 
 .EmbedEditor-field-actions button
   display: inline

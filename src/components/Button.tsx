@@ -6,6 +6,6 @@ export const Button = forwardRef((props: {
 } & React.InputHTMLAttributes<HTMLButtonElement>, ref: React.Ref<HTMLButtonElement>) => {
     let themeClasses = ["Button", ...props.theme?.split(" ").map(x => "Button-" + x) || []];
     return (
-        <button ref={ref} {...props} type="button" className={themeClasses.join(" ")} />
+        <button ref={ref} {...props} type="button" className={themeClasses.join(" ") + (props.className ? ` ${props.className}` : "")} />
     );
 });

@@ -7,7 +7,7 @@ import {CloseIcon, OutlinedAddPhotoAlternativeIcon} from "../../icons/Icons";
 import {Button} from "../../components/Button";
 import {EmbedField, EmbedInfo, splitFields} from "./Embed";
 import {RenderLeafProps} from "slate-react/dist/components/editable";
-import {objectContains} from "../../util";
+import {objectContains, useObjectURL} from "../../util";
 
 export type EditableEmbedField = {
     name: SlateNode[],
@@ -18,6 +18,8 @@ export type EditableEmbed = {
     title: SlateNode[],
     description: SlateNode[],
     footer: SlateNode[],
+    image: File|null,
+    thumbnail: File|null,
     fields: EditableEmbedField[],
     fieldLayout: {inline: boolean}[]
 };
@@ -38,8 +40,23 @@ export function convertEditableEmbed(embed: EditableEmbed): EmbedInfo {
         fields: fields,
         footer: serialize(embed.footer) ? {
             text: serialize(embed.footer)
+        } : undefined,
+        image: embed.image ? {
+            url: "attachment://embedimage.png"
+        } : undefined,
+        thumbnail: embed.thumbnail ? {
+            url: "attachment://embed-thumbnail.png"
         } : undefined
     };
+}
+
+export function extractEmbedFiles(embed: EditableEmbed): [string, File][] {
+    const ret: [string, File][] = [];
+    if (embed.image)
+        ret.push(["embedimage.png", embed.image]);
+    if (embed.thumbnail)
+        ret.push(["embed-thumbnail.png", embed.thumbnail]);
+    return ret;
 }
 
 const createDefaultNodes = (): SlateNode[] => [{ children: [{ text: '' }] }];
@@ -48,6 +65,8 @@ export const defaultEmbed: EditableEmbed = {
     title: createDefaultNodes(),
     description: createDefaultNodes(),
     footer: createDefaultNodes(),
+    image: null,
+    thumbnail: null,
     fields: [],
     fieldLayout: []
 };
@@ -85,6 +104,34 @@ function EditorField(props: {className: string, style?: CSSProperties, value: Sl
         <Slate editor={editor} value={props.value} onChange={props.onChange}>
             <Editable className={props.className} style={props.style} renderLeaf={renderLeaf} decorate={decorate} />
         </Slate>
+    );
+}
+
+function EditorImageField(props: {file: File|null, setFile: (file: File|null) => void}) {
+    const objectURL = useObjectURL(props.file);
+    const selectPic = () => {
+        let input = document.createElement("input");
+        input.type = "file";
+        input.onchange = () => {
+            if (!input.files || input.files.length === 0)
+                return;
+            props.setFile(input.files[0]);
+        };
+        input.click();
+    };
+    if (objectURL) {
+        return (
+            <div className="EmbedEditor-image" onClick={() => props.setFile(null)}>
+                <img src={objectURL} alt="" />
+                <div className="EmbedEditor-imageDarken" />
+                <CloseIcon className="EmbedEditor-removeImage" />
+            </div>
+        );
+    }
+    return (
+        <Button theme="secondary icon" className="EmbedEditor-addImage" onClick={selectPic}>
+            <OutlinedAddPhotoAlternativeIcon />
+        </Button>
     );
 }
 
@@ -137,11 +184,11 @@ export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Part
                 <div className="EmbedEditor-field-actions">
                     <button onClick={() => addField(false)}>Add field</button> <button onClick={() => addField(true)}>Add inline field</button>
                 </div>
-                <div className="Embed-media">
-                    <Button theme="secondary icon"><OutlinedAddPhotoAlternativeIcon /></Button>
+                <div className="Embed-media EmbedEditor-imageContainer">
+                    <EditorImageField file={props.embed.image} setFile={(v) => props.onChange({image: v})} />
                 </div>
-                <div className="Embed-thumbnail">
-                    <Button theme="secondary icon"><OutlinedAddPhotoAlternativeIcon /></Button>
+                <div className="Embed-thumbnail EmbedEditor-imageContainer">
+                    <EditorImageField file={props.embed.thumbnail} setFile={(v) => props.onChange({thumbnail: v})} />
                 </div>
                 <div className="Embed-footer">
                     <EditorField className="Embed-footer-text" placeholder="Footer" style={{flexGrow: 1}} value={props.embed.footer} onChange={(v) => props.onChange({footer: v})} />
