@@ -9,10 +9,12 @@ export type EmbedField = {
 export type EmbedInfo = {
     author?: {
         name?: string,
+        url?: string,
         icon_url?: string,
     },
     title?: string,
     description?: string,
+    url?: string,
     fields?: EmbedField[],
     image?: {
         url?: string

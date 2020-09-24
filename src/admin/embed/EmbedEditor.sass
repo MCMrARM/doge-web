@@ -124,6 +124,7 @@
   background: rgba(255, 255, 255, 0.1)
 
 .Embed-inlineOptions
+  position: relative
   color: rgba(255, 255, 255, 0.33)
   opacity: 0
   transition: opacity 0.2s
@@ -134,6 +135,26 @@
 
 .Embed-inlineOption
   cursor: pointer
+  outline: none
 
 .Embed-inlineOption:hover
   color: rgba(255, 255, 255, 0.5)
+
+.Embed-inlineOption.active
+  color: rgba(255, 255, 255, 1)
+
+.EmbedEditor-UrlDropDown
+  position: absolute
+  right: -100px
+  top: 100%
+  width: 200px
+  z-index: 100
+
+.EmbedEditor-UrlDropDown input
+  background: none
+  border: none
+  color: white
+  outline: none
+  padding: 8px
+  background: #202225
+  border-radius: 4px

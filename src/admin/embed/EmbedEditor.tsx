@@ -1,4 +1,13 @@
-import React, {CSSProperties, ReactNode, useCallback, useMemo} from "react";
+import React, {
+    CSSProperties,
+    ReactNode,
+    FocusEvent,
+    useCallback,
+    useMemo,
+    useRef,
+    useState,
+    KeyboardEvent
+} from "react";
 import {createEditor, Editor, Node as SlateNode, NodeEntry, Range} from 'slate';
 import {Slate, Editable, withReact, DefaultLeaf} from 'slate-react';
 import "./Embed.sass";
@@ -15,8 +24,10 @@ export type EditableEmbedField = {
 };
 export type EditableEmbed = {
     author: SlateNode[],
+    authorUrl: string,
     title: SlateNode[],
     description: SlateNode[],
+    url: string,
     footer: SlateNode[],
     image: File|null,
     thumbnail: File|null,
@@ -36,10 +47,12 @@ export function convertEditableEmbed(embed: EditableEmbed): EmbedInfo {
     return {
         author: serialize(embed.author) ? {
             name: serialize(embed.author),
+            url: embed.authorUrl || undefined,
             icon_url: embed.authorImage ? "attachment://embed-author.png" : undefined
         } : undefined,
         title: serialize(embed.title),
         description: serialize(embed.description),
+        url: embed.url || undefined,
         fields: fields,
         footer: serialize(embed.footer) ? {
             text: serialize(embed.footer),
@@ -70,8 +83,10 @@ export function extractEmbedFiles(embed: EditableEmbed): [string, File][] {
 const createDefaultNodes = (): SlateNode[] => [{ children: [{ text: '' }] }];
 export const defaultEmbed: EditableEmbed = {
     author: createDefaultNodes(),
+    authorUrl: "",
     title: createDefaultNodes(),
     description: createDefaultNodes(),
+    url: "",
     footer: createDefaultNodes(),
     image: null,
     thumbnail: null,
@@ -148,6 +163,18 @@ function EditorImageField(props: {file: File|null, setFile: (file: File|null) =>
     );
 }
 
+function UrlDropDown(props: {url: string, setUrl: (value: string) => void, onCloseRequested: () => void}) {
+    const onKeyDown = (ev: KeyboardEvent) => {
+        if (ev.key === "Enter" || ev.key === "Escape")
+            props.onCloseRequested();
+    };
+    return (
+        <div className="EmbedEditor-UrlDropDown">
+            <input autoFocus={true} type="text" placeholder="Enter URL here" value={props.url} onChange={(e) => props.setUrl(e.target.value)} onKeyDown={onKeyDown} />
+        </div>
+    )
+}
+
 export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Partial<EditableEmbed>) => void}) {
     const fieldRows = splitFields(props.embed.fieldLayout || []);
 
@@ -183,21 +210,31 @@ export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Part
         })
     ));
 
+    const authorInlineOptions = useRef<HTMLDivElement>(null);
+    const [authorUrlBoxOpen, setAuthorUrlBoxOpen] = useState(false);
+    const [urlBoxOpen, setUrlBoxOpen] = useState(false);
+    const onInlineOptionsBlur = (ev: FocusEvent<HTMLElement>, setBoxOpenCb: (v: boolean) => void) => {
+        if (!ev.currentTarget.contains(ev.relatedTarget as Node))
+            setBoxOpenCb(false);
+    };
+
     return (
         <div className="Embed-wrapper">
             <div className="Embed Embed-withThumbnail EmbedEditor">
                 <div className="Embed-author Embed-inlineOptions-ctr">
                     <EditorImageField className="EmbedEditor-image-small Embed-author-icon" file={props.embed.authorImage} setFile={(v) => props.onChange({authorImage: v})} noAddButton={true} />
                     <EditorField className="Embed-author-text" placeholder="Author" style={{flexGrow: 1}} value={props.embed.author} onChange={(v) => props.onChange({author: v})} />
-                    <div className="Embed-inlineOptions">
-                        <OutlinedAddPhotoAlternativeIcon className="Embed-inlineOption" onClick={() => selectPic((v) => props.onChange({authorImage: v}))} />
-                        <LinkIcon className="Embed-inlineOption"  />
+                    <div ref={authorInlineOptions} className="Embed-inlineOptions" onBlur={(ev) => onInlineOptionsBlur(ev, setAuthorUrlBoxOpen)}>
+                        <OutlinedAddPhotoAlternativeIcon className="Embed-inlineOption" onClick={() => selectPic((v) => props.onChange({authorImage: v}))} tabIndex={0} />
+                        <LinkIcon className={"Embed-inlineOption" + (authorUrlBoxOpen ? " active" : "")} onClick={() => setAuthorUrlBoxOpen(!authorUrlBoxOpen)} tabIndex={0} />
+                        {authorUrlBoxOpen && <UrlDropDown url={props.embed.authorUrl} setUrl={(v) => props.onChange({authorUrl: v})} onCloseRequested={() => setAuthorUrlBoxOpen(false)} />}
                     </div>
                 </div>
                 <div className="Embed-title Embed-inlineOptions-ctr">
                     <EditorField className="" style={{flexGrow: 1}} placeholder="Title" value={props.embed.title} onChange={(v) => props.onChange({title: v})} />
-                    <div className="Embed-inlineOptions">
-                        <LinkIcon className="Embed-inlineOption"  />
+                    <div className="Embed-inlineOptions" onBlur={(ev) => onInlineOptionsBlur(ev, setUrlBoxOpen)}>
+                        <LinkIcon className={"Embed-inlineOption" + (urlBoxOpen ? " active" : "")} onClick={() => setUrlBoxOpen(!urlBoxOpen)} tabIndex={0} />
+                        {urlBoxOpen && <UrlDropDown url={props.embed.url} setUrl={(v) => props.onChange({url: v})} onCloseRequested={() => setUrlBoxOpen(false)} />}
                     </div>
                 </div>
                 <EditorField className="Embed-description" placeholder="Description" value={props.embed.description} onChange={(v) => props.onChange({description: v})} />
@@ -217,8 +254,7 @@ export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Part
                     <EditorImageField className="EmbedEditor-image-small Embed-footer-icon" file={props.embed.footerImage} setFile={(v) => props.onChange({footerImage: v})} noAddButton={true} />
                     <EditorField className="Embed-footer-text" placeholder="Footer" style={{flexGrow: 1}} value={props.embed.footer} onChange={(v) => props.onChange({footer: v})} />
                     <div className="Embed-inlineOptions">
-                        <OutlinedAddPhotoAlternativeIcon className="Embed-inlineOption" onClick={() => selectPic((v) => props.onChange({footerImage: v}))} />
-                        <LinkIcon className="Embed-inlineOption" />
+                        <OutlinedAddPhotoAlternativeIcon className="Embed-inlineOption" onClick={() => selectPic((v) => props.onChange({footerImage: v}))} tabIndex={0} />
                     </div>
                 </div>
             </div>
