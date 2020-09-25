@@ -85,7 +85,7 @@ function EmbedListEntryEditor(props: {className?: string, msg?: ApiEmbed, onEdit
     const [attachments, setAttachments] = useState<File[]>([]);
     const save = async () => {
         const contentText = content.map(n => SlateNode.string(n)).join('\n');
-        const finalEmbed = convertEditableEmbed(embed);
+        const finalEmbed = hasEmbed ? convertEditableEmbed(embed) : {};
         try {
             let message;
             if (props.msg) {
