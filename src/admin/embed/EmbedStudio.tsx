@@ -10,7 +10,6 @@ import "./EmbedStudio.sass";
 import {
     convertEditableEmbed,
     convertToEditableEmbed,
-    EditableEmbed,
     EmbedEditor,
     extractEmbedFiles,
     selectPic
@@ -65,17 +64,17 @@ export function EmbedColorIconDropdown(props: {value: number, onChange: (value: 
     }, [visible]);
     let onBlur = (ev: FocusEvent) => { if (!ev.currentTarget.contains(ev.relatedTarget as Node)) setVisible(false) };
     return (
-        <>
-            <Button theme="colorless icon" className="EmbedListEntry-embedOption" onClick={() => setVisible(true)} ><PaletteIcon className="Icon" /></Button>
+        <div className="ColorIconDropdown EmbedListEntry-embedOption">
+            <Button theme="colorless icon" onClick={() => setVisible(true)} ><PaletteIcon className="Icon" /></Button>
             {visible && <div ref={dropdownRef} className="ColorIconDropdown-dropdown" tabIndex={0} onBlur={onBlur}>
                 <HsvColorPicker hsv={hsv} onHsvChange={(hsv) => { props.onChange(colorArrToNumber(hsvToRgb(...hsv))); setHsv(hsv); }} />
                 <Input type={"text"} value={text !== null ? text : colorIntToHexString(props.value)} onValueChange={setText} onBlur={() => setTextField(null)} style={{marginTop: "16px", fontSize: "12px", padding: "4px 8px"}} />
             </div>}
-        </>
+        </div>
     );
 }
 
-function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void}) {
+function EmbedListEntryEditor(props: {className?: string, msg?: ApiEmbed, onEditFinish: () => void}) {
     const dispatch = useDispatch();
     const channel = useContext(ChannelContext);
     const [hasEmbed, setHasEmbed] = useState(Object.keys(props.msg?.embed || {}).length > 0);
@@ -137,7 +136,7 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
     };
 
     return (
-        <div className="EmbedListEntry EmbedListEntry-editMode">
+        <div className={"EmbedListEntry EmbedListEntry-editMode" + (props.className ? ` ${props.className}` : "")}>
             <EditorField className="EmbedListEntry-messageContent" value={content} onChange={setContent} placeholder="Message" />
             {hasEmbed && (
                 <div className="EmbedListEntry-embed">
@@ -161,7 +160,7 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
                 ))}
             </div>
             <div className="EmbedListEntry-buttons">
-                <Button onClick={save}>Done</Button>
+                <Button onClick={save}>{props.msg ? "Done" : "Send"}</Button>
                 {props.msg && <Button theme="secondary" style={{marginLeft: "4px"}} onClick={props.onEditFinish}>Cancel</Button>}
                 {props.msg && <Button theme="secondary" style={{marginLeft: "4px"}} onClick={doDelete}>Delete</Button>}
                 {!hasEmbed && <Button theme="secondary" style={{marginLeft: "4px"}} onClick={() => setHasEmbed(true)}>Add embed</Button>}
@@ -191,7 +190,7 @@ export function ChannelEmbedManager(props: {server: ServerInfo, channelId: strin
     return (
         <ChannelContext.Provider value={{guildId: props.server.id, channelId: props.channelId}}>
             {rEmbedList?.list && <EmbedList embeds={rEmbedList?.list} />}
-            <EmbedListEntryEditor onEditFinish={() => {}} />
+            <EmbedListEntryEditor className="new" onEditFinish={() => {}} />
         </ChannelContext.Provider>
     );
 }
@@ -204,7 +203,7 @@ export function EmbedStudio(props: {server: ServerInfo}) {
     return (
         <div className="AdminPage EmbedStudio">
             <h1 className="AdminPage-Title"><DashboardIcon className="Icon"/> Embed Studio</h1>
-            <ChannelDropdown value={channelId} server={props.server} onValueChanged={(chan) => history.replace(`/${props.server.id}/admin/embed/${chan}`)} noneOption={"Select a channel"} />
+            <ChannelDropdown value={channelId} server={props.server} onValueChanged={(chan) => history.replace(`/${props.server.id}/admin/embed/${chan}`)} style={{marginBottom: "16px"}} noneOption={"Select a channel"} />
             {channelId && <ChannelEmbedManager server={props.server} channelId={channelId} />}
         </div>
     );
