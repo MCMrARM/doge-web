@@ -1,5 +1,5 @@
 import React, {FocusEvent, useContext, useEffect, useRef, useState} from "react";
-import {DashboardIcon, PaletteIcon} from "../../icons/Icons";
+import {CloseIcon, DashboardIcon, PaletteIcon} from "../../icons/Icons";
 import {Embed} from "./Embed";
 import {ServerInfo} from "../../shared/ServerInfo";
 import {useDispatch, useSelector} from "react-redux";
@@ -57,7 +57,7 @@ export function EmbedColorIconDropdown(props: {value: number, onChange: (value: 
     let onBlur = (ev: FocusEvent) => { if (!ev.currentTarget.contains(ev.relatedTarget as Node)) setVisible(false) };
     return (
         <>
-            <Button theme="colorless icon" style={{alignSelf: "stretch", marginLeft: "8px"}} className="EmbedListEntry-embedOption" onClick={() => setVisible(true)} ><PaletteIcon className="Icon" style={{width: "16px", height: "16px"}} /></Button>
+            <Button theme="colorless icon" className="EmbedListEntry-embedOption" onClick={() => setVisible(true)} ><PaletteIcon className="Icon" /></Button>
             {visible && <div ref={dropdownRef} className="ColorIconDropdown-dropdown" tabIndex={0} onBlur={onBlur}>
                 <HsvColorPicker hsv={hsv} onHsvChange={(hsv) => { props.onChange(colorArrToNumber(hsvToRgb(...hsv))); setHsv(hsv); }} />
                 <Input type={"text"} value={text !== null ? text : colorIntToHexString(props.value)} onValueChange={setText} onBlur={() => setTextField(null)} style={{marginTop: "16px", fontSize: "12px", padding: "4px 8px"}} />
@@ -110,6 +110,7 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
                 <div className="EmbedListEntry-embed">
                     <EmbedEditor embed={embed} onChange={changes => setEmbed(embed => objectContains(embed, changes) ? embed : {...embed, ...changes})} />
                     <div className="EmbedListEntry-embedOptions">
+                        <Button theme="colorless icon" className="EmbedListEntry-embedOption" onClick={() => setHasEmbed(false)} ><CloseIcon className="Icon" /></Button>
                         <EmbedColorIconDropdown value={embed.color !== undefined ? embed.color : 0x202225} onChange={(v) => setEmbed({...embed, color: v})} />
                     </div>
                 </div>
@@ -117,7 +118,6 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
             <Button onClick={save}>Done</Button>
             {props.msg && <Button onClick={doDelete}>Delete</Button>}
             {!hasEmbed && <Button onClick={() => setHasEmbed(true)}>Add embed</Button>}
-            {hasEmbed && <Button onClick={() => setHasEmbed(false)}>Remove embed</Button>}
         </div>
     );
 }
@@ -148,7 +148,7 @@ export function ChannelEmbedManager(props: {server: ServerInfo, channelId: strin
 }
 
 export function EmbedStudio(props: {server: ServerInfo}) {
-    const [channelId, setChannelId] = useState<string|null>(null);
+    const [channelId, setChannelId] = useState<string|null>("450728088977014785");
     return (
         <div className="AdminPage EmbedStudio">
             <h1 className="AdminPage-Title"><DashboardIcon className="Icon"/> Embed Studio</h1>
