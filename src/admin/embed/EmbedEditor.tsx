@@ -61,7 +61,7 @@ export function convertEditableEmbed(embed: EditableEmbed): EmbedInfo {
         title: serialize(embed.title),
         description: serialize(embed.description),
         url: embed.url || undefined,
-        fields: fields,
+        fields: fields.length > 0 ? fields : undefined,
         footer: serialize(embed.footer) ? {
             text: serialize(embed.footer),
             icon_url: embed.footerImage ? "attachment://embed-footer.png" : undefined
