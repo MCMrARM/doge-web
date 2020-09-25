@@ -42,8 +42,8 @@ export function convertToEditableEmbed(embed: EmbedInfo): EditableEmbed {
         thumbnail: embed.thumbnail?.url || null,
         authorImage: embed.author?.icon_url || null,
         footerImage: embed.footer?.icon_url || null,
-        fields: [],
-        fieldLayout: [],
+        fields: embed.fields?.map(x => ({name: deserialize(x.name), value: deserialize(x.value)})) || [],
+        fieldLayout: embed.fields?.map(x => ({inline: x.inline || false})) || [],
         color: embed.color
     };
 }
