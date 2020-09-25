@@ -4,7 +4,7 @@ import {Embed} from "./Embed";
 import {ServerInfo} from "../../shared/ServerInfo";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../store";
-import {fetchEmbedList, selectEmbedListById, updateEmbed} from "../redux/embedList";
+import {fetchEmbedList, selectEmbedListById, updateEmbed, deleteEmbed} from "../redux/embedList";
 import {ApiEmbed} from "../../shared/ApiEmbed";
 import "./EmbedStudio.sass";
 import {convertEditableEmbed, convertToEditableEmbed, EmbedEditor, extractEmbedFiles} from "./EmbedEditor";
@@ -25,7 +25,7 @@ function EmbedListEntry(props: {msg: ApiEmbed}) {
     return (
         <div className="EmbedListEntry" onClick={() => setEditing(true)}>
             <span className="EmbedListEntry-messageContent">{props.msg.content}</span>
-            <Embed embed={props.msg.embed}/>
+            {props.msg.embed && <Embed embed={props.msg.embed}/>}
         </div>
     );
 }
@@ -40,20 +40,27 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
         const contentText = content.map(n => SlateNode.string(n)).join('\n');
         const finalEmbed = convertEditableEmbed(embed);
         try {
-            let messageId;
+            let message;
             if (props.msg) {
-                let result = await ApiClient.instance.updateEmbed(channel.guildId, channel.channelId, props.msg.id, contentText, finalEmbed);
-                messageId = result.id;
+                message = await ApiClient.instance.updateEmbed(channel.guildId, channel.channelId, props.msg.id, contentText, finalEmbed);
             } else {
-                let result = await ApiClient.instance.postEmbed(channel.guildId, channel.channelId, contentText, finalEmbed, extractEmbedFiles(embed));
-                messageId = result.id;
+                message = await ApiClient.instance.postEmbed(channel.guildId, channel.channelId, contentText, finalEmbed, extractEmbedFiles(embed));
             }
             dispatch(updateEmbed({
-                guildId: channel.guildId, channelId: channel.channelId, messageId: messageId, embed: {
-                    id: messageId,
-                    embed: finalEmbed,
-                    content: contentText
-                }
+                guildId: channel.guildId, channelId: channel.channelId, messageId: message.id, embed: message
+            }));
+            props.onEditFinish();
+        } catch (e) {
+            alert(e);
+        }
+    };
+    const doDelete = async () => {
+        if (!props.msg)
+            return;
+        try {
+            await ApiClient.instance.deleteEmbed(channel.guildId, channel.channelId, props.msg.id);
+            dispatch(deleteEmbed({
+                guildId: channel.guildId, channelId: channel.channelId, messageId: props.msg.id
             }));
             props.onEditFinish();
         } catch (e) {
@@ -65,6 +72,7 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
             <EditorField className="EmbedListEntry-messageContent" value={content} onChange={setContent} placeholder="Message" />
             {hasEmbed && <EmbedEditor embed={embed} onChange={changes => setEmbed(embed => objectContains(embed, changes) ? embed : {...embed, ...changes})}/>}
             <Button onClick={save}>Done</Button>
+            {props.msg && <Button onClick={doDelete}>Delete</Button>}
             {!hasEmbed && <Button onClick={() => setHasEmbed(true)}>Add embed</Button>}
             {hasEmbed && <Button onClick={() => setHasEmbed(false)}>Remove embed</Button>}
         </div>

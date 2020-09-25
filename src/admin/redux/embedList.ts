@@ -36,6 +36,14 @@ const embedListSlice = createSlice({
             } else {
                 entity.list.push(action.payload.embed);
             }
+        },
+        deleteEmbed(state, action: PayloadAction<{guildId: string, channelId: string, messageId: string}>) {
+            const entity = state.entities[action.payload.guildId + "-" + action.payload.channelId];
+            if (!entity || !entity.list)
+                return;
+            const idx = entity.list.findIndex(x => x.id === action.payload.messageId);
+            if (idx !== -1)
+                entity.list = [...entity.list.slice(0, idx), ...entity.list.slice(idx + 1)];
         }
     },
     extraReducers: builder => {
@@ -54,7 +62,8 @@ const embedListSlice = createSlice({
 export default embedListSlice.reducer
 
 export const {
-    updateEmbed
+    updateEmbed,
+    deleteEmbed
 } = embedListSlice.actions;
 
 const {

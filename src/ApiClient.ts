@@ -47,8 +47,9 @@ export default class ApiClient {
         return appJwt ? {"Authorization": "Bearer " + appJwt} : {};
     }
 
-    private async get(url: string): Promise<any> {
+    private async retrieve(method: string, url: string): Promise<any> {
         return (await fetch(this.baseUrl + url, {
+            method: method,
             headers: {
                 ...this.createAuthHeader()
             }
@@ -71,8 +72,10 @@ export default class ApiClient {
             .then(this.jsonErrorTransform));
     }
 
+    private get = this.retrieve.bind(this, "GET");
     private post = this.upload.bind(this, "POST");
     private patch = this.upload.bind(this, "PATCH");
+    private delete = this.retrieve.bind(this, "DELETE");
 
     async getServerInfo(serverId: string): Promise<ServerInfo> {
         return this.get(`servers/${encodeURIComponent(serverId)}/admin/server`);
@@ -89,7 +92,7 @@ export default class ApiClient {
         return this.post(`servers/${encodeURIComponent(serverId)}/admin/config`, JSON.stringify(configJson));
     }
 
-    async postEmbed(serverId: string, channelId: string, content: string, embed: object, attachments: [string, File][]): Promise<{id: string}> {
+    async postEmbed(serverId: string, channelId: string, content: string, embed: object, attachments: [string, File][]): Promise<ApiEmbed> {
         const formData = new FormData();
         formData.append("content", content);
         formData.append("embed", JSON.stringify(embed));
@@ -98,11 +101,15 @@ export default class ApiClient {
         return this.post(`servers/${encodeURIComponent(serverId)}/admin/embeds/${encodeURIComponent(channelId)}`, formData, "undefined");
     }
 
-    async updateEmbed(serverId: string, channelId: string, messageId: string, content: string, embed: object): Promise<{id: string}> {
+    async updateEmbed(serverId: string, channelId: string, messageId: string, content: string, embed: object): Promise<ApiEmbed> {
         return this.patch(`servers/${encodeURIComponent(serverId)}/admin/embeds/${encodeURIComponent(channelId)}/${encodeURIComponent(messageId)}`, JSON.stringify({
             content: content,
             embed: embed
         }));
+    }
+
+    async deleteEmbed(serverId: string, channelId: string, messageId: string): Promise<void> {
+        return this.delete(`servers/${encodeURIComponent(serverId)}/admin/embeds/${encodeURIComponent(channelId)}/${encodeURIComponent(messageId)}`);
     }
 
     async getEmbedList(serverId: string, channelId: string): Promise<ApiEmbed[]> {
