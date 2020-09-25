@@ -109,7 +109,7 @@ export const defaultEmbed: EditableEmbed = {
     color: 0
 };
 
-function selectPic(callback: (file: File) => void) {
+export function selectPic(callback: (file: File) => void) {
     let input = document.createElement("input");
     input.type = "file";
     input.onchange = () => {

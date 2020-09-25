@@ -7,7 +7,7 @@ import {RootState} from "../../store";
 import {fetchEmbedList, selectEmbedListById, updateEmbed, deleteEmbed} from "../redux/embedList";
 import {ApiEmbed} from "../../shared/ApiEmbed";
 import "./EmbedStudio.sass";
-import {convertEditableEmbed, convertToEditableEmbed, EmbedEditor, extractEmbedFiles} from "./EmbedEditor";
+import {convertEditableEmbed, convertToEditableEmbed, EmbedEditor, extractEmbedFiles, selectPic} from "./EmbedEditor";
 import {objectContains} from "../../util";
 import {Button} from "../../components/Button";
 import {EditorField} from "./SlateUtils";
@@ -72,6 +72,7 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
     const [hasEmbed, setHasEmbed] = useState(Object.keys(props.msg?.embed || {}).length > 0);
     const [embed, setEmbed] = useState(convertToEditableEmbed(props.msg?.embed || {}));
     const [content, setContent] = useState<SlateNode[]>([{ children: [{ text: props.msg?.content || "" }] }]);
+    const [attachments, setAttachments] = useState<File[]>([]);
     const save = async () => {
         const contentText = content.map(n => SlateNode.string(n)).join('\n');
         const finalEmbed = convertEditableEmbed(embed);
@@ -80,7 +81,7 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
             if (props.msg) {
                 message = await ApiClient.instance.updateEmbed(channel.guildId, channel.channelId, props.msg.id, contentText, finalEmbed);
             } else {
-                message = await ApiClient.instance.postEmbed(channel.guildId, channel.channelId, contentText, finalEmbed, extractEmbedFiles(embed));
+                message = await ApiClient.instance.postEmbed(channel.guildId, channel.channelId, contentText, finalEmbed, extractEmbedFiles(embed).concat(attachments.map(x => [x.name, x])));
             }
             dispatch(updateEmbed({
                 guildId: channel.guildId, channelId: channel.channelId, messageId: message.id, embed: message
@@ -103,6 +104,8 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
             alert(e);
         }
     };
+    const requestAddFile = () => selectPic(file => setAttachments([...attachments, file]));
+    const removeEmbed = (idx: number) =>  setAttachments([...attachments.slice(0, idx), ...attachments.slice(idx + 1)]);
     return (
         <div className="EmbedListEntry EmbedListEntry-editMode">
             <EditorField className="EmbedListEntry-messageContent" value={content} onChange={setContent} placeholder="Message" />
@@ -115,9 +118,17 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
                     </div>
                 </div>
             )}
-            <Button onClick={save}>Done</Button>
-            {props.msg && <Button theme="secondary" style={{marginLeft: "4px"}} onClick={doDelete}>Delete</Button>}
-            {!hasEmbed && <Button theme="secondary" style={{marginLeft: "4px"}} onClick={() => setHasEmbed(true)}>Add embed</Button>}
+            <div className="EmbedListEntry-attachments">
+                {attachments.map((x, i) => (
+                    <div className="EmbedListEntry-attachment" key={"attachment-" + i}>{x.name} <Button theme="secondary icon" className="EmbedListEntry-attachment-delete" onClick={() => setHasEmbed(false)} ><CloseIcon className="Icon" onClick={() => removeEmbed(i)} /></Button></div>
+                ))}
+            </div>
+            <div className="EmbedListEntry-buttons">
+                <Button onClick={save}>Done</Button>
+                {props.msg && <Button theme="secondary" style={{marginLeft: "4px"}} onClick={doDelete}>Delete</Button>}
+                {!hasEmbed && <Button theme="secondary" style={{marginLeft: "4px"}} onClick={() => setHasEmbed(true)}>Add embed</Button>}
+                {!props.msg && <Button theme="secondary" style={{marginLeft: "4px"}} onClick={requestAddFile}>Attach file</Button>}
+            </div>
         </div>
     );
 }
