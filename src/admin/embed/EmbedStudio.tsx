@@ -27,6 +27,7 @@ import rgbToHsv from "rgb-hsv";
 import hsvToRgb from "hsv-rgb";
 import {colorArrToNumber, colorIntToHexString, colorIntToArr, parseColor} from "../../colorUtil";
 import {TextArea} from "../../components/TextArea";
+import {useRouteMatch, useHistory} from "react-router-dom";
 
 const ChannelContext = React.createContext<{guildId: string, channelId: string}>({guildId: "", channelId: ""});
 
@@ -196,11 +197,14 @@ export function ChannelEmbedManager(props: {server: ServerInfo, channelId: strin
 }
 
 export function EmbedStudio(props: {server: ServerInfo}) {
-    const [channelId, setChannelId] = useState<string|null>("450728088977014785");
+    const history = useHistory();
+    const routeMatch = useRouteMatch<{channel: string}>("/:id/admin/embed/:channel");
+    const channelId = routeMatch?.params.channel || null;
+
     return (
         <div className="AdminPage EmbedStudio">
             <h1 className="AdminPage-Title"><DashboardIcon className="Icon"/> Embed Studio</h1>
-            <ChannelDropdown value={channelId} server={props.server} onValueChanged={setChannelId} noneOption={"Select a channel"} />
+            <ChannelDropdown value={channelId} server={props.server} onValueChanged={(chan) => history.replace(`/${props.server.id}/admin/embed/${chan}`)} noneOption={"Select a channel"} />
             {channelId && <ChannelEmbedManager server={props.server} channelId={channelId} />}
         </div>
     );
