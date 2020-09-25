@@ -20,10 +20,10 @@ export type EditableEmbed = {
     description: SlateNode[],
     url: string,
     footer: SlateNode[],
-    image: File|null,
-    thumbnail: File|null,
-    authorImage: File|null,
-    footerImage: File|null,
+    image: File|string|null,
+    thumbnail: File|string|null,
+    authorImage: File|string|null,
+    footerImage: File|string|null,
     fields: EditableEmbedField[],
     fieldLayout: {inline: boolean}[],
     color?: number
@@ -38,10 +38,10 @@ export function convertToEditableEmbed(embed: EmbedInfo): EditableEmbed {
         description: deserialize(embed.description),
         url: embed.url || "",
         footer: deserialize(embed.footer?.text),
-        image: null,
-        thumbnail: null,
-        authorImage: null,
-        footerImage: null,
+        image: embed.image?.url || null,
+        thumbnail: embed.thumbnail?.url || null,
+        authorImage: embed.author?.icon_url || null,
+        footerImage: embed.footer?.icon_url || null,
         fields: [],
         fieldLayout: [],
         color: embed.color
@@ -59,7 +59,7 @@ export function convertEditableEmbed(embed: EditableEmbed): EmbedInfo {
         author: serialize(embed.author) ? {
             name: serialize(embed.author),
             url: embed.authorUrl || undefined,
-            icon_url: embed.authorImage ? "attachment://embed-author.png" : undefined
+            icon_url: embed.authorImage instanceof File ? "attachment://embed-author.png" : (embed.authorImage || undefined)
         } : undefined,
         title: serialize(embed.title),
         description: serialize(embed.description),
@@ -67,13 +67,13 @@ export function convertEditableEmbed(embed: EditableEmbed): EmbedInfo {
         fields: fields.length > 0 ? fields : undefined,
         footer: serialize(embed.footer) ? {
             text: serialize(embed.footer),
-            icon_url: embed.footerImage ? "attachment://embed-footer.png" : undefined
+            icon_url: embed.footerImage instanceof File ? "attachment://embed-footer.png" : (embed.footerImage || undefined)
         } : undefined,
         image: embed.image ? {
-            url: "attachment://embed-image.png"
+            url: embed.image instanceof File ? "attachment://embed-image.png" : (embed.image || undefined)
         } : undefined,
         thumbnail: embed.thumbnail ? {
-            url: "attachment://embed-thumbnail.png"
+            url: embed.thumbnail instanceof File ? "attachment://embed-thumbnail.png" : (embed.thumbnail || undefined)
         } : undefined,
         color: embed.color
     };
@@ -81,13 +81,13 @@ export function convertEditableEmbed(embed: EditableEmbed): EmbedInfo {
 
 export function extractEmbedFiles(embed: EditableEmbed): [string, File][] {
     const ret: [string, File][] = [];
-    if (embed.image)
+    if (embed.image instanceof File)
         ret.push(["embed-image.png", embed.image]);
-    if (embed.thumbnail)
+    if (embed.thumbnail instanceof File)
         ret.push(["embed-thumbnail.png", embed.thumbnail]);
-    if (embed.authorImage)
+    if (embed.authorImage instanceof File)
         ret.push(["embed-author.png", embed.authorImage]);
-    if (embed.footerImage)
+    if (embed.footerImage instanceof File)
         ret.push(["embed-footer.png", embed.footerImage]);
     return ret;
 }
@@ -120,8 +120,10 @@ function selectPic(callback: (file: File) => void) {
     input.click();
 }
 
-function EditorImageField(props: {file: File|null, setFile: (file: File|null) => void, className?: string, noAddButton?: boolean}) {
-    const objectURL = useObjectURL(props.file);
+function EditorImageField(props: {file: File|string|null, setFile: (file: File|string|null) => void, className?: string, noAddButton?: boolean}) {
+    let objectURL = useObjectURL(props.file instanceof File ? props.file : null);
+    if (typeof props.file === 'string')
+        objectURL = props.file;
     if (objectURL) {
         return (
             <div className={"EmbedEditor-image" + (props.className ? ` ${props.className}` : "")} onClick={() => props.setFile(null)}>
