@@ -1,13 +1,20 @@
 import React, {FocusEvent, useContext, useEffect, useRef, useState} from "react";
-import {CloseIcon, DashboardIcon, PaletteIcon} from "../../icons/Icons";
-import {Embed} from "./Embed";
+import {CloseIcon, CodeIcon, DashboardIcon, PaletteIcon} from "../../icons/Icons";
+import {Embed, EmbedInfo} from "./Embed";
 import {ServerInfo} from "../../shared/ServerInfo";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../store";
 import {fetchEmbedList, selectEmbedListById, updateEmbed, deleteEmbed} from "../redux/embedList";
 import {ApiEmbed} from "../../shared/ApiEmbed";
 import "./EmbedStudio.sass";
-import {convertEditableEmbed, convertToEditableEmbed, EmbedEditor, extractEmbedFiles, selectPic} from "./EmbedEditor";
+import {
+    convertEditableEmbed,
+    convertToEditableEmbed,
+    EditableEmbed,
+    EmbedEditor,
+    extractEmbedFiles,
+    selectPic
+} from "./EmbedEditor";
 import {objectContains} from "../../util";
 import {Button} from "../../components/Button";
 import {EditorField} from "./SlateUtils";
@@ -19,6 +26,7 @@ import {Input} from "../../components/Input";
 import rgbToHsv from "rgb-hsv";
 import hsvToRgb from "hsv-rgb";
 import {colorArrToNumber, colorIntToHexString, colorIntToArr, parseColor} from "../../colorUtil";
+import {TextArea} from "../../components/TextArea";
 
 const ChannelContext = React.createContext<{guildId: string, channelId: string}>({guildId: "", channelId: ""});
 
@@ -70,6 +78,8 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
     const dispatch = useDispatch();
     const channel = useContext(ChannelContext);
     const [hasEmbed, setHasEmbed] = useState(Object.keys(props.msg?.embed || {}).length > 0);
+    const [embedCodeView, setEmbedCodeView] = useState(false);
+    let [currentEmbedCode, setCurrentEmbedCode] = useState<[string|null, string|null, string?]>([null, null]);
     const [embed, setEmbed] = useState(convertToEditableEmbed(props.msg?.embed || {}));
     const [content, setContent] = useState<SlateNode[]>([{ children: [{ text: props.msg?.content || "" }] }]);
     const [attachments, setAttachments] = useState<File[]>([]);
@@ -106,6 +116,25 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
     };
     const requestAddFile = () => selectPic(file => setAttachments([...attachments, file]));
     const removeEmbed = (idx: number) =>  setAttachments([...attachments.slice(0, idx), ...attachments.slice(idx + 1)]);
+
+    let embedBaseJson = "";
+    if (embedCodeView) {
+        embedBaseJson = JSON.stringify(convertEditableEmbed(embed));
+        if (currentEmbedCode[0] !== embedBaseJson)
+            currentEmbedCode = [embedBaseJson, embedBaseJson];
+    }
+    const trySetEmbedCode = (value: string) => {
+        let embed;
+        try {
+            embed = convertToEditableEmbed(JSON.parse(value) as EmbedInfo);
+        } catch (e) {
+            setCurrentEmbedCode([embedBaseJson, value, e.toLocaleString()]);
+            return;
+        }
+        setEmbed(embed);
+        setCurrentEmbedCode([embedBaseJson, value]);
+    };
+
     return (
         <div className="EmbedListEntry EmbedListEntry-editMode">
             <EditorField className="EmbedListEntry-messageContent" value={content} onChange={setContent} placeholder="Message" />
@@ -115,7 +144,14 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
                     <div className="EmbedListEntry-embedOptions">
                         <Button theme="colorless icon" className="EmbedListEntry-embedOption" onClick={() => setHasEmbed(false)} ><CloseIcon className="Icon" /></Button>
                         <EmbedColorIconDropdown value={embed.color !== undefined ? embed.color : 0x202225} onChange={(v) => setEmbed({...embed, color: v})} />
+                        <Button theme="colorless icon" className="EmbedListEntry-embedOption" onClick={() => setEmbedCodeView(!embedCodeView)} ><CodeIcon className="Icon" /></Button>
                     </div>
+                    {embedCodeView && (
+                        <div className="EmbedListEntry-codeEdit">
+                            <TextArea value={currentEmbedCode[1] || ""} onChange={trySetEmbedCode} />
+                            <div className="EmbedListEntry-codeEditError">{currentEmbedCode[2]}</div>
+                        </div>
+                    )}
                 </div>
             )}
             <div className="EmbedListEntry-attachments">
