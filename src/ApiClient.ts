@@ -56,12 +56,12 @@ export default class ApiClient {
             .then(this.jsonErrorTransform));
     }
 
-    private async post(url: string, body: BodyInit, contentType: string = "application/json"): Promise<any> {
+    private async upload(method: string, url: string, body: BodyInit, contentType: string = "application/json"): Promise<any> {
         let contentTypeHeader = {};
         if (contentType !== "undefined")
             contentTypeHeader = {"Content-Type": contentType};
         return (await fetch(this.baseUrl + url, {
-            method: "POST",
+            method: method,
             body: body,
             headers: {
                 ...contentTypeHeader,
@@ -70,6 +70,9 @@ export default class ApiClient {
         })
             .then(this.jsonErrorTransform));
     }
+
+    private post = this.upload.bind(this, "POST");
+    private patch = this.upload.bind(this, "PATCH");
 
     async getServerInfo(serverId: string): Promise<ServerInfo> {
         return this.get(`servers/${encodeURIComponent(serverId)}/admin/server`);
@@ -86,13 +89,20 @@ export default class ApiClient {
         return this.post(`servers/${encodeURIComponent(serverId)}/admin/config`, JSON.stringify(configJson));
     }
 
-    async postEmbed(serverId: string, channelId: string, content: string, embed: string, attachments: [string, File][]): Promise<void> {
+    async postEmbed(serverId: string, channelId: string, content: string, embed: object, attachments: [string, File][]): Promise<{id: string}> {
         const formData = new FormData();
         formData.append("content", content);
-        formData.append("embed", embed);
+        formData.append("embed", JSON.stringify(embed));
         for (const attachment of attachments)
             formData.append("attachment", attachment[1], attachment[0]);
         return this.post(`servers/${encodeURIComponent(serverId)}/admin/embeds/${encodeURIComponent(channelId)}`, formData, "undefined");
+    }
+
+    async updateEmbed(serverId: string, channelId: string, messageId: string, content: string, embed: object): Promise<{id: string}> {
+        return this.patch(`servers/${encodeURIComponent(serverId)}/admin/embeds/${encodeURIComponent(channelId)}/${encodeURIComponent(messageId)}`, JSON.stringify({
+            content: content,
+            embed: embed
+        }));
     }
 
     async getEmbedList(serverId: string, channelId: string): Promise<ApiEmbed[]> {

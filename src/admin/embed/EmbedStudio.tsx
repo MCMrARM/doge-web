@@ -1,17 +1,20 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {DashboardIcon} from "../../icons/Icons";
 import {Embed} from "./Embed";
 import {ServerInfo} from "../../shared/ServerInfo";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../store";
-import {fetchEmbedList, selectEmbedListById} from "../redux/embedList";
+import {fetchEmbedList, selectEmbedListById, updateEmbed} from "../redux/embedList";
 import {ApiEmbed} from "../../shared/ApiEmbed";
 import "./EmbedStudio.sass";
-import {convertToEditableEmbed, EmbedEditor} from "./EmbedEditor";
+import {convertEditableEmbed, convertToEditableEmbed, EmbedEditor, extractEmbedFiles} from "./EmbedEditor";
 import {objectContains} from "../../util";
 import {Button} from "../../components/Button";
 import {EditorField} from "./SlateUtils";
 import {Node as SlateNode} from 'slate';
+import ApiClient from "../../ApiClient";
+
+const ChannelContext = React.createContext<{guildId: string, channelId: string}>({guildId: "", channelId: ""});
 
 function EmbedListEntry(props: {msg: ApiEmbed}) {
     const [editing, setEditing] = useState(false);
@@ -25,14 +28,41 @@ function EmbedListEntry(props: {msg: ApiEmbed}) {
         </div>
     );
 }
-function EmbedListEntryEditor(props: {msg: ApiEmbed, onEditFinish: () => void}) {
-    const [embed, setEmbed] = useState(convertToEditableEmbed(props.msg.embed));
-    const [content, setContent] = useState<SlateNode[]>([{ children: [{ text: props.msg.content }] }]);
+
+function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void}) {
+    const dispatch = useDispatch();
+    const channel = useContext(ChannelContext);
+    const [embed, setEmbed] = useState(convertToEditableEmbed(props.msg?.embed || {}));
+    const [content, setContent] = useState<SlateNode[]>([{ children: [{ text: props.msg?.content || "" }] }]);
+    const save = async () => {
+        const contentText = content.map(n => SlateNode.string(n)).join('\n');
+        const finalEmbed = convertEditableEmbed(embed);
+        try {
+            let messageId;
+            if (props.msg) {
+                let result = await ApiClient.instance.updateEmbed(channel.guildId, channel.channelId, props.msg.id, contentText, finalEmbed);
+                messageId = result.id;
+            } else {
+                let result = await ApiClient.instance.postEmbed(channel.guildId, channel.channelId, contentText, finalEmbed, extractEmbedFiles(embed));
+                messageId = result.id;
+            }
+            dispatch(updateEmbed({
+                guildId: channel.guildId, channelId: channel.channelId, messageId: messageId, embed: {
+                    id: messageId,
+                    embed: finalEmbed,
+                    content: contentText
+                }
+            }));
+            props.onEditFinish();
+        } catch (e) {
+            alert(e);
+        }
+    };
     return (
         <div className="EmbedListEntry EmbedListEntry-editMode" onChange={props.onEditFinish}>
             <EditorField className="EmbedListEntry-messageContent" value={content} onChange={setContent} placeholder="Message" />
             <EmbedEditor embed={embed} onChange={changes => setEmbed(embed => objectContains(embed, changes) ? embed : {...embed, ...changes})}/>
-            <Button onClick={props.onEditFinish}>Done</Button>
+            <Button onClick={save}>Done</Button>
         </div>
     );
 }
@@ -58,7 +88,10 @@ export function EmbedStudio(props: {server: ServerInfo}) {
     return (
         <div className="AdminPage">
             <h1 className="AdminPage-Title"><DashboardIcon className="Icon"/> Embed Studio</h1>
-            {rEmbedList?.list && <EmbedList embeds={rEmbedList?.list} />}
+            <ChannelContext.Provider value={{guildId: props.server.id, channelId: "450728088977014785"}}>
+                {rEmbedList?.list && <EmbedList embeds={rEmbedList?.list} />}
+            <EmbedListEntryEditor onEditFinish={() => {}} />
+            </ChannelContext.Provider>
         </div>
     );
 }
