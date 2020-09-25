@@ -33,6 +33,7 @@ function EmbedListEntry(props: {msg: ApiEmbed}) {
 function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void}) {
     const dispatch = useDispatch();
     const channel = useContext(ChannelContext);
+    const [hasEmbed, setHasEmbed] = useState(Object.keys(props.msg?.embed || {}).length > 0);
     const [embed, setEmbed] = useState(convertToEditableEmbed(props.msg?.embed || {}));
     const [content, setContent] = useState<SlateNode[]>([{ children: [{ text: props.msg?.content || "" }] }]);
     const save = async () => {
@@ -62,8 +63,10 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
     return (
         <div className="EmbedListEntry EmbedListEntry-editMode" onChange={props.onEditFinish}>
             <EditorField className="EmbedListEntry-messageContent" value={content} onChange={setContent} placeholder="Message" />
-            <EmbedEditor embed={embed} onChange={changes => setEmbed(embed => objectContains(embed, changes) ? embed : {...embed, ...changes})}/>
+            {hasEmbed && <EmbedEditor embed={embed} onChange={changes => setEmbed(embed => objectContains(embed, changes) ? embed : {...embed, ...changes})}/>}
             <Button onClick={save}>Done</Button>
+            {!hasEmbed && <Button onClick={() => setHasEmbed(true)}>Add embed</Button>}
+            {hasEmbed && <Button onClick={() => setHasEmbed(false)}>Remove embed</Button>}
         </div>
     );
 }
