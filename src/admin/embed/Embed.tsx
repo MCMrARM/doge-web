@@ -71,7 +71,7 @@ export function Embed(props: {embed: EmbedInfo}) {
                 {props.embed.image?.url && <img src={props.embed.image.url} alt="" className="Embed-media" />}
                 {props.embed.thumbnail?.url && <img src={props.embed.thumbnail.url} alt="" className="Embed-thumbnail" />}
                 {props.embed.footer?.text && <div className="Embed-footer">
-                    <img src={props.embed.footer.icon_url} alt="" className="Embed-footer-icon" />
+                    {props.embed.footer.icon_url && <img src={props.embed.footer.icon_url} alt="" className="Embed-footer-icon" />}
                     <span className="Embed-footer-text">{props.embed.footer.text}</span>
                 </div>}
             </div>
