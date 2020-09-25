@@ -1,22 +1,12 @@
-import React, {
-    CSSProperties,
-    ReactNode,
-    FocusEvent,
-    useCallback,
-    useMemo,
-    useRef,
-    useState,
-    KeyboardEvent
-} from "react";
-import {createEditor, Editor, Node as SlateNode, NodeEntry, Range} from 'slate';
-import {Slate, Editable, withReact, DefaultLeaf} from 'slate-react';
+import React, {FocusEvent, useRef, useState, KeyboardEvent} from "react";
+import {Node as SlateNode} from 'slate';
 import "./Embed.sass";
 import "./EmbedEditor.sass";
 import {CloseIcon, LinkIcon, OutlinedAddPhotoAlternativeIcon} from "../../icons/Icons";
 import {Button} from "../../components/Button";
 import {EmbedField, EmbedInfo, splitFields} from "./Embed";
-import {RenderLeafProps} from "slate-react/dist/components/editable";
 import {objectContains, useObjectURL} from "../../util";
+import {EditorField} from "./SlateUtils";
 
 export type EditableEmbedField = {
     name: SlateNode[],
@@ -36,6 +26,24 @@ export type EditableEmbed = {
     fields: EditableEmbedField[],
     fieldLayout: {inline: boolean}[]
 };
+
+export function convertToEditableEmbed(embed: EmbedInfo): EditableEmbed {
+    const deserialize = (text: string|undefined): SlateNode[] => [{ children: [{ text: text || "" }] }];
+    return {
+        author: deserialize(embed.author?.name),
+        authorUrl: embed.author?.url || "",
+        title: deserialize(embed.title),
+        description: deserialize(embed.description),
+        url: embed.url || "",
+        footer: deserialize(embed.footer?.text),
+        image: null,
+        thumbnail: null,
+        authorImage: null,
+        footerImage: null,
+        fields: [],
+        fieldLayout: []
+    };
+}
 
 export function convertEditableEmbed(embed: EditableEmbed): EmbedInfo {
     const serialize = (nodes: SlateNode[]) => nodes.map(n => SlateNode.string(n)).join('\n') || undefined;
@@ -95,42 +103,6 @@ export const defaultEmbed: EditableEmbed = {
     fields: [],
     fieldLayout: []
 };
-
-function useDecorateWithPlaceholder(placeholder: string) {
-    return useCallback((entry: NodeEntry): Range[] => {
-        if (!Editor.isEditor(entry[0]) || Array.from(SlateNode.texts(entry[0])).length !== 1 || SlateNode.string(entry[0]) !== '')
-            return [];
-        const start = Editor.start(entry[0], []);
-        return [{
-            "$placeholder": true,
-            placeholder,
-            anchor: start,
-            focus: start
-        }];
-    }, [placeholder]);
-}
-
-const renderLeaf = (props: RenderLeafProps) => {
-    let children = props.children;
-    if (props.leaf["$placeholder"])
-        children = (
-            <React.Fragment>
-                <span contentEditable={false} className={"EmbedEditor-placeholder"}>{props.leaf.placeholder as ReactNode}</span>
-                {props.children}
-            </React.Fragment>
-        );
-    return <DefaultLeaf {...props} children={children} />;
-};
-
-function EditorField(props: {className: string, style?: CSSProperties, value: SlateNode[], placeholder: string, onChange: (value: SlateNode[]) => void}) {
-    const editor = useMemo(() => withReact(createEditor()), []);
-    const decorate = useDecorateWithPlaceholder(props.placeholder);
-    return (
-        <Slate editor={editor} value={props.value} onChange={props.onChange}>
-            <Editable className={props.className} style={props.style} renderLeaf={renderLeaf} decorate={decorate} />
-        </Slate>
-    );
-}
 
 function selectPic(callback: (file: File) => void) {
     let input = document.createElement("input");

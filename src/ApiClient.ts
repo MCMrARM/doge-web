@@ -1,6 +1,7 @@
 import {BotConfig} from "./shared/BotConfig";
 import {ServerInfo} from "./shared/ServerInfo";
 import {LeaderboardData} from "./shared/LeaderboardData";
+import {ApiEmbed} from "./shared/ApiEmbed";
 
 export class ResponseError extends Error {}
 
@@ -55,12 +56,15 @@ export default class ApiClient {
             .then(this.jsonErrorTransform));
     }
 
-    private async post(url: string, body: File|string, contentType: string = "application/json"): Promise<any> {
+    private async post(url: string, body: BodyInit, contentType: string = "application/json"): Promise<any> {
+        let contentTypeHeader = {};
+        if (contentType !== "undefined")
+            contentTypeHeader = {"Content-Type": contentType};
         return (await fetch(this.baseUrl + url, {
             method: "POST",
             body: body,
             headers: {
-                "Content-Type": contentType,
+                ...contentTypeHeader,
                 ...this.createAuthHeader()
             }
         })
@@ -80,6 +84,19 @@ export default class ApiClient {
         if (Object.keys(images).length > 0)
             configJson = {...config, "$images": images};
         return this.post(`servers/${encodeURIComponent(serverId)}/admin/config`, JSON.stringify(configJson));
+    }
+
+    async postEmbed(serverId: string, channelId: string, content: string, embed: string, attachments: [string, File][]): Promise<void> {
+        const formData = new FormData();
+        formData.append("content", content);
+        formData.append("embed", embed);
+        for (const attachment of attachments)
+            formData.append("attachment", attachment[1], attachment[0]);
+        return this.post(`servers/${encodeURIComponent(serverId)}/admin/embeds/${encodeURIComponent(channelId)}`, formData, "undefined");
+    }
+
+    async getEmbedList(serverId: string, channelId: string): Promise<ApiEmbed[]> {
+        return this.get(`servers/${encodeURIComponent(serverId)}/admin/embeds/${encodeURIComponent(channelId)}`);
     }
 
     async getLeaderboard(serverId: string, after?: number|string): Promise<LeaderboardData> {

@@ -26,6 +26,7 @@ import {WelcomeCard} from "./WelcomeCard";
 import {Permissions} from "./Permissions";
 import {PersistentRoles} from "./PersistentRoles";
 import {JsonEdit} from "./JsonEdit";
+import {EmbedStudio} from "./embed/EmbedStudio";
 
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -139,6 +140,7 @@ export function AdminMain() {
                     <nav>
                         <ul>
                             <li><NavLink to={`/${id}/admin`} exact={true}><DashboardIcon className="Icon"/> Overview</NavLink></li>
+                            <li><NavLink to={`/${id}/admin/embed`}><DashboardIcon className="Icon"/> Embed Studio</NavLink></li>
                             <li><NavLink to={`/${id}/admin/xp`}><EmojiEventsIcon className="Icon"/> Leveling</NavLink></li>
                             <li><NavLink to={`/${id}/admin/log`}><HistoryEduIcon className="Icon"/> Logging</NavLink></li>
                             <li><NavLink to={`/${id}/admin/welcome`}><ContactIcon className="Icon"/> Welcome Card</NavLink></li>
@@ -185,6 +187,9 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
     return (
         <div>
             <Switch>
+                <Route path="/:id/admin/embed">
+                    <EmbedStudio server={props.server} />
+                </Route>
                 <Route path="/:id/admin/xp">
                     <Leveling server={props.server} config={editableConfig.xp} onChange={(changes) => setEditableConfig({...editableConfig, xp: {...editableConfig!.xp, ...changes}})} />
                 </Route>
