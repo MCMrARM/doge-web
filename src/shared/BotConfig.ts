@@ -31,7 +31,8 @@ export type WelcomeBannerConfig = {
 };
 export type WelcomeConfig = {
     banner: WelcomeBannerConfig|null,
-    channel: string|null
+    channel: string|null,
+    message?: string
 };
 export type PermissionGroup = {
     id?: string,

@@ -30,6 +30,7 @@ import {ColorPicker} from "../components/ColorPicker";
 import {ColorInput} from "../components/ColorInput";
 import {ImageUploadButton} from "./components/ImageUploadButton";
 import {useObjectURL} from "../util";
+import {TextArea} from "../components/TextArea";
 
 const availableFonts = new Map(Object.entries({
     "Roboto": "Roboto",
@@ -123,6 +124,9 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
             <h1 className="AdminPage-Title"><ContactIcon className="Icon"/> Welcome Card Settings</h1>
             <TwoColumnOption title="Welcome Card Channel" description="A message with the welcome card will be sent to the specified channel">
                 <ChannelDropdown value={props.config.channel} server={props.server} noneOption="Disabled" onValueChanged={(v) => props.onChange({channel: v})} />
+            </TwoColumnOption>
+            <TwoColumnOption title="Welcome Message" description="This message will be sent. {user} and {server} are available.">
+                <TextArea value={props.config.message} onChange={(v) => props.onChange({message: v})} />
             </TwoColumnOption>
             <div className="WelcomeCard-editor">
                 <div style={{flexGrow: 1}}>
