@@ -116,8 +116,8 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
                 </div>
             )}
             <Button onClick={save}>Done</Button>
-            {props.msg && <Button onClick={doDelete}>Delete</Button>}
-            {!hasEmbed && <Button onClick={() => setHasEmbed(true)}>Add embed</Button>}
+            {props.msg && <Button theme="secondary" style={{marginLeft: "4px"}} onClick={doDelete}>Delete</Button>}
+            {!hasEmbed && <Button theme="secondary" style={{marginLeft: "4px"}} onClick={() => setHasEmbed(true)}>Add embed</Button>}
         </div>
     );
 }
