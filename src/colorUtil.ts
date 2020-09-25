@@ -2,6 +2,14 @@ export function colorIntToHexString(color: number) {
     return "#" + color.toString(16).padStart(6, "0");
 }
 
+export function colorIntToArr(rgb: number): [number, number, number] {
+    return [(rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, (rgb >> 0) & 0xFF];
+}
+
+export function colorArrToNumber(arr: [number, number, number]): number {
+    return (arr[0] << 16) | (arr[1] << 8) | arr[2];
+}
+
 export function colorArrToString(arr: number[]) {
     if (arr.length > 3 && arr[3] !== 1) {
         return "rgba(" + arr[0].toString() + "," + arr[1].toString() + "," + arr[2].toString() + "," + arr[3].toString() + ")";

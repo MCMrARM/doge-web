@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useState} from "react";
-import {DashboardIcon} from "../../icons/Icons";
+import React, {FocusEvent, useContext, useEffect, useRef, useState} from "react";
+import {DashboardIcon, PaletteIcon} from "../../icons/Icons";
 import {Embed} from "./Embed";
 import {ServerInfo} from "../../shared/ServerInfo";
 import {useDispatch, useSelector} from "react-redux";
@@ -14,6 +14,11 @@ import {EditorField} from "./SlateUtils";
 import {Node as SlateNode} from 'slate';
 import ApiClient from "../../ApiClient";
 import {ChannelDropdown} from "../components/ChannelDropdown";
+import {HsvColorPicker} from "../../components/ColorPicker";
+import {Input} from "../../components/Input";
+import rgbToHsv from "rgb-hsv";
+import hsvToRgb from "hsv-rgb";
+import {colorArrToNumber, colorIntToHexString, colorIntToArr, parseColor} from "../../colorUtil";
 
 const ChannelContext = React.createContext<{guildId: string, channelId: string}>({guildId: "", channelId: ""});
 
@@ -27,6 +32,37 @@ function EmbedListEntry(props: {msg: ApiEmbed}) {
             <span className="EmbedListEntry-messageContent">{props.msg.content}</span>
             {props.msg.embed && <Embed embed={props.msg.embed}/>}
         </div>
+    );
+}
+
+export function EmbedColorIconDropdown(props: {value: number, onChange: (value: number) => void}) {
+    let [hsv, setHsv] = useState<[number, number, number]>([0, 0, 0]);
+    const hsvRgb = hsvToRgb(...hsv);
+    if (colorArrToNumber(hsvRgb) !== props.value)
+        hsv = rgbToHsv(...colorIntToArr(props.value));
+
+    const [visible, setVisible] = useState(false);
+    const [text, setTextField] = useState<string|null>(null);
+    const setText = (text: string) => {
+        const c = parseColor(text);
+        if (c !== null && c[3] === 255)
+            props.onChange(colorArrToNumber([c[0], c[1], c[2]]));
+        setTextField(text);
+    };
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (visible)
+            dropdownRef.current?.focus();
+    }, [visible]);
+    let onBlur = (ev: FocusEvent) => { if (!ev.currentTarget.contains(ev.relatedTarget as Node)) setVisible(false) };
+    return (
+        <>
+            <Button theme="colorless icon" style={{alignSelf: "stretch", marginLeft: "8px"}} className="EmbedListEntry-embedOption" onClick={() => setVisible(true)} ><PaletteIcon className="Icon" style={{width: "16px", height: "16px"}} /></Button>
+            {visible && <div ref={dropdownRef} className="ColorIconDropdown-dropdown" tabIndex={0} onBlur={onBlur}>
+                <HsvColorPicker hsv={hsv} onHsvChange={(hsv) => { props.onChange(colorArrToNumber(hsvToRgb(...hsv))); setHsv(hsv); }} />
+                <Input type={"text"} value={text !== null ? text : colorIntToHexString(props.value)} onValueChange={setText} onBlur={() => setTextField(null)} style={{marginTop: "16px", fontSize: "12px", padding: "4px 8px"}} />
+            </div>}
+        </>
     );
 }
 
@@ -68,9 +104,16 @@ function EmbedListEntryEditor(props: {msg?: ApiEmbed, onEditFinish: () => void})
         }
     };
     return (
-        <div className="EmbedListEntry EmbedListEntry-editMode" onChange={props.onEditFinish}>
+        <div className="EmbedListEntry EmbedListEntry-editMode">
             <EditorField className="EmbedListEntry-messageContent" value={content} onChange={setContent} placeholder="Message" />
-            {hasEmbed && <EmbedEditor embed={embed} onChange={changes => setEmbed(embed => objectContains(embed, changes) ? embed : {...embed, ...changes})}/>}
+            {hasEmbed && (
+                <div className="EmbedListEntry-embed">
+                    <EmbedEditor embed={embed} onChange={changes => setEmbed(embed => objectContains(embed, changes) ? embed : {...embed, ...changes})} />
+                    <div className="EmbedListEntry-embedOptions">
+                        <EmbedColorIconDropdown value={embed.color !== undefined ? embed.color : 0x202225} onChange={(v) => setEmbed({...embed, color: v})} />
+                    </div>
+                </div>
+            )}
             <Button onClick={save}>Done</Button>
             {props.msg && <Button onClick={doDelete}>Delete</Button>}
             {!hasEmbed && <Button onClick={() => setHasEmbed(true)}>Add embed</Button>}
@@ -107,7 +150,7 @@ export function ChannelEmbedManager(props: {server: ServerInfo, channelId: strin
 export function EmbedStudio(props: {server: ServerInfo}) {
     const [channelId, setChannelId] = useState<string|null>(null);
     return (
-        <div className="AdminPage">
+        <div className="AdminPage EmbedStudio">
             <h1 className="AdminPage-Title"><DashboardIcon className="Icon"/> Embed Studio</h1>
             <ChannelDropdown value={channelId} server={props.server} onValueChanged={setChannelId} noneOption={"Select a channel"} />
             {channelId && <ChannelEmbedManager server={props.server} channelId={channelId} />}

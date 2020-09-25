@@ -1,5 +1,6 @@
 import React from "react";
 import "./Embed.sass";
+import {colorIntToHexString} from "../../colorUtil";
 
 export type EmbedField = {
     name: string,
@@ -25,7 +26,8 @@ export type EmbedInfo = {
     footer?: {
         text?: string,
         icon_url?: string
-    }
+    },
+    color?: number
 }
 
 export function splitFields<T extends {inline?: boolean}>(fields: T[]): T[][] {
@@ -50,7 +52,7 @@ export function Embed(props: {embed: EmbedInfo}) {
 
     return (
         <div className="Embed-wrapper">
-            <div className="Embed Embed-withThumbnail">
+            <div className="Embed Embed-withThumbnail" style={{borderLeftColor: props.embed.color ? colorIntToHexString(props.embed.color) : undefined}}>
                 {props.embed.author?.name && <div className="Embed-author">
                     {props.embed.author.icon_url && <img src={props.embed.author.icon_url} alt="" className="Embed-author-icon" />}
                     <span className="Embed-author-text">{props.embed.author.name}</span>

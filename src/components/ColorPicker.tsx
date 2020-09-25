@@ -41,7 +41,7 @@ export function HsvColorPicker(props: {hsv: [number, number, number], onHsvChang
         if (huePointerDown) {
             let bbox = e.currentTarget.getBoundingClientRect();
             let hue = e.clientX - bbox.left;
-            props.onHsvChange([clamp(hue / e.currentTarget.scrollWidth * 360, 0, 360), props.hsv[1], props.hsv[2]]);
+            props.onHsvChange([clamp(hue / e.currentTarget.scrollWidth * 360, 0, 360 - 0.00000000001), props.hsv[1], props.hsv[2]]);
         }
     };
 

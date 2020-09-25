@@ -7,6 +7,7 @@ import {Button} from "../../components/Button";
 import {EmbedField, EmbedInfo, splitFields} from "./Embed";
 import {objectContains, useObjectURL} from "../../util";
 import {EditorField} from "./SlateUtils";
+import {colorIntToHexString} from "../../colorUtil";
 
 export type EditableEmbedField = {
     name: SlateNode[],
@@ -24,7 +25,8 @@ export type EditableEmbed = {
     authorImage: File|null,
     footerImage: File|null,
     fields: EditableEmbedField[],
-    fieldLayout: {inline: boolean}[]
+    fieldLayout: {inline: boolean}[],
+    color?: number
 };
 
 export function convertToEditableEmbed(embed: EmbedInfo): EditableEmbed {
@@ -41,7 +43,8 @@ export function convertToEditableEmbed(embed: EmbedInfo): EditableEmbed {
         authorImage: null,
         footerImage: null,
         fields: [],
-        fieldLayout: []
+        fieldLayout: [],
+        color: embed.color
     };
 }
 
@@ -71,7 +74,8 @@ export function convertEditableEmbed(embed: EditableEmbed): EmbedInfo {
         } : undefined,
         thumbnail: embed.thumbnail ? {
             url: "attachment://embed-thumbnail.png"
-        } : undefined
+        } : undefined,
+        color: embed.color
     };
 }
 
@@ -101,7 +105,8 @@ export const defaultEmbed: EditableEmbed = {
     authorImage: null,
     footerImage: null,
     fields: [],
-    fieldLayout: []
+    fieldLayout: [],
+    color: 0
 };
 
 function selectPic(callback: (file: File) => void) {
@@ -192,7 +197,7 @@ export function EmbedEditor(props: {embed: EditableEmbed, onChange: (embed: Part
 
     return (
         <div className="Embed-wrapper">
-            <div className="Embed Embed-withThumbnail EmbedEditor">
+            <div className="Embed Embed-withThumbnail EmbedEditor" style={{borderLeftColor: props.embed.color ? colorIntToHexString(props.embed.color) : undefined}}>
                 <div className="Embed-author Embed-inlineOptions-ctr">
                     <EditorImageField className="EmbedEditor-image-small Embed-author-icon" file={props.embed.authorImage} setFile={(v) => props.onChange({authorImage: v})} noAddButton={true} />
                     <EditorField className="Embed-author-text" placeholder="Author" style={{flexGrow: 1}} value={props.embed.author} onChange={(v) => props.onChange({author: v})} />
