@@ -173,7 +173,7 @@ function EmbedListEntryEditor(props: {className?: string, msg?: ApiEmbed, onEdit
 function EmbedList(props: {embeds: ApiEmbed[]}) {
     return (
         <div>
-            {props.embeds.map(x => <EmbedListEntry msg={x} />)}
+            {props.embeds.map(x => <EmbedListEntry key={x.id} msg={x} />)}
         </div>
     );
 }
