@@ -13,6 +13,7 @@ import {Button} from "../../components/Button";
 import {EditorField} from "./SlateUtils";
 import {Node as SlateNode} from 'slate';
 import ApiClient from "../../ApiClient";
+import {ChannelDropdown} from "../components/ChannelDropdown";
 
 const ChannelContext = React.createContext<{guildId: string, channelId: string}>({guildId: "", channelId: ""});
 
@@ -75,23 +76,30 @@ function EmbedList(props: {embeds: ApiEmbed[]}) {
     );
 }
 
-export function EmbedStudio(props: {server: ServerInfo}) {
+export function ChannelEmbedManager(props: {server: ServerInfo, channelId: string}) {
     const dispatch = useDispatch();
 
-    const rEmbedList = useSelector((s: RootState) => selectEmbedListById(s, props.server.id, "450728088977014785"));
+    const rEmbedList = useSelector((s: RootState) => selectEmbedListById(s, props.server.id, props.channelId));
     useEffect(() => {
         if (!(rEmbedList?.state))
-            dispatch(fetchEmbedList({guildId: props.server.id, channelId: "450728088977014785"}));
-    }, [dispatch, rEmbedList, props.server.id]);
+            dispatch(fetchEmbedList({guildId: props.server.id, channelId: props.channelId}));
+    }, [dispatch, rEmbedList, props.server.id, props.channelId]);
 
+    return (
+        <ChannelContext.Provider value={{guildId: props.server.id, channelId: props.channelId}}>
+            {rEmbedList?.list && <EmbedList embeds={rEmbedList?.list} />}
+            <EmbedListEntryEditor onEditFinish={() => {}} />
+        </ChannelContext.Provider>
+    );
+}
 
+export function EmbedStudio(props: {server: ServerInfo}) {
+    const [channelId, setChannelId] = useState<string|null>(null);
     return (
         <div className="AdminPage">
             <h1 className="AdminPage-Title"><DashboardIcon className="Icon"/> Embed Studio</h1>
-            <ChannelContext.Provider value={{guildId: props.server.id, channelId: "450728088977014785"}}>
-                {rEmbedList?.list && <EmbedList embeds={rEmbedList?.list} />}
-            <EmbedListEntryEditor onEditFinish={() => {}} />
-            </ChannelContext.Provider>
+            <ChannelDropdown value={channelId} server={props.server} onValueChanged={setChannelId} noneOption={"Select a channel"} />
+            {channelId && <ChannelEmbedManager server={props.server} channelId={channelId} />}
         </div>
     );
 }
