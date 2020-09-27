@@ -147,7 +147,7 @@ export function AdminMain() {
                 <div className="AdminMain-mobileHeader">
                     <div className="AdminName-sidebar-server" onClick={() => setServerListExpanded(!serverListExpanded)} onBlur={onServerListBlur} tabIndex={0}>
                         <img src={rServerInfo?.info?.iconUrl || "data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E"} alt="Server Icon" className="Icon" />
-                        {rServerInfo?.info?.name || "Server"}
+                        <span className="AdminName-mobileHeader-serverName">{rServerInfo?.info?.name || "Server"}</span>
                         <ExpandMoreIcon className="AdminName-sidebar-server-expand" />
                         {serverListDropDown}
                     </div>

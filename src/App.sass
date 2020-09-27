@@ -23,6 +23,11 @@ $topNavHeight: 65px
     font-size: 26px
     vertical-align: top
 
+.App-topNav-main
+    display: flex
+    align-items: center
+    flex-grow: 1
+
 .App-topNav-menu
     padding: 0
     margin: 0 20px
@@ -107,8 +112,58 @@ $topNavHeight: 65px
 .TopBarUserSection-menu li > a:hover
     background: rgba(0, 0, 0, 0.1)
 
+.App-topNav-mobileOpen
+    display: none
+
 @media (max-width: 1300px)
     .App-topNav
         width: initial
         padding-left: 32px
         padding-right: 32px
+
+@media (max-width: 900px)
+    .App-topNav-main
+        display: none
+
+    .App-topNav-menu
+        margin: 0
+
+    .App-topNav-mobileOpen
+        display: flex
+        margin-left: auto
+        align-items: center
+        justify-content: center
+
+    .App-topNav-mobileOpen svg
+        width: 24px
+        height: 24px
+
+    .App-topNav-main-mobileOpen
+        position: absolute
+        left: 0
+        right: 0
+        top: $topNavHeight + 1px
+        bottom: 0
+        display: block
+        z-index: 10000
+        background: #3A3A3A
+        overflow-y: auto
+
+    .App-topNav-menu
+        display: flex
+        flex-direction: column
+        padding-top: 8px
+
+    .App-topNav-menu li
+        display: block
+
+    .App-topNav-menu li a, .App-topNav-login
+        display: block
+        margin: 0
+        padding: 0 32px
+
+    .App-topNav-menu li a.active
+        border-bottom: none
+
+    .TopBarUserSection
+        padding: 0 24px

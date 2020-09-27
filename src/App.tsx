@@ -15,7 +15,7 @@ import {AdminMain, AdminRedirectToLast} from "./admin/AdminMain";
 import {createDiscordLoginUrl, DiscordAuthPage} from "./DiscordAuthPage";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "./store";
-import {ExpandMoreIcon} from "./icons/Icons";
+import {ExpandMoreIcon, MenuIcon} from "./icons/Icons";
 import {logout} from "./redux/user";
 import {Leaderboard} from "./Leaderboard";
 
@@ -54,16 +54,20 @@ const TopBarUserSectionWithRouter = withRouter(TopBarUserSection);
 function TopBar() {
     const currentServerId = useActiveServerId();
     const serverPrefix = currentServerId ? `/${currentServerId}` : "";
+    const [mobileOpen, setMobileOpen] = useState(false);
     return (
         <nav className="App-topNav">
             <h1>Doge Bot</h1>
-            <ul className="App-topNav-menu">
-                <li><NavLink to="/" exact={true}>Home</NavLink></li>
-                <li><NavLink to={serverPrefix + "/admin"}>Administration</NavLink></li>
-                <li><NavLink to={serverPrefix + "/leaderboard"}>Leaderboard</NavLink></li>
-                <li><NavLink to="/help">Help</NavLink></li>
-            </ul>
-            <TopBarUserSectionWithRouter />
+            <div className="App-topNav-mobileOpen" onClick={() => setMobileOpen(!mobileOpen)}><MenuIcon /></div>
+            <div className={"App-topNav-main " + (mobileOpen ? "App-topNav-main-mobileOpen" : "")}>
+                <ul className="App-topNav-menu">
+                    <li><NavLink to="/" exact={true}>Home</NavLink></li>
+                    <li><NavLink to={serverPrefix + "/admin"}>Administration</NavLink></li>
+                    <li><NavLink to={serverPrefix + "/leaderboard"}>Leaderboard</NavLink></li>
+                    <li><NavLink to="/help">Help</NavLink></li>
+                </ul>
+                <TopBarUserSectionWithRouter />
+            </div>
         </nav>
     );
 }
