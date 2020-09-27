@@ -15,7 +15,7 @@ function LeaderboardEntryElementWrapped(props: {rank: number, entry: Leaderboard
             <div className="Leaderboard-rank">{props.rank}</div>
             <img className="Leaderboard-avatar" src={props.entry.userImageUrl} alt="" />
             <div className="Leaderboard-name">{props.entry.userName !== null ? props.entry.userName : "Unknown user"}</div>
-            <div className="Leaderboard-counter">
+            <div className="Leaderboard-counter Leaderboard-messages">
                 <span className="title">Messages</span>
                 <span className="value">{props.entry.messages}</span>
             </div>

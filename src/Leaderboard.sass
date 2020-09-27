@@ -19,6 +19,7 @@
   border-radius: 32px
 
 .Leaderboard-server-name
+  flex: 0 0
   margin-left: 32px
   margin-right: 32px
 
@@ -158,6 +159,9 @@
     width: auto
 
 @media (max-width: 720px)
+  .Leaderboard-main
+    padding: 16px
+
   .Leaderboard-container
     margin-left: 0
     margin-right: 0
@@ -182,9 +186,14 @@
 
   .Leaderboard-entry > .Leaderboard-counter
     order: 1
+    flex-basis: 0
+    flex-grow: 1
     flex-direction: row
     align-items: center
-    margin: 8px 0 8px 48px
+    margin: 8px 2px
+
+  .Leaderboard-entry > .Leaderboard-messages
+    margin-left: 48px
 
   .Leaderboard-entry > .Leaderboard-counter .title
     margin-right: 16px
