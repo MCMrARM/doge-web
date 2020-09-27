@@ -116,7 +116,7 @@
   margin-right: 32px
 
 .AdminMain-unsavedPopup-container
-  position: absolute
+  position: fixed
   left: 0
   right: 0
   bottom: 0
@@ -127,7 +127,7 @@
 .AdminMain-unsavedPopup
   align-items: center
   display: flex
-  position: fixed
+  position: absolute
   left: 0
   right: 0
   bottom: -80px
@@ -248,6 +248,15 @@
 
   .AdminMain-mobileHeader-current-expand
     margin-left: auto
+
+@media (max-width: 1000px)
+  .AdminMain-unsavedPopup
+    width: initial
+    left: 16px
+    right: 16px
+
+  .AdminMain-unsavedPopup-container-visible .AdminMain-unsavedPopup
+    bottom: 16px
 
 @media (max-width: 580px)
   .AdminMain-mobileHeader
