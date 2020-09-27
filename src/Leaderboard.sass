@@ -27,6 +27,9 @@
   border: 1px solid #707070
   border-radius: 8px
 
+.Leaderboard-info-ctr
+  order: 1
+
 .Leaderboard-main
   flex-grow: 1
   padding: 32px
@@ -58,10 +61,16 @@
   opacity: 0.4
 
 .Leaderboard-name
+  display: inline-block
+  width: 1px
+  flex-basis: 1px
   flex-grow: 1
+  flex-shrink: 1
   font-size: 20px
   font-weight: 500
   text-align: left
+  overflow: hidden
+  word-wrap: break-word
 
 .Leaderboard-counter
   display: flex
@@ -128,3 +137,54 @@
 .Leaderboard-role-table .lvl
   display: inline-block
   font-size: 12px
+
+@media (max-width: 1300px)
+  .Leaderboard-container
+    width: auto
+    margin-left: 32px
+    margin-right: 32px
+
+  .Leaderboard-main
+    margin-right: 0
+
+  .Leaderboard-info-ctr
+    display: grid
+    flex-grow: 1
+    order: 0
+    grid-template-columns: 1fr 1fr
+    grid-gap: 0 16px
+
+  .Leaderboard-info
+    width: auto
+
+@media (max-width: 720px)
+  .Leaderboard-container
+    margin-left: 0
+    margin-right: 0
+
+  .Leaderboard-info-ctr
+    grid-template-columns: 1fr
+
+  .Leaderboard-info, .Leaderboard-main
+    border-left-width: 0
+    border-right-width: 0
+    border-radius: 0
+
+  .Leaderboard-entry
+    flex-wrap: wrap
+    justify-content: space-between
+
+  .Leaderboard-entry::before
+    content: ''
+    width: 100%
+    height: 0
+    order: 1
+
+  .Leaderboard-entry > .Leaderboard-counter
+    order: 1
+    flex-direction: row
+    align-items: center
+    margin: 8px 0 8px 48px
+
+  .Leaderboard-entry > .Leaderboard-counter .title
+    margin-right: 16px

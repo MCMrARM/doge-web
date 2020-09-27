@@ -90,11 +90,6 @@ export function Leaderboard() {
                 <img className="Leaderboard-server-icon" src={rData?.data?.meta?.serverIconUrl} alt="" />
                 <span className="Leaderboard-server-name"><strong>{rData?.data?.meta?.serverName}</strong>'s leaderboard</span>
             </div>
-            <div className="Leaderboard-main">
-                {rData?.data?.leaderboard?.map((x, i) => <LeaderboardEntryElement key={"lb-" + i} rank={i + 1} entry={x}/>)}
-                {rData?.loadMore === "pending" && <span>Loading more...</span>}
-                {rData?.loadMore !== "pending" && rData?.data?.after && <Button ref={loadMoreButton} theme="colorless" onClick={loadMore}>Load more</Button>}
-            </div>
             <div className="Leaderboard-info-ctr">
                 <div className="Leaderboard-info">
                     <h3>Information</h3>
@@ -107,7 +102,7 @@ export function Leaderboard() {
                     <table style={{marginTop: "8px"}} className="Leaderboard-role-table">
                         <tbody>
                             {rData?.data?.meta?.xpRoles.map((x, i) => <tr key={"rank-" + i}>
-                                <td style={{width: "20%"}} />
+                                <td style={{width: "30%"}} />
                                 <td style={{width: "0px"}}><span className="lvl">LVL</span></td>
                                 <td style={{width: "0px"}}>{x.level}</td>
                                 <td style={{width: "100%"}}><span className="role" style={{color: colorIntToHexString(x.roleColor), borderColor: colorIntToHexString(x.roleColor)}}>{x.roleName}</span></td>
@@ -115,6 +110,11 @@ export function Leaderboard() {
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div className="Leaderboard-main">
+                {rData?.data?.leaderboard?.map((x, i) => <LeaderboardEntryElement key={"lb-" + i} rank={i + 1} entry={x}/>)}
+                {rData?.loadMore === "pending" && <span>Loading more...</span>}
+                {rData?.loadMore !== "pending" && rData?.data?.after && <Button ref={loadMoreButton} theme="colorless" onClick={loadMore}>Load more</Button>}
             </div>
         </div>
     )
