@@ -25,6 +25,9 @@
   cursor: pointer
   outline: none
 
+.AdminName-sidebar-mobileClose
+  display: none
+
 .AdminName-sidebar-server:hover
   background: #3A3A3A
 
@@ -148,3 +151,99 @@
 
 .AdminMain-unsavedPopup > .Button
   margin-left: 8px
+
+.AdminMain-mobileHeader
+  display: none
+
+
+@media (max-width: 1300px)
+  .AdminMain
+    width: initial
+    flex-direction: column
+    margin: 16px -1px 0 -1px
+    border-radius: 8px 8px 0 0
+    border-left-width: 0
+    border-right-width: 0
+
+  .AdminMain-sidebar
+    display: none
+    position: absolute
+    left: 0
+    top: 0
+    right: 0
+    bottom: 0
+    width: auto
+    overflow-y: auto
+    z-index: 10000
+
+  .AdminMain-sidebar-mobileVisible
+    display: block
+
+  .AdminMain-sidebar .AdminName-sidebar-server
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2)
+
+  .AdminMain-sidebar .AdminName-sidebar-server-expand
+    margin-right: 28px
+
+  .AdminName-sidebar-mobileClose
+    display: flex
+    margin: -16px -28px -16px 0
+    width: 64px
+    align-self: stretch
+    align-items: center
+    justify-content: center
+    background: rgba(0, 0, 0, 0.1)
+
+  .AdminName-sidebar-mobileClose > svg
+    width: 24px
+    height: 24px
+
+  .AdminPage
+    margin: 32px
+
+  .AdminPage-Title
+    display: none
+
+  .AdminMain-mobileHeader
+    display: flex
+    background: #3B3B3B
+    border-bottom: 1px solid #707070
+    border-radius: 8px 8px 0 0
+
+  .AdminMain-mobileHeader .AdminName-sidebar-server
+    margin-bottom: 0
+    border-right: 1px solid #707070
+    width: 200px
+    border-radius: 8px 0 0 0
+
+  .AdminMain-mobileHeader > nav ul
+    padding: 0
+    margin: 0
+
+  .AdminMain-mobileHeader > nav li
+    display: inline-block
+    padding: 0
+    margin: 0
+
+  .AdminMain-mobileHeader > nav a
+    display: none
+
+  .AdminMain-mobileHeader > nav a.active
+    display: block
+
+  .AdminMain-mobileHeader-current
+    display: flex
+    align-items: center
+    flex-grow: 1
+    padding: 16px 28px
+    font-size: 20px
+    font-weight: bold
+    cursor: pointer
+
+  .AdminMain-mobileHeader-current .Icon
+    width: 32px
+    height: 32px
+    margin-right: 16px
+
+  .AdminMain-mobileHeader-current-expand
+    margin-left: auto
