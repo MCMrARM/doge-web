@@ -65,6 +65,8 @@ function ActionVarListLevel(props: {workflow: ActionWorkflow|null, level: {[name
     };
     const ret: ReactNode[] = [];
     createItems(props.level, [], ret, true);
+    if (ret.length === 0)
+        return null;
     return (
         <ul className="ActionVarList-items">
             {ret}
@@ -112,6 +114,8 @@ export function ActionVarSelector(props: {context: {[name: string]: VariableType
     const context = useContext(WorkflowContext);
     let content: ReactNode|ReactNode[] = "(unset)";
     if (props.value.type === "number") {
+        content = props.value.value;
+    } else if (props.value.type === "string") {
         content = props.value.value;
     } else if (props.value.type === "ref" && props.value.path.length > 1) {
         let origin;

@@ -47,6 +47,9 @@ export type VariableSource = {
     type: "number",
     value: number
 } | {
+    type: "string",
+    value: string
+} | {
     type: "object",
     object: {
         [name: string]: VariableSource
@@ -93,6 +96,8 @@ export function resolveVarType(source: VariableSource|undefined, context: {[key:
         return ent;
     } else if (source.type === "number") {
         return VariableType.NUMBER;
+    } else if (source.type === "string") {
+        return VariableType.STRING;
     }
     return null;
 }
