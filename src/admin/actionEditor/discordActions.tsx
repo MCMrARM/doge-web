@@ -1,6 +1,15 @@
-import {ArrayVariableType, makeAction, resolveVarType, SetVariableType, VariableType} from "./actions";
+import {ArrayVariableType, makeAction, makeCategory, resolveVarType, SetVariableType, VariableType} from "./actions";
 import {ActionElement, ActionVarSelector} from "./renderer";
 import React from "react";
+
+const discordCategory = makeCategory({
+    name: "Discord"
+});
+
+const memberCategory = makeCategory({
+    parent: discordCategory,
+    name: "Member"
+});
 
 const RoleVariableType = new VariableType("role");
 
@@ -17,6 +26,8 @@ GuildVariableType.children["members"] = new ArrayVariableType(MemberVariableType
 
 makeAction({
     id: "GuildMember.addRole",
+    name: "Add role",
+    category: memberCategory,
     render: (props) => {
         return (
             <ActionElement action={props.action}>
@@ -30,6 +41,8 @@ makeAction({
 });
 makeAction({
     id: "GuildMember.removeRole",
+    name: "Remove role",
+    category: memberCategory,
     render: (props) => {
         return (
             <ActionElement action={props.action}>

@@ -5,6 +5,7 @@
   padding: 8px
   display: flex
   align-items: center
+  margin-bottom: 8px
 
 .ActionElement-no
   display: flex
@@ -61,7 +62,7 @@
 .ActionVarList-itemsCtr
   display: flex
 
-.ActionVarList-items
+.ActionVarList-items, .ActionList-items
   width: 80px
   padding: 0
   margin: 0
@@ -73,15 +74,16 @@
 .ActionVarList-items:last-child
   border-right: none
 
-.ActionVarList-item
+.ActionVarList-item, .ActionList-item
   display: flex
   height: 18px
   align-items: center
   padding: 1px
   cursor: pointer
 
-.ActionVarList-item.selected
+.ActionVarList-item.selected, .ActionList-item.selected
   background: rgba(255, 255, 255, 0.07)
+  color: #22D870
 
 .ActionVarList-origin
   display: flex
@@ -92,4 +94,18 @@
   border-radius: 2px
   background: #20a85a
   margin-right: 4px
+  font-size: 12px
+  color: white
+
+.ActionList
+  width: 400px
+  background: #3C3C3C
+  border: 1px solid #4E4E4E
+  border-radius: 2px
+  z-index: 10000
+  display: flex
+
+.ActionList-header
+  text-transform: uppercase
+  color: #22D870
   font-size: 12px

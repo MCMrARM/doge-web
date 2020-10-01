@@ -1,10 +1,20 @@
-import {ArrayVariableType, makeAction, resolveVarType, VariableType} from "./actions";
+import {ArrayVariableType, makeAction, makeCategory, resolveVarType, VariableType} from "./actions";
 import React from "react";
 import {ActionElement, ActionVarSelector} from "./renderer";
 
+const scriptingCategory = makeCategory({
+    name: "Scripting"
+});
+
+const arrayCategory = makeCategory({
+    parent: scriptingCategory,
+    name: "Arrays"
+});
 
 makeAction({
     id: "BaseReadOnlyArray.get",
+    name: "Get element from array",
+    category: arrayCategory,
     output: (action, context) => {
         const thisType = resolveVarType(action.input.this, context);
         return thisType instanceof ArrayVariableType ? thisType.arrayOf : undefined;

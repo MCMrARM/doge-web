@@ -1,3 +1,5 @@
+import {act} from "react-dom/test-utils";
+
 export class VariableType {
     static STRING = new VariableType("string");
     static NUMBER = new VariableType("number");
@@ -57,8 +59,31 @@ export type VariableSource = {
 }
 
 
+export type CategoryDef = {
+    parent?: CategoryDef,
+    name: string,
+    children?: CategoryDef[],
+    actions?: ActionDef[]
+}
+
+export const actionCategories: CategoryDef[] = [];
+
+export function makeCategory(category: CategoryDef) {
+    if (category.parent) {
+        if (!category.parent.children)
+            category.parent.children = [];
+        category.parent.children.push(category);
+    } else {
+        actionCategories.push(category);
+    }
+    return category;
+}
+
+
 export type ActionDef = {
     id: string,
+    name: string,
+    category: CategoryDef,
     assignNo?: boolean,
     output?: (action: ActionUsage, context: {[key: string]: VariableType}) => VariableType | undefined,
     render: (props: { action: ActionUsage, context: {[key: string]: VariableType}, onInputChange: (changes: { [name: string]: VariableSource|null }) => void }) => JSX.Element
@@ -68,6 +93,11 @@ export const actions: {[id: string]: ActionDef} = {};
 
 export function makeAction(action: ActionDef) {
     actions[action.id] = action;
+    if (action.category) {
+        if (!action.category.actions)
+            action.category.actions = [];
+        action.category.actions.push(action);
+    }
 }
 
 

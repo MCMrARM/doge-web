@@ -1,7 +1,8 @@
 import {
+    actionCategories,
     ActionOutputVariableType,
     ActionUsage,
-    ActionWorkflow, checkVarTypeContainsType,
+    ActionWorkflow, CategoryDef, checkVarTypeContainsType,
     SetVariableType, sourceToUserDisplayedRefText, userDisplayedRefTextToSource,
     VariableSource,
     VariableType
@@ -155,4 +156,31 @@ export function ActionVarSelector(props: {context: {[name: string]: VariableType
             {open && <ActionVarList context={props.context} value={props.value} type={props.type} onChange={props.onChange} />}
         </div>
     );
+}
+
+export function ActionList(props: {categories?: CategoryDef[]}) {
+    const categories = props.categories || actionCategories;
+    const [selectedCategory, setSelectedCategory] = useState<number>(0);
+    const flatSelCatList: ReactNode[] = [];
+    function createSelCatList(node: CategoryDef, textPath: string) {
+        let i = 0;
+        for (const child of node.actions || []) {
+            flatSelCatList.push(<li key={textPath + "-" + (i++)} className="ActionList-item">{child.name}</li>);
+        }
+        for (const child of node.children || []) {
+            flatSelCatList.push(<li key={textPath + "-" + i} className="ActionList-header">{child.name}</li>);
+            createSelCatList(child, textPath + "-" + (i++));
+        }
+    }
+    createSelCatList(categories[selectedCategory], "cat-" + selectedCategory);
+    return (
+        <div className="ActionList">
+            <ul className="ActionList-items">
+                {categories.map((x, i) => <li key={"cat-" + i} onClick={() => setSelectedCategory(i)} className={"ActionList-item" + (selectedCategory === i ? " selected" : "")}>{x.name}</li>)}
+            </ul>
+            <ul className="ActionList-items" style={{width: "auto", flexGrow: 1}}>
+                {flatSelCatList}
+            </ul>
+        </div>
+    )
 }
