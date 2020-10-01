@@ -1,5 +1,3 @@
-import {act} from "react-dom/test-utils";
-
 export class VariableType {
     static STRING = new VariableType("string");
     static NUMBER = new VariableType("number");
