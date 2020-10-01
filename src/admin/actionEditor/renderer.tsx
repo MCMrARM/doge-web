@@ -1,7 +1,7 @@
 import {
     ActionOutputVariableType,
     ActionUsage,
-    ActionWorkflow,
+    ActionWorkflow, checkVarTypeContainsType,
     SetVariableType,
     VariableSource,
     VariableType
@@ -38,14 +38,14 @@ export function ActionElement(props: {action: ActionUsage, children: React.React
     );
 }
 
-function ActionVarListLevel(props: {workflow: ActionWorkflow|null, level: {[name: string]: VariableType}, selected: string[], firstLevel: boolean}) {
+function ActionVarListLevel(props: {workflow: ActionWorkflow|null, level: {[name: string]: VariableType}, selected: string[], expectedType: VariableType, firstLevel: boolean}) {
     const createItems = (from: {[name: string]: VariableType}, path: string[], arr: ReactNode[], selected: boolean) => {
         for (const k of Object.keys(from)) {
             let v = from[k];
             const kSelected = selected && props.selected[path.length] === k;
             if (v instanceof SetVariableType && v.showFlattened) {
                 createItems(v.children, [...path, k], arr, kSelected);
-            } else {
+            } else if (kSelected || checkVarTypeContainsType(v, props.expectedType)) {
                 let content: ReactNode;
                 if (props.firstLevel && path.length > 0) {
                     let origin;
@@ -72,7 +72,7 @@ function ActionVarListLevel(props: {workflow: ActionWorkflow|null, level: {[name
     )
 }
 
-export function ActionVarList(props: {context: {[name: string]: VariableType}, value: VariableSource, onChange: (value: VariableSource) => void}) {
+export function ActionVarList(props: {context: {[name: string]: VariableType}, value: VariableSource, type: VariableType, onChange: (value: VariableSource) => void}) {
     const context = useContext(WorkflowContext);
     const levels: [{[name: string]: VariableType}, string[]][] = [];
     if (props.value.type === "ref") {
@@ -100,13 +100,13 @@ export function ActionVarList(props: {context: {[name: string]: VariableType}, v
         <div className="ActionVarList">
             <input className="ActionVarList-input" type="text" value={props.value.type} />
             <div className="ActionVarList-itemsCtr">
-                {levels.map((x, i) => <ActionVarListLevel workflow={context} key={"level-" + i} level={x[0]} selected={x[1]} firstLevel={i === 0} />)}
+                {levels.map((x, i) => <ActionVarListLevel workflow={context} key={"level-" + i} level={x[0]} selected={x[1]} expectedType={props.type} firstLevel={i === 0} />)}
             </div>
         </div>
     )
 }
 
-export function ActionVarSelector(props: {context: {[name: string]: VariableType}, value: VariableSource, onChange: (value: VariableSource) => void}) {
+export function ActionVarSelector(props: {context: {[name: string]: VariableType}, value: VariableSource, type: VariableType, onChange: (value: VariableSource) => void}) {
     const [open, setOpen] = useState(false);
 
     const context = useContext(WorkflowContext);
@@ -130,7 +130,7 @@ export function ActionVarSelector(props: {context: {[name: string]: VariableType
         <div className="ActionVarSelector" onClick={() => setOpen(true)}>
             {content}
 
-            {open && <ActionVarList context={props.context} value={props.value} onChange={props.onChange} />}
+            {open && <ActionVarList context={props.context} value={props.value} type={props.type} onChange={props.onChange} />}
         </div>
     );
 }

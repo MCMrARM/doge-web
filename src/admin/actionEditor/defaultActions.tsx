@@ -1,4 +1,4 @@
-import {ArrayVariableType, makeAction, resolveVarType} from "./actions";
+import {ArrayVariableType, makeAction, resolveVarType, VariableType} from "./actions";
 import React from "react";
 import {ActionElement, ActionVarSelector} from "./renderer";
 
@@ -13,9 +13,9 @@ makeAction({
         return (
             <ActionElement action={props.action}>
                 Get element no.
-                <ActionVarSelector context={props.context} value={props.action.input.index} onChange={v => props.onInputChange({index: v})} />
+                <ActionVarSelector context={props.context} value={props.action.input.index} type={VariableType.NUMBER} onChange={v => props.onInputChange({index: v})} />
                 from
-                <ActionVarSelector context={props.context} value={props.action.input.this} onChange={v => props.onInputChange({this: v})} />
+                <ActionVarSelector context={props.context} value={props.action.input.this} type={ArrayVariableType.GENERIC} onChange={v => props.onInputChange({this: v})} />
             </ActionElement>
         );
     }

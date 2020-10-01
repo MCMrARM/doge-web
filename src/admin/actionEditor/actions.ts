@@ -19,9 +19,11 @@ export class SetVariableType extends VariableType {
     }
 }
 export class ArrayVariableType extends VariableType {
-    arrayOf: VariableType;
+    static GENERIC = new ArrayVariableType(undefined);
 
-    constructor(arrayOf: VariableType) {
+    arrayOf?: VariableType;
+
+    constructor(arrayOf: VariableType|undefined) {
         super("array");
         this.arrayOf = arrayOf;
     }
@@ -97,7 +99,7 @@ export function resolveVarType(source: VariableSource|undefined, context: {[key:
 
 export function checkVarTypesCompatible(a: VariableType, b: VariableType): boolean {
     if (a instanceof ArrayVariableType && b instanceof ArrayVariableType)
-        return checkVarTypesCompatible(a.arrayOf, b.arrayOf);
+        return a.arrayOf === undefined || b.arrayOf === undefined || checkVarTypesCompatible(a.arrayOf, b.arrayOf);
     return a.name === b.name;
 }
 
