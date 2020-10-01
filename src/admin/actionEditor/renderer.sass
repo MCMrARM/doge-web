@@ -40,7 +40,7 @@
   border: 1px solid #4E4E4E
   border-radius: 2px
   z-index: 10000
-  overflow-x: hidden
+  overflow-x: auto
   display: flex
   flex-direction: column
   width: min-content
@@ -64,19 +64,20 @@
 
 .ActionVarList-items, .ActionList-items
   width: 80px
+  max-height: 200px
   padding: 0
   margin: 0
   list-style: none
   font-size: 13px
   border-right: 1px solid #4E4E4E
-  overflow-y: hidden
+  overflow-y: auto
 
 .ActionVarList-items:last-child
   border-right: none
 
 .ActionVarList-item, .ActionList-item
   display: flex
-  height: 18px
+  min-height: 18px
   align-items: center
   padding: 1px
   cursor: pointer
