@@ -80,7 +80,8 @@ export type ActionUsage = {
 }
 export type ActionWorkflow = {
     root: ActionUsage[],
-    numberedActionMap: {[key: string]: number}
+    numberedActionMap: {[key: string]: number},
+    reverseNumberedActionMap: {[key: number]: string}
 }
 
 export function resolveVarType(source: VariableSource|undefined, context: {[key: string]: VariableType}): VariableType|null {
@@ -118,6 +119,36 @@ export function checkVarTypeContainsType(container: VariableType, what: Variable
     }
     return false;
 }
+
+export function sourceToUserDisplayedRefText(workflow: ActionWorkflow|null, src: VariableSource) {
+    if (src.type === "number") {
+        return src.value.toString();
+    } else if (src.type === "string") {
+        if (src.value.startsWith("@"))
+            return "@" + src.value;
+        return src.value;
+    } else if (src.type === "ref" && src.path.length > 0) {
+        if (src.path[0] === "args")
+            return "@" + src.path.slice(1).join(".");
+        const renamedFirstComponent = workflow?.numberedActionMap[src.path[0]] || src.path[0];
+        return "@" + [renamedFirstComponent, ...src.path.slice(1)].join(".");
+    } else if (src.type === "ref") {
+        return "@";
+    }
+    return "?" + src.type + "?";
+}
+
+export function userDisplayedRefTextToSource(workflow: ActionWorkflow|null, str: string): VariableSource {
+    if (str.startsWith("@")) {
+        if (str.startsWith("@@"))
+            return {type: "string", value: str.substr(1)};
+        const path = str.substr(1).split(".");
+        path[0] = workflow?.reverseNumberedActionMap[parseInt(path[0])] || path[0];
+        return {type: "ref", path: path};
+    }
+    return {type: "string", value: str};
+}
+
 
 export function parseActions() {
     //
