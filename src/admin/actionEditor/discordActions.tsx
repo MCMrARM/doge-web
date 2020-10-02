@@ -5,12 +5,11 @@ import {
     renderVariableTypeDefault,
     RenderVariableTypeProps,
     RenderConstListProps,
-    StringFormatVarEditor
+    StringFormatVarEditor, ConditionActionElement
 } from "./renderer";
 import React, {createContext, useContext} from "react";
 import {ServerInfo} from "../../shared/ServerInfo";
 import {colorIntToHexString} from "../../colorUtil";
-import {TextArea} from "../../components/TextArea";
 
 export const ActionGuildContext = createContext<ServerInfo | null>(null);
 
@@ -98,6 +97,21 @@ function ChannelConstListComponent(props: RenderConstListProps) {
 }
 
 makeAction({
+    id: "GuildMember.hasRole",
+    name: "Has role",
+    category: memberCategory,
+    render: (props) => {
+        return (
+            <ConditionActionElement action={props.action}>
+                <ActionVarSelector context={props.context} value={props.action.input.this} type={MemberVariableType} onChange={v => props.onInputChange({this: v})} />
+                has role
+                <ActionVarSelector context={props.context} value={props.action.input.role} type={RoleVariableType} valueComponent={RoleValueComponent} constListComponent={RoleConstListComponent} onChange={v => props.onInputChange({role: v})} />
+            </ConditionActionElement>
+        );
+    }
+});
+
+makeAction({
     id: "GuildMember.addRole",
     name: "Add role",
     category: memberCategory,
@@ -112,6 +126,7 @@ makeAction({
         );
     }
 });
+
 makeAction({
     id: "GuildMember.removeRole",
     name: "Remove role",
@@ -127,6 +142,7 @@ makeAction({
         );
     }
 });
+
 makeAction({
     id: "TextChannel.send",
     name: "Send message",

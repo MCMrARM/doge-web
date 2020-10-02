@@ -1,3 +1,5 @@
+import React from "react";
+
 export class VariableType {
     static STRING = new VariableType("string");
     static NUMBER = new VariableType("number");
@@ -78,13 +80,19 @@ export function makeCategory(category: CategoryDef) {
 }
 
 
+export type ActionRenderProps = {
+    action: ActionUsage,
+    context: {[key: string]: VariableType},
+    onInputChange: (changes: { [name: string]: VariableSource|null }) => void,
+    onBlockChange: (changes: { [name: string]: ActionUsage[]|null }) => void
+}
 export type ActionDef = {
     id: string,
     name: string,
     category: CategoryDef,
     assignNo?: boolean,
     output?: (action: ActionUsage, context: {[key: string]: VariableType}) => VariableType | undefined,
-    render: (props: { action: ActionUsage, context: {[key: string]: VariableType}, onInputChange: (changes: { [name: string]: VariableSource|null }) => void }) => JSX.Element
+    render: React.ComponentType<ActionRenderProps>
 }
 
 export const actions: {[id: string]: ActionDef} = {};
@@ -103,7 +111,6 @@ export type ActionUsage = {
     ref: string,
     action: ActionDef,
     input: { [name: string]: VariableSource },
-    condition?: ActionUsage[],
     blocks?: { [name: string]: ActionUsage[] }
 }
 export type ActionWorkflow = {

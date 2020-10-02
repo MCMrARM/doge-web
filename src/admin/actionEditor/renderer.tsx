@@ -11,26 +11,35 @@ import React, {createContext, ReactNode, useContext, useState} from "react";
 import "./renderer.sass";
 import {TextArea} from "../../components/TextArea";
 
-const WorkflowContext = createContext<ActionWorkflow|null>(null);
+export const WorkflowContext = createContext<ActionWorkflow|null>(null);
 
-export function ActionRenderer(props: {initialContext: {[name: string]: VariableType}, workflow: ActionWorkflow, onChange: (newWorkflow: ActionWorkflow) => void}) {
+export function ActionRenderer(props: {initialContext: {[name: string]: VariableType}, workflow: ActionWorkflow, actions?: ActionUsage[], onChange: (newActions: ActionUsage[]) => void}) {
+    const inActions = props.actions || props.workflow.root;
     const actions = [];
     let context: {[name: string]: VariableType} = {...props.initialContext};
-    const changeItem = (i: number, v: { [name: string]: VariableSource|null }) => {
-        const newArray = [...props.workflow.root];
-        newArray[i] = {...newArray[i], input: {...newArray[i].input}};
+    const changeItem = (i: number, k: "input" | "blocks", v: { [name: string]: any }) => {
+        const newArray = [...inActions];
+        const newValue = {...newArray[i][k] || {}};
         for (const key of Object.keys(v)) {
             const value = v[key];
             if (value !== null)
-                newArray[i].input[key] = value;
+                newValue[key] = value;
             else
-                delete newArray[i].input[key];
+                delete newValue[key];
         }
-        props.onChange({...props.workflow, root: newArray});
+        newArray[i] = {...newArray[i], [k]: newValue};
+        props.onChange(newArray);
     };
-    for (let i = 0; i < props.workflow.root.length; i++) {
-        const action = props.workflow.root[i];
-        actions.push(<action.action.render key={action.ref} action={action} context={context} onInputChange={v => changeItem(i, v)} />);
+    for (let i = 0; i < inActions.length; i++) {
+        const action = inActions[i];
+        actions.push(
+            <action.action.render
+                key={action.ref}
+                action={action}
+                context={context}
+                onInputChange={v => changeItem(i, "input", v)}
+                onBlockChange={v => changeItem(i, "blocks", v)} />
+        );
         if (action.ref && action.action.output) {
             const out = action.action.output(action, context);
             if (out)
@@ -53,6 +62,13 @@ export function ActionElement(props: {action: ActionUsage, children: React.React
             </div>
         </div>
     );
+}
+
+export function ConditionActionElement(props: {action: ActionUsage, children: React.ReactNode[]}) {
+    return <ActionElement action={props.action}>
+        If
+        {props.children}
+    </ActionElement>;
 }
 
 function ActionVarListLevel(props: {workflow: ActionWorkflow|null, level: {[name: string]: VariableType}, globalPath: string[], selected: string[], expectedType: VariableType, firstLevel: boolean, hasConst: boolean, onChange: (value: VariableSource) => void}) {
