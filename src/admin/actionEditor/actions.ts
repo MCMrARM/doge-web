@@ -177,6 +177,22 @@ export function userDisplayedRefTextToSource(workflow: ActionWorkflow|null, str:
     return {type: "string", value: str};
 }
 
+export function parseStringFormatVarNames(format: string) {
+    const ret = new Set<string>();
+    for (let i = 0; i < format.length; i++) {
+        if (format.charAt(i) === '{') {
+            let start = i;
+            for (; i < format.length; i++)
+                if (format.charAt(i) === '}')
+                    break;
+            if (format.charAt(i) === '}')
+                ret.add(format.substr(start + 1, i - start - 1));
+        }
+        if (format.charAt(i) === '\\')
+            ++i;
+    }
+    return ret;
+}
 
 export function parseActions() {
     //

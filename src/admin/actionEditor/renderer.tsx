@@ -2,13 +2,14 @@ import {
     actionCategories,
     ActionOutputVariableType,
     ActionUsage,
-    ActionWorkflow, CategoryDef, checkVarTypeContainsType,
+    ActionWorkflow, CategoryDef, checkVarTypeContainsType, parseStringFormatVarNames,
     SetVariableType, sourceToUserDisplayedRefText, userDisplayedRefTextToSource,
     VariableSource,
     VariableType
 } from "./actions";
 import React, {createContext, ReactNode, useContext, useState} from "react";
 import "./renderer.sass";
+import {TextArea} from "../../components/TextArea";
 
 const WorkflowContext = createContext<ActionWorkflow|null>(null);
 
@@ -47,7 +48,9 @@ export function ActionElement(props: {action: ActionUsage, children: React.React
     return (
         <div className="ActionElement">
             {no && <div className="ActionElement-no">{no}</div>}
-            {props.children}
+            <div className="ActionElement-content">
+                {props.children}
+            </div>
         </div>
     );
 }
@@ -103,10 +106,10 @@ function ActionVarListLevel(props: {workflow: ActionWorkflow|null, level: {[name
     )
 }
 
-export function ActionVarList(props: {context: {[name: string]: VariableType}, value: VariableSource, type: VariableType, constListComponent?: (props: RenderConstListProps) => JSX.Element, onChange: (value: VariableSource) => void}) {
+export function ActionVarList(props: {context: {[name: string]: VariableType}, value: VariableSource|undefined, type: VariableType, constListComponent?: (props: RenderConstListProps) => JSX.Element, onChange: (value: VariableSource) => void}) {
     const context = useContext(WorkflowContext);
     const levels: [{[name: string]: VariableType}, string[]][] = [];
-    if (props.value.type === "ref") {
+    if (props.value && props.value.type === "ref") {
         levels.push([props.context, []]);
         let checkLevel: { [name: string]: VariableType } = props.context;
         let levelNo = 0;
@@ -129,19 +132,21 @@ export function ActionVarList(props: {context: {[name: string]: VariableType}, v
 
     return (
         <div className="ActionVarList">
-            <input className="ActionVarList-input" type="text" value={sourceToUserDisplayedRefText(context, props.value)} onChange={v => props.onChange(userDisplayedRefTextToSource(context, v.target.value))} />
+            <input className="ActionVarList-input" type="text" value={props.value ? sourceToUserDisplayedRefText(context, props.value) : ""} onChange={v => props.onChange(userDisplayedRefTextToSource(context, v.target.value))} />
             <div className="ActionVarList-itemsCtr">
-                {levels.map((x, i) => <ActionVarListLevel workflow={context} key={"level-" + i} level={x[0]} globalPath={x[1]} selected={props.value.type === "ref" ? props.value.path : []} expectedType={props.type} firstLevel={i === 0} hasConst={i === 0 && props.constListComponent !== undefined} onChange={props.onChange} />)}
-                {props.constListComponent !== undefined && (props.value.type !== "ref" || props.value.path.length === 0) ? <props.constListComponent value={props.value} onChange={props.onChange} /> : null}
+                {levels.map((x, i) => <ActionVarListLevel workflow={context} key={"level-" + i} level={x[0]} globalPath={x[1]} selected={props.value && props.value.type === "ref" ? props.value.path : []} expectedType={props.type} firstLevel={i === 0} hasConst={i === 0 && props.constListComponent !== undefined} onChange={props.onChange} />)}
+                {props.constListComponent !== undefined && (!props.value || props.value.type !== "ref" || props.value.path.length === 0) ? <props.constListComponent value={props.value} onChange={props.onChange} /> : null}
             </div>
         </div>
     )
 }
 
-export type RenderVariableTypeProps = {workflow: ActionWorkflow|null, value: VariableSource}
+export type RenderVariableTypeProps = {workflow: ActionWorkflow|null, value: VariableSource|undefined}
 
 export function renderVariableTypeDefault(props: RenderVariableTypeProps): JSX.Element {
-    if (props.value.type === "number") {
+    if (!props.value) {
+        return <span>(unset)</span>;
+    } else if (props.value.type === "number") {
         return <React.Fragment>{props.value.value.toString()}</React.Fragment>;
     } else if (props.value.type === "string") {
         return <React.Fragment>{props.value.value}</React.Fragment>;
@@ -157,12 +162,12 @@ export function renderVariableTypeDefault(props: RenderVariableTypeProps): JSX.E
             {props.value.path.slice(1).join("'s ")}
         </React.Fragment>;
     }
-    return <span>"(unset)"</span>;
+    return <span>(unset)</span>;
 }
 
-export type RenderConstListProps = {value: VariableSource, onChange: (value: VariableSource) => void}
+export type RenderConstListProps = {value: VariableSource|undefined, onChange: (value: VariableSource) => void}
 
-export function ActionVarSelector(props: {context: {[name: string]: VariableType}, value: VariableSource, type: VariableType, valueComponent?: (props: RenderVariableTypeProps) => JSX.Element, constListComponent?: (props: RenderConstListProps) => JSX.Element, onChange: (value: VariableSource) => void}) {
+export function ActionVarSelector(props: {context: {[name: string]: VariableType}, value: VariableSource | undefined, type: VariableType, valueComponent?: (props: RenderVariableTypeProps) => JSX.Element, constListComponent?: (props: RenderConstListProps) => JSX.Element, onChange: (value: VariableSource) => void}) {
     const [open, setOpen] = useState(false);
 
     const workflow = useContext(WorkflowContext);
@@ -201,5 +206,33 @@ export function ActionList(props: {categories?: CategoryDef[]}) {
                 {flatSelCatList}
             </ul>
         </div>
+    )
+}
+
+export function StringFormatVarEditor(props: {context: {[key: string]: VariableType}, value: VariableSource|undefined, onChange: (value: VariableSource) => void}) {
+    let objectValue: { [name: string]: VariableSource } = {};
+    if (props.value && props.value.type === "object")
+        objectValue = props.value.object;
+    let messageStr = objectValue.message && objectValue.message.type === "string" ? objectValue.message.value : "";
+    if (props.value && props.value.type === "string")
+        messageStr = props.value.value;
+    const vars = Array.from(parseStringFormatVarNames(messageStr));
+    return (
+        <React.Fragment>
+            <TextArea
+                value={messageStr}
+                onChange={v => props.onChange({type: "object", object: {...objectValue, message: {type: "string", value: v}}})}
+                style={{width: "100%"}} />
+            {vars.length > 0 && "Substitutions:"}
+            {vars.map(x => (
+                <div key={"var-" + x} className="StringFormatVarEditor-sub">
+                    <strong>{`{${x}}`}</strong>
+                    <ActionVarSelector
+                        context={props.context} type={VariableType.STRING}
+                        value={objectValue[x]}
+                        onChange={v => props.onChange({type: "object", object: {...objectValue, [x]: v}})} />
+                </div>
+            ))}
+        </React.Fragment>
     )
 }

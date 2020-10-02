@@ -4,7 +4,7 @@
   border-radius: 8px
   padding: 8px
   display: flex
-  align-items: center
+  align-items: flex-start
   margin-bottom: 8px
 
 .ActionElement-no
@@ -16,6 +16,13 @@
   justify-content: center
   border-radius: 16px
   margin-right: 16px
+
+.ActionElement-content
+  display: flex
+  align-items: center
+  flex-wrap: wrap
+  flex-grow: 1
+  min-height: 32px
 
 .ActionVarSelector
   position: relative
@@ -110,3 +117,8 @@
   text-transform: uppercase
   color: #22D870
   font-size: 12px
+
+.StringFormatVarEditor-sub
+  display: flex
+  align-items: center
+  margin: 0 8px
