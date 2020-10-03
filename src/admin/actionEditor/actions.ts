@@ -84,7 +84,8 @@ export type ActionRenderProps = {
     action: ActionUsage,
     context: {[key: string]: VariableType},
     onInputChange: (changes: { [name: string]: VariableSource|null }) => void,
-    onBlockChange: (changes: { [name: string]: ActionUsage[]|null }) => void
+    onBlockChange: (changes: { [name: string]: ActionUsage[]|null }) => void,
+    path: [string, number][]
 }
 export type ActionDef = {
     id: string,
@@ -199,6 +200,78 @@ export function parseStringFormatVarNames(format: string) {
             ++i;
     }
     return ret;
+}
+
+export type ActionItemPath = [string, number][]
+
+export function getSharedActionItemPathPart(a: [string, number][], b: [string, number][]) {
+    const m = Math.min(a.length, b.length);
+    for (let i = 0; ; ++i) {
+        if (i === m || a[i][0] !== b[i][0] || a[i][1] !== b[i][1])
+            return i;
+    }
+}
+
+
+// returns [modifiable node]
+export function rewriteBlocksAtPath(root: {[name: string]: ActionUsage[]}, path: ActionItemPath): {[name: string]: ActionUsage[]} {
+    let current: {[name: string]: ActionUsage[]} = root;
+    for (const el of path) {
+        const newEdit = {...current[el[0]][el[1]]};
+        newEdit.blocks = {...newEdit.blocks};
+        current[el[0]] = [...current[el[0]]];
+        current[el[0]][el[1]] = newEdit;
+        current = newEdit.blocks;
+    }
+    return current;
+}
+
+// returns [new root, deleted element]
+export function deleteActionItemAtPath(root: {[name: string]: ActionUsage[]}, path: ActionItemPath): ActionUsage {
+    const last = rewriteBlocksAtPath(root, path.slice(0, path.length - 1));
+    const pathLast = path[path.length - 1];
+    const deleted = last[pathLast[0]][pathLast[1]];
+    last[pathLast[0]] = [...last[pathLast[0]].slice(0, pathLast[1]), ...last[pathLast[0]].slice(pathLast[1] + 1)];
+    return deleted;
+}
+
+export function createActionItemAtPath(root: {[name: string]: ActionUsage[]}, path: ActionItemPath, what: ActionUsage) {
+    const last = rewriteBlocksAtPath(root, path.slice(0, path.length - 1));
+    const pathLast = path[path.length - 1];
+    last[pathLast[0]] = [...last[pathLast[0]].slice(0, pathLast[1]), what, ...last[pathLast[0]].slice(pathLast[1])];
+}
+
+export function moveActionItem(root: {[name: string]: ActionUsage[]}, from: ActionItemPath, to: ActionItemPath): ActionItemPath {
+    let sharedI = getSharedActionItemPathPart(from, to);
+    if (sharedI === from.length)
+        return from;
+    if (sharedI === to.length)
+        --sharedI;
+
+    const last = rewriteBlocksAtPath(root, from.slice(0, sharedI));
+    const deleted = deleteActionItemAtPath(last, from.slice(sharedI));
+    if (to.length !== from.length && to[sharedI] && to[sharedI][0] === from[sharedI][0] && to[sharedI][1] > from[sharedI][1]) {
+        to = [...to];
+        --to[sharedI][1];
+        createActionItemAtPath(last, to.slice(sharedI), deleted);
+        return to;
+    } else {
+        createActionItemAtPath(last, to.slice(sharedI), deleted);
+        return to;
+    }
+}
+
+const actionBlockOrder = ["condition", "then", "else"];
+export function isActionItemBelow(what: ActionItemPath, comparedTo: ActionItemPath) {
+    for (let i = 0; i < Math.min(what.length, comparedTo.length); ++i) {
+        const whatBlockIdx = actionBlockOrder.indexOf(what[i][0]);
+        const comparedToBlockIdx = actionBlockOrder.indexOf(comparedTo[i][0]);
+        if (whatBlockIdx !== comparedToBlockIdx)
+            return whatBlockIdx > comparedToBlockIdx;
+        if (what[i][1] !== comparedTo[i][1])
+            return what[i][1] > comparedTo[i][1];
+    }
+    return what.length > comparedTo.length;
 }
 
 export function parseActions() {

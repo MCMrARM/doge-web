@@ -117,7 +117,7 @@ makeAction({
     category: memberCategory,
     render: (props) => {
         return (
-            <ActionElement action={props.action}>
+            <ActionElement action={props.action} path={props.path}>
                 Add role
                 <ActionVarSelector context={props.context} value={props.action.input.role} type={RoleVariableType} valueComponent={RoleValueComponent} constListComponent={RoleConstListComponent} onChange={v => props.onInputChange({role: v})} />
                 to
@@ -133,7 +133,7 @@ makeAction({
     category: memberCategory,
     render: (props) => {
         return (
-            <ActionElement action={props.action}>
+            <ActionElement action={props.action} path={props.path}>
                 Remove role
                 <ActionVarSelector context={props.context} value={props.action.input.role} type={RoleVariableType} valueComponent={RoleValueComponent} constListComponent={RoleConstListComponent} onChange={v => props.onInputChange({role: v})} />
                 to
@@ -149,7 +149,7 @@ makeAction({
     category: channelCategory,
     render: (props) => {
         return (
-            <ActionElement action={props.action}>
+            <ActionElement action={props.action} path={props.path}>
                 Send message to channel
                 <ActionVarSelector context={props.context} value={props.action.input.this} type={ChannelVariableType} valueComponent={ChannelValueComponent} constListComponent={ChannelConstListComponent} onChange={v => props.onInputChange({this: v})} />
                 <StringFormatVarEditor context={props.context} value={props.action.input.message} onChange={v => props.onInputChange({message: v})} />

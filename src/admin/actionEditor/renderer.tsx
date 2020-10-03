@@ -2,18 +2,20 @@ import {
     actionCategories,
     ActionOutputVariableType,
     ActionUsage,
-    ActionWorkflow, CategoryDef, checkVarTypeContainsType, parseStringFormatVarNames,
+    ActionWorkflow, CategoryDef, checkVarTypeContainsType, isActionItemBelow, moveActionItem, parseStringFormatVarNames,
     SetVariableType, sourceToUserDisplayedRefText, userDisplayedRefTextToSource,
     VariableSource,
     VariableType
 } from "./actions";
-import React, {createContext, ReactNode, useContext, useState} from "react";
+import React, {createContext, ReactNode, useContext, useRef, useState} from "react";
 import "./renderer.sass";
+import { useDrag, useDrop } from 'react-dnd';
 import {TextArea} from "../../components/TextArea";
 
 export const WorkflowContext = createContext<ActionWorkflow|null>(null);
+export const WorkflowRootChangeContext = createContext<((newActions: ActionUsage[]) => void)|null>(null);
 
-export function ActionRenderer(props: {initialContext: {[name: string]: VariableType}, workflow: ActionWorkflow, actions?: ActionUsage[], onChange: (newActions: ActionUsage[]) => void}) {
+export function ActionRenderer(props: {initialContext: {[name: string]: VariableType}, workflow: ActionWorkflow, actions?: ActionUsage[], onChange: (newActions: ActionUsage[]) => void, path?: [[string, number][], string]}) {
     const inActions = props.actions || props.workflow.root;
     const actions = [];
     let context: {[name: string]: VariableType} = {...props.initialContext};
@@ -30,6 +32,7 @@ export function ActionRenderer(props: {initialContext: {[name: string]: Variable
         newArray[i] = {...newArray[i], [k]: newValue};
         props.onChange(newArray);
     };
+    const pathBase = props.path ? props.path[0] : [];
     for (let i = 0; i < inActions.length; i++) {
         const action = inActions[i];
         actions.push(
@@ -38,7 +41,8 @@ export function ActionRenderer(props: {initialContext: {[name: string]: Variable
                 action={action}
                 context={context}
                 onInputChange={v => changeItem(i, "input", v)}
-                onBlockChange={v => changeItem(i, "blocks", v)} />
+                onBlockChange={v => changeItem(i, "blocks", v)}
+                path={[...pathBase, [props.path?.[1] || "", i]]} />
         );
         if (action.ref && action.action.output) {
             const out = action.action.output(action, context);
@@ -46,16 +50,68 @@ export function ActionRenderer(props: {initialContext: {[name: string]: Variable
                 context = {...context, [action.ref]: new ActionOutputVariableType(out)};
         }
     }
-    return <WorkflowContext.Provider value={props.workflow}>
-        {actions}
-    </WorkflowContext.Provider>
+    if (props.path) {
+        return <React.Fragment>{actions}</React.Fragment>;
+    } else {
+        return <WorkflowContext.Provider value={props.workflow}>
+            <WorkflowRootChangeContext.Provider value={v => props.onChange(v)}>
+                {actions}
+            </WorkflowRootChangeContext.Provider>
+        </WorkflowContext.Provider>
+    }
 }
 
-export function ActionElement(props: {action: ActionUsage, children: React.ReactNode[]}) {
+export const DRAG_ITEM_TYPE_ACTION = "Doge-Action";
+
+export function ActionElement(props: {action: ActionUsage, path?: [string, number][], children: React.ReactNode[]}) {
     const context = useContext(WorkflowContext);
+    const setRootCb = useContext(WorkflowRootChangeContext);
     const no = context?.numberedActionMap[props.action.ref];
+
+    const ref = useRef<HTMLDivElement>(null);
+    const [, drop] = useDrop({
+        accept: DRAG_ITEM_TYPE_ACTION,
+        hover(item: any, monitor) {
+            if (!ref.current || !props.path)
+                return;
+
+            const srcPath = item.path;
+            let dstPath = props.path;
+            if (srcPath === dstPath)
+                return;
+
+            const hoverBoundingRect = ref.current?.getBoundingClientRect();
+            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+            const clientOffset = monitor.getClientOffset();
+            const hoverClientY = (clientOffset?.y || 0) - hoverBoundingRect.top;
+
+            const below = isActionItemBelow(dstPath, srcPath);
+            if (!below && hoverClientY > hoverMiddleY) {
+                dstPath = [...dstPath];
+                dstPath[dstPath.length - 1] = [dstPath[dstPath.length - 1][0], dstPath[dstPath.length - 1][1] + 1];
+            }
+
+            if (JSON.stringify(srcPath) === JSON.stringify(dstPath)) {
+                item.path = dstPath;
+                return;
+            }
+
+            const tmpRoot = {"": context!.root};
+            dstPath = moveActionItem(tmpRoot, srcPath, dstPath);
+            setRootCb!(tmpRoot[""]);
+            item.path = dstPath;
+        },
+    });
+    const [{ isDragging }, drag] = useDrag({
+        item: { type: DRAG_ITEM_TYPE_ACTION, path: props.path },
+        collect: (monitor: any) => ({
+            isDragging: monitor.isDragging(),
+        }),
+    });
+    drag(drop(ref));
+
     return (
-        <div className="ActionElement">
+        <div ref={ref} className="ActionElement">
             {no && <div className="ActionElement-no">{no}</div>}
             <div className="ActionElement-content">
                 {props.children}

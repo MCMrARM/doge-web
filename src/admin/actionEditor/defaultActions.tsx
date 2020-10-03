@@ -16,12 +16,12 @@ function IfComponent(props: ActionRenderProps) {
     const workflow = useContext(WorkflowContext);
     return (
         <React.Fragment>
-            <ActionRenderer initialContext={props.context} workflow={workflow!} actions={props.action.blocks?.condition || []} onChange={v => props.onBlockChange({condition: v})} />
+            <ActionRenderer initialContext={props.context} workflow={workflow!} actions={props.action.blocks?.condition || []} path={[props.path, "condition"]} onChange={v => props.onBlockChange({condition: v})} />
             <div className="ActionConditional">
                 <span className="ActionConditional-header">Then</span>
-                <ActionRenderer initialContext={props.context} workflow={workflow!} actions={props.action.blocks?.then || []} onChange={v => props.onBlockChange({then: v})} />
+                <ActionRenderer initialContext={props.context} workflow={workflow!} actions={props.action.blocks?.then || []} path={[props.path, "then"]} onChange={v => props.onBlockChange({then: v})} />
                 <span className="ActionConditional-header">Else</span>
-                <ActionRenderer initialContext={props.context} workflow={workflow!} actions={props.action.blocks?.else || []} onChange={v => props.onBlockChange({else: v})} />
+                <ActionRenderer initialContext={props.context} workflow={workflow!} actions={props.action.blocks?.else || []} path={[props.path, "else"]} onChange={v => props.onBlockChange({else: v})} />
             </div>
         </React.Fragment>
     );
@@ -43,7 +43,7 @@ makeAction({
     },
     render: (props) => {
         return (
-            <ActionElement action={props.action}>
+            <ActionElement action={props.action} path={props.path}>
                 Get item no.
                 <ActionVarSelector context={props.context} value={props.action.input.index} type={VariableType.NUMBER} onChange={v => props.onInputChange({index: v})} />
                 from
@@ -63,7 +63,7 @@ makeAction({
     },
     render: (props) => {
         return (
-            <ActionElement action={props.action}>
+            <ActionElement action={props.action} path={props.path}>
                 Get random element from
                 <ActionVarSelector context={props.context} value={props.action.input.this} type={ArrayVariableType.GENERIC} onChange={v => props.onInputChange({this: v})} />
             </ActionElement>
