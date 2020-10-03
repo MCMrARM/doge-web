@@ -7,7 +7,7 @@ import {
     VariableSource,
     VariableType
 } from "./actions";
-import React, {createContext, ReactNode, useContext, useRef, useState} from "react";
+import React, {createContext, ReactNode, RefObject, useContext, useRef, useState} from "react";
 import "./renderer.sass";
 import { useDrag, useDrop } from 'react-dnd';
 import {TextArea} from "../../components/TextArea";
@@ -50,6 +50,9 @@ export function ActionRenderer(props: {initialContext: {[name: string]: Variable
                 context = {...context, [action.ref]: new ActionOutputVariableType(out)};
         }
     }
+    if (actions.length === 0) {
+        actions.push(<NoActionElement key={"nothing"} path={[...pathBase, [props.path?.[1] || "", 0]]} />);
+    }
     if (props.path) {
         return <React.Fragment>{actions}</React.Fragment>;
     } else {
@@ -63,20 +66,18 @@ export function ActionRenderer(props: {initialContext: {[name: string]: Variable
 
 export const DRAG_ITEM_TYPE_ACTION = "Doge-Action";
 
-export function ActionElement(props: {action: ActionUsage, path?: [string, number][], children: React.ReactNode[]}) {
-    const context = useContext(WorkflowContext);
+function useActionDragDrop(ref: RefObject<HTMLElement>, path: [string, number][] | undefined, draggable: boolean) {
+    const workflow = useContext(WorkflowContext);
     const setRootCb = useContext(WorkflowRootChangeContext);
-    const no = context?.numberedActionMap[props.action.ref];
 
-    const ref = useRef<HTMLDivElement>(null);
     const [, drop] = useDrop({
         accept: DRAG_ITEM_TYPE_ACTION,
         hover(item: any, monitor) {
-            if (!ref.current || !props.path)
+            if (!ref.current || !workflow || !path)
                 return;
 
             const srcPath = item.path;
-            let dstPath = props.path;
+            let dstPath = path;
             if (srcPath === dstPath)
                 return;
 
@@ -96,19 +97,28 @@ export function ActionElement(props: {action: ActionUsage, path?: [string, numbe
                 return;
             }
 
-            const tmpRoot = {"": context!.root};
+            const tmpRoot = {"": workflow.root};
             dstPath = moveActionItem(tmpRoot, srcPath, dstPath);
             setRootCb!(tmpRoot[""]);
             item.path = dstPath;
         },
     });
     const [{ isDragging }, drag] = useDrag({
-        item: { type: DRAG_ITEM_TYPE_ACTION, path: props.path },
+        item: { type: DRAG_ITEM_TYPE_ACTION, path: path },
         collect: (monitor: any) => ({
             isDragging: monitor.isDragging(),
         }),
+        canDrag: draggable && path !== undefined
     });
     drag(drop(ref));
+}
+
+export function ActionElement(props: {action: ActionUsage, path?: [string, number][], children: React.ReactNode[]}) {
+    const ref = useRef<HTMLDivElement>(null);
+    const context = useContext(WorkflowContext);
+    const no = context?.numberedActionMap[props.action.ref];
+
+    useActionDragDrop(ref, props.path, true);
 
     return (
         <div ref={ref} className="ActionElement">
@@ -116,6 +126,34 @@ export function ActionElement(props: {action: ActionUsage, path?: [string, numbe
             <div className="ActionElement-content">
                 {props.children}
             </div>
+        </div>
+    );
+}
+
+function NoActionElement(props: {path: [string, number][]}) {
+    const workflow = useContext(WorkflowContext);
+    const setRootCb = useContext(WorkflowRootChangeContext);
+    const ref = useRef<HTMLDivElement>(null);
+
+    const [, drop] = useDrop({
+        accept: DRAG_ITEM_TYPE_ACTION,
+        hover(item: any, monitor) {
+            if (!ref.current)
+                return;
+
+
+            const srcPath = item.path;
+            const tmpRoot = {"": workflow!.root};
+            let dstPath = moveActionItem(tmpRoot, srcPath, props.path);
+            setRootCb!(tmpRoot[""]);
+            item.path = dstPath;
+        },
+    });
+    drop(ref);
+
+    return (
+        <div ref={ref} className="ActionElement-doNothing">
+            Do nothing
         </div>
     );
 }
