@@ -2,18 +2,17 @@ import {
     actionCategories,
     ActionOutputVariableType,
     ActionUsage,
-    ActionWorkflow, CategoryDef, checkVarTypeContainsType, isActionItemBelow, moveActionItem, parseStringFormatVarNames,
+    ActionWorkflow, CategoryDef, checkVarTypeContainsType, moveActionItem, parseStringFormatVarNames,
     SetVariableType, sourceToUserDisplayedRefText, userDisplayedRefTextToSource,
     VariableSource,
     VariableType
 } from "./actions";
 import React, {createContext, ReactNode, RefObject, useContext, useRef, useState} from "react";
 import "./renderer.sass";
-import { useDrag, useDrop } from 'react-dnd';
 import {TextArea} from "../../components/TextArea";
+import {DragContext, DragDropCallback, DragItem} from "./dragHelper";
 
 export const WorkflowContext = createContext<ActionWorkflow|null>(null);
-export const WorkflowRootChangeContext = createContext<((newActions: ActionUsage[]) => void)|null>(null);
 
 export function ActionRenderer(props: {initialContext: {[name: string]: VariableType}, workflow: ActionWorkflow, actions?: ActionUsage[], onChange: (newActions: ActionUsage[]) => void, path?: [[string, number][], string]}) {
     const inActions = props.actions || props.workflow.root;
@@ -56,110 +55,57 @@ export function ActionRenderer(props: {initialContext: {[name: string]: Variable
     if (props.path) {
         return <React.Fragment>{actions}</React.Fragment>;
     } else {
+        const dropItem: DragDropCallback = (from, to, pos) => {
+            const tmpRoot = {"": inActions};
+            if (pos === "below") {
+                to = [...to];
+                ++to[to.length - 1][1];
+            }
+            moveActionItem(tmpRoot, from, to);
+            props.onChange(tmpRoot[""]);
+        };
         return <WorkflowContext.Provider value={props.workflow}>
-            <WorkflowRootChangeContext.Provider value={v => props.onChange(v)}>
+            <DragContext onDrop={dropItem}>
                 {actions}
-            </WorkflowRootChangeContext.Provider>
+            </DragContext>
         </WorkflowContext.Provider>
     }
 }
 
-export const DRAG_ITEM_TYPE_ACTION = "Doge-Action";
-
-function useActionDragDrop(ref: RefObject<HTMLElement>, path: [string, number][] | undefined, draggable: boolean) {
-    const workflow = useContext(WorkflowContext);
-    const setRootCb = useContext(WorkflowRootChangeContext);
-
-    const [, drop] = useDrop({
-        accept: DRAG_ITEM_TYPE_ACTION,
-        hover(item: any, monitor) {
-            if (!ref.current || !workflow || !path)
-                return;
-
-            const srcPath = item.path;
-            let dstPath = path;
-            if (srcPath === dstPath)
-                return;
-
-            const hoverBoundingRect = ref.current?.getBoundingClientRect();
-            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-            const clientOffset = monitor.getClientOffset();
-            const hoverClientY = (clientOffset?.y || 0) - hoverBoundingRect.top;
-
-            const below = isActionItemBelow(dstPath, srcPath);
-            if (!below && hoverClientY > hoverMiddleY) {
-                dstPath = [...dstPath];
-                dstPath[dstPath.length - 1] = [dstPath[dstPath.length - 1][0], dstPath[dstPath.length - 1][1] + 1];
-            }
-
-            if (JSON.stringify(srcPath) === JSON.stringify(dstPath)) {
-                item.path = dstPath;
-                return;
-            }
-
-            const tmpRoot = {"": workflow.root};
-            dstPath = moveActionItem(tmpRoot, srcPath, dstPath);
-            setRootCb!(tmpRoot[""]);
-            item.path = dstPath;
-        },
-    });
-    const [{ isDragging }, drag] = useDrag({
-        item: { type: DRAG_ITEM_TYPE_ACTION, path: path },
-        collect: (monitor: any) => ({
-            isDragging: monitor.isDragging(),
-        }),
-        canDrag: draggable && path !== undefined
-    });
-    drag(drop(ref));
-}
-
 export function ActionElement(props: {action: ActionUsage, path?: [string, number][], children: React.ReactNode[]}) {
-    const ref = useRef<HTMLDivElement>(null);
     const context = useContext(WorkflowContext);
     const no = context?.numberedActionMap[props.action.ref];
 
-    useActionDragDrop(ref, props.path, true);
-
     return (
-        <div ref={ref} className="ActionElement">
-            {no && <div className="ActionElement-no">{no}</div>}
-            <div className="ActionElement-content">
-                {props.children}
-            </div>
-        </div>
+        <DragItem dragKey={(props.path || []).flatMap(x => x).join("-")} data={props.path || []} placeholderClassName="ActionElement-dragPlaceholder">
+            {(provided) => (
+                <div className="ActionElement" ref={provided.ref as RefObject<HTMLDivElement>} style={provided.dragStyle} {...provided.events}>
+                    {no && <div className="ActionElement-no">{no}</div>}
+                    <div className="ActionElement-content">
+                        {props.children}
+                    </div>
+                </div>
+            )}
+        </DragItem>
     );
 }
 
 function NoActionElement(props: {path: [string, number][]}) {
-    const workflow = useContext(WorkflowContext);
-    const setRootCb = useContext(WorkflowRootChangeContext);
-    const ref = useRef<HTMLDivElement>(null);
-
-    const [, drop] = useDrop({
-        accept: DRAG_ITEM_TYPE_ACTION,
-        hover(item: any, monitor) {
-            if (!ref.current)
-                return;
-
-
-            const srcPath = item.path;
-            const tmpRoot = {"": workflow!.root};
-            let dstPath = moveActionItem(tmpRoot, srcPath, props.path);
-            setRootCb!(tmpRoot[""]);
-            item.path = dstPath;
-        },
-    });
-    drop(ref);
-
     return (
-        <div ref={ref} className="ActionElement-doNothing">
-            Do nothing
-        </div>
+        <DragItem dragKey={(props.path || []).flatMap(x => x).join("-") + "-NONE"} data={props.path} placeholderClassName="ActionElement-dragPlaceholder" positions={["above"]}>
+            {(provided) => provided.droppingOver ? (
+                <div ref={provided.ref as RefObject<HTMLDivElement>} />
+            ) : (
+                <div ref={provided.ref as RefObject<HTMLDivElement>} className="ActionElement-doNothing">
+                    Do nothing
+                </div>
+            )}
+        </DragItem>
     );
 }
 
-export function ConditionActionElement(props: {action: ActionUsage, children: React.ReactNode[]}) {
-    return <ActionElement action={props.action}>
+export function ConditionActionElement(props: {action: ActionUsage, path?: [string, number][], children: React.ReactNode[]}) {
+    return <ActionElement action={props.action} path={props.path}>
         If
         {props.children}
     </ActionElement>;

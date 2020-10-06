@@ -226,11 +226,12 @@ export function rewriteBlocksAtPath(root: {[name: string]: ActionUsage[]}, path:
     return current;
 }
 
-// returns [new root, deleted element]
 export function deleteActionItemAtPath(root: {[name: string]: ActionUsage[]}, path: ActionItemPath): ActionUsage {
     const last = rewriteBlocksAtPath(root, path.slice(0, path.length - 1));
     const pathLast = path[path.length - 1];
     const deleted = last[pathLast[0]][pathLast[1]];
+    if (deleted === undefined)
+        throw new Error("Missing source");
     last[pathLast[0]] = [...last[pathLast[0]].slice(0, pathLast[1]), ...last[pathLast[0]].slice(pathLast[1] + 1)];
     return deleted;
 }
@@ -250,7 +251,7 @@ export function moveActionItem(root: {[name: string]: ActionUsage[]}, from: Acti
 
     const last = rewriteBlocksAtPath(root, from.slice(0, sharedI));
     const deleted = deleteActionItemAtPath(last, from.slice(sharedI));
-    if (to.length !== from.length && to[sharedI] && to[sharedI][0] === from[sharedI][0] && to[sharedI][1] > from[sharedI][1]) {
+    if (to.length >= from.length && to[sharedI] && to[sharedI][0] === from[sharedI][0] && to[sharedI][1] > from[sharedI][1]) {
         to = [...to];
         --to[sharedI][1];
         createActionItemAtPath(last, to.slice(sharedI), deleted);

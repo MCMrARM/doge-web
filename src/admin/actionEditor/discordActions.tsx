@@ -102,7 +102,7 @@ makeAction({
     category: memberCategory,
     render: (props) => {
         return (
-            <ConditionActionElement action={props.action}>
+            <ConditionActionElement action={props.action} path={props.path}>
                 <ActionVarSelector context={props.context} value={props.action.input.this} type={MemberVariableType} onChange={v => props.onInputChange({this: v})} />
                 has role
                 <ActionVarSelector context={props.context} value={props.action.input.role} type={RoleVariableType} valueComponent={RoleValueComponent} constListComponent={RoleConstListComponent} onChange={v => props.onInputChange({role: v})} />
