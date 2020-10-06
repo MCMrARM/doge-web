@@ -2,17 +2,26 @@ import {
     actionCategories,
     ActionOutputVariableType,
     ActionUsage,
-    ActionWorkflow, CategoryDef, checkVarTypeContainsType, moveActionItem, parseStringFormatVarNames,
-    SetVariableType, sourceToUserDisplayedRefText, userDisplayedRefTextToSource,
+    ActionWorkflow,
+    CategoryDef,
+    checkVarTypeContainsType,
+    deleteActionItemAtPath,
+    moveActionItem,
+    parseStringFormatVarNames,
+    SetVariableType,
+    sourceToUserDisplayedRefText,
+    userDisplayedRefTextToSource,
     VariableSource,
     VariableType
 } from "./actions";
-import React, {createContext, ReactNode, RefObject, useContext, useRef, useState} from "react";
+import React, {createContext, ReactNode, RefObject, useContext, useState} from "react";
 import "./renderer.sass";
 import {TextArea} from "../../components/TextArea";
 import {DragContext, DragDropCallback, DragItem} from "./dragHelper";
+import {CloseIcon} from "../../icons/Icons";
 
 export const WorkflowContext = createContext<ActionWorkflow|null>(null);
+export const WorkflowSetRootContext = createContext<((newActions: ActionUsage[]) => void)|null>(null);
 
 export function ActionRenderer(props: {initialContext: {[name: string]: VariableType}, workflow: ActionWorkflow, actions?: ActionUsage[], onChange: (newActions: ActionUsage[]) => void, path?: [[string, number][], string]}) {
     const inActions = props.actions || props.workflow.root;
@@ -56,25 +65,34 @@ export function ActionRenderer(props: {initialContext: {[name: string]: Variable
         return <React.Fragment>{actions}</React.Fragment>;
     } else {
         const dropItem: DragDropCallback = (from, to, pos) => {
-            const tmpRoot = {"": inActions};
             if (pos === "below") {
                 to = [...to];
                 ++to[to.length - 1][1];
             }
+            const tmpRoot = {"": inActions};
             moveActionItem(tmpRoot, from, to);
             props.onChange(tmpRoot[""]);
         };
         return <WorkflowContext.Provider value={props.workflow}>
-            <DragContext onDrop={dropItem}>
-                {actions}
-            </DragContext>
+            <WorkflowSetRootContext.Provider value={props.onChange}>
+                <DragContext onDrop={dropItem}>
+                    {actions}
+                </DragContext>
+            </WorkflowSetRootContext.Provider>
         </WorkflowContext.Provider>
     }
 }
 
 export function ActionElement(props: {action: ActionUsage, path?: [string, number][], children: React.ReactNode[]}) {
-    const context = useContext(WorkflowContext);
-    const no = context?.numberedActionMap[props.action.ref];
+    const workflow = useContext(WorkflowContext);
+    const setRoot = useContext(WorkflowSetRootContext);
+    const no = workflow?.numberedActionMap[props.action.ref];
+
+    const deleteMe = () => {
+        const tmpRoot = {"": workflow?.root || []};
+        deleteActionItemAtPath(tmpRoot, props.path || []);
+        setRoot!(tmpRoot[""]);
+    };
 
     return (
         <DragItem dragKey={(props.path || []).flatMap(x => x).join("-")} data={props.path || []} placeholderClassName="ActionElement-dragPlaceholder">
@@ -84,6 +102,7 @@ export function ActionElement(props: {action: ActionUsage, path?: [string, numbe
                     <div className="ActionElement-content">
                         {props.children}
                     </div>
+                    <div className="ActionElement-delete" onPointerDown={e => e.stopPropagation()} onClick={deleteMe}><CloseIcon /></div>
                 </div>
             )}
         </DragItem>
