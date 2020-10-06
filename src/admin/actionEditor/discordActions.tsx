@@ -1,4 +1,4 @@
-import {ArrayVariableType, makeAction, makeCategory, SetVariableType, VariableSource, VariableType} from "./actions";
+import {ArrayVariableType, makeAction, makeCategory, SetVariableType, VariableType} from "./actions";
 import {
     ActionElement,
     ActionVarSelector,
@@ -10,11 +10,15 @@ import {
 import React, {createContext, useContext} from "react";
 import {ServerInfo} from "../../shared/ServerInfo";
 import {colorIntToHexString} from "../../colorUtil";
+import {DiscordIcon} from "../../icons/Icons";
 
 export const ActionGuildContext = createContext<ServerInfo | null>(null);
 
 const discordCategory = makeCategory({
-    name: "Discord"
+    name: "Discord",
+    renderIcon: () => {
+        return <DiscordIcon className="Icon" />
+    }
 });
 
 const memberCategory = makeCategory({

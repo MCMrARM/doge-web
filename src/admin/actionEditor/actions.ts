@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactNode} from "react";
 
 export class VariableType {
     static STRING = new VariableType("string");
@@ -62,6 +62,7 @@ export type VariableSource = {
 export type CategoryDef = {
     parent?: CategoryDef,
     name: string,
+    renderIcon?: () => ReactNode | ReactNode[]
     children?: CategoryDef[],
     actions?: ActionDef[]
 }

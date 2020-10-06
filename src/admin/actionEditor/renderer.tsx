@@ -275,7 +275,7 @@ export function ActionList(props: {categories?: CategoryDef[]}) {
     return (
         <div className="ActionList">
             <ul className="ActionList-items">
-                {categories.map((x, i) => <li key={"cat-" + i} onClick={() => setSelectedCategory(i)} className={"ActionList-item" + (selectedCategory === i ? " selected" : "")}>{x.name}</li>)}
+                {categories.map((x, i) => <li key={"cat-" + i} onClick={() => setSelectedCategory(i)} className={"ActionList-item" + (selectedCategory === i ? " selected" : "")}>{x.renderIcon?.()} {x.name}</li>)}
             </ul>
             <ul className="ActionList-items" style={{width: "auto", flexGrow: 1}}>
                 {flatSelCatList}

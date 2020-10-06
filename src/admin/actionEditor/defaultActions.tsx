@@ -2,9 +2,13 @@ import {ActionRenderProps, ArrayVariableType, makeAction, makeCategory, resolveV
 import React, {useContext} from "react";
 import {ActionElement, ActionRenderer, ActionVarSelector, WorkflowContext} from "./renderer";
 import "./defaultActions.sass";
+import {CustomScriptIcon} from "../../icons/Icons";
 
 const scriptingCategory = makeCategory({
-    name: "Scripting"
+    name: "Scripting",
+    renderIcon: () => {
+        return <CustomScriptIcon className="Icon" />
+    }
 });
 
 const arrayCategory = makeCategory({
