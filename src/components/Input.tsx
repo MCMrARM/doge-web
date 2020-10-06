@@ -2,7 +2,7 @@ import React from 'react';
 import "./Input.sass";
 
 export function Input(props: { onValueChange?: (value: string) => void } & React.InputHTMLAttributes<HTMLInputElement>) {
-    let filteredProps = {...props};
+    const filteredProps = {...props};
     delete filteredProps["onValueChange"];
     return (
         <input

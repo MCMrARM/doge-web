@@ -148,7 +148,7 @@ function EmbedListEntryEditor(props: {className?: string, msg?: ApiEmbed, onEdit
                     </div>
                     {embedCodeView && (
                         <div className="EmbedListEntry-codeEdit">
-                            <TextArea value={currentEmbedCode[1] || ""} onChange={trySetEmbedCode} />
+                            <TextArea value={currentEmbedCode[1] || ""} onValueChange={trySetEmbedCode} />
                             <div className="EmbedListEntry-codeEditError">{currentEmbedCode[2]}</div>
                         </div>
                     )}

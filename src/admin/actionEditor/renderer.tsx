@@ -230,7 +230,7 @@ export function ActionVarSelector(props: {context: {[name: string]: VariableType
     const ValueComponent = props.valueComponent || renderVariableTypeDefault;
 
     return (
-        <div className="ActionVarSelector" onClick={() => setOpen(true)}>
+        <div className="ActionVarSelector" onClick={() => setOpen(true)} onPointerDown={(e) => e.stopPropagation()}>
             <ValueComponent workflow={workflow} value={props.value} />
 
             {open && <ActionVarList context={props.context} value={props.value} type={props.type} constListComponent={props.constListComponent} onChange={props.onChange} />}
@@ -277,7 +277,8 @@ export function StringFormatVarEditor(props: {context: {[key: string]: VariableT
         <React.Fragment>
             <TextArea
                 value={messageStr}
-                onChange={v => props.onChange({type: "object", object: {...objectValue, message: {type: "string", value: v}}})}
+                onValueChange={v => props.onChange({type: "object", object: {...objectValue, message: {type: "string", value: v}}})}
+                onPointerDown={(e) => e.stopPropagation()}
                 style={{width: "100%"}} />
             {vars.length > 0 && "Substitutions:"}
             {vars.map(x => (

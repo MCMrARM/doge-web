@@ -12,7 +12,7 @@ export function TextAreaList(props: {value: string[], placeholder: string, onVal
             props.onValueChanged([...props.value.slice(0, i), ...props.value.slice(i + 1)]);
     };
     let onAddNew = (v: string) => props.onValueChanged([...props.value, v]);
-    let ret = props.value.map((x, i) => <TextArea key={i} value={x} style={{marginBottom: "4px"}} onChange={(v) => onChange(i, v)} onBlur={() => onBlur(i)} />);
-    ret.push(<TextArea value="" key={props.value.length} placeholder={props.placeholder} onChange={onAddNew} />);
+    let ret = props.value.map((x, i) => <TextArea key={i} value={x} style={{marginBottom: "4px"}} onValueChange={(v) => onChange(i, v)} onBlur={() => onBlur(i)} />);
+    ret.push(<TextArea value="" key={props.value.length} placeholder={props.placeholder} onValueChange={onAddNew} />);
     return <div>{ret}</div>;
 }

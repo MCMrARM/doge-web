@@ -126,7 +126,7 @@ export function WelcomeCard(props: {server: ServerInfo, config: WelcomeConfig, o
                 <ChannelDropdown value={props.config.channel} server={props.server} noneOption="Disabled" onValueChanged={(v) => props.onChange({channel: v})} />
             </TwoColumnOption>
             <TwoColumnOption title="Welcome Message" description="This message will be sent. {user} and {server} are available.">
-                <TextArea value={props.config.message} onChange={(v) => props.onChange({message: v})} />
+                <TextArea value={props.config.message} onValueChange={(v) => props.onChange({message: v})} />
             </TwoColumnOption>
             <div className="WelcomeCard-editor">
                 <div style={{flexGrow: 1}}>
