@@ -24,7 +24,7 @@ import {GuildListEntry} from "../AuthApiClient";
 import {Logging} from "./Logging";
 import {WelcomeCard} from "./WelcomeCard";
 import {Permissions} from "./Permissions";
-import {PersistentRoles} from "./PersistentRoles";
+import {PersistentRoles, PersistentRolesVolatileData} from "./PersistentRoles";
 import {JsonEdit} from "./JsonEdit";
 import {EmbedStudio} from "./embed/EmbedStudio";
 
@@ -200,14 +200,24 @@ function AdminMainLinkList(props: {component: React.ComponentType<{to: string, e
     )
 }
 
+interface VolatileData {
+    role: PersistentRolesVolatileData
+}
+
+const defaultVolatileData = {
+    role: {}
+};
+
 function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
     const dispatch = useDispatch();
 
     let [editableConfig, setEditableConfig] = useState<BotConfig>(props.config);
+    let [volatileData, setVolatileData] = useState<VolatileData>(defaultVolatileData);
     let [overrideImages, setOverrideImages] = useState<{[key: string]: [string, File]}>({});
     useEffect(() => {
         if (props.config) {
             setEditableConfig(props.config);
+            setVolatileData(defaultVolatileData);
             setOverrideImages({});
         }
     }, [props.config]);
@@ -242,7 +252,8 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
                     <WelcomeCard server={props.server} config={editableConfig.welcome} onChange={(changes) => setEditableConfig({...editableConfig, welcome: {...editableConfig!.welcome, ...changes}})} overrideImages={overrideImages} onSetImage={(k, v, f) => setOverrideImages({...overrideImages, [k]: [v, f]})} />
                 </Route>
                 <Route path="/:id/admin/role">
-                    <PersistentRoles server={props.server} config={editableConfig.role} onChange={(changes) => setEditableConfig({...editableConfig, role: {...editableConfig!.role, ...changes}})} />
+                    <PersistentRoles server={props.server} config={editableConfig.role} oldConfig={props.config.role} onChange={(changes) => setEditableConfig({...editableConfig, role: {...editableConfig!.role, ...changes}})}
+                        volatileData={volatileData.role} onVolatileDataChange={(x) => setVolatileData({...volatileData, role: x})}/>
                 </Route>
                 <Route path="/:id/admin/permission">
                     <Permissions server={props.server} config={editableConfig.permission} onChange={(changes) => setEditableConfig({...editableConfig, permission: {...editableConfig!.permission, ...changes}})} />
@@ -257,7 +268,7 @@ function AdminMainRouter(props: {server: ServerInfo, config: BotConfig}) {
             <div className={"AdminMain-unsavedPopup-container" + (uiHasChanges ? " AdminMain-unsavedPopup-container-visible" : "")}>
                 <div className="AdminMain-unsavedPopup">
                     <span className="AdminMain-unsavedPopupText">You have unsaved changes!</span>
-                    <Button theme="secondary" onClick={() => { setEditableConfig(props.config); setOverrideImages({}); }}>Revert</Button>
+                    <Button theme="secondary" onClick={() => { setEditableConfig(props.config); setVolatileData(defaultVolatileData); setOverrideImages({}); }}>Revert</Button>
                     <Button onClick={() => save()}>Save and apply</Button>
                 </div>
             </div>
